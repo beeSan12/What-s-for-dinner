@@ -31,4 +31,14 @@ export class ProductService {
   async findAll() {
     return this.productRepository.get({})
   }
+
+  /**
+   * Retrieves a product by its ID.
+   *
+   * @param {string} id - The product ID.
+   * @returns {Promise<object>} - A promise that resolves to the product object.
+   */
+  async findById(id) {
+    return this.repository.getById(id)
+  }
 }
