@@ -1,32 +1,48 @@
 /**
- * This files is used to load the Open Food Facts CSV file and
- * provide a function to search for products.
- *
+ * @file Defines the ProductController.
  * @module ProductController
  * @author Beatriz Sanssi
  */
 
-import fs from 'fs'
-import path from 'path'
-import csv from 'csv-parser'
+/**
+ * Controller for handling product-related requests.
+ */
+export class ProductController {
+  constructor(productService) {
+    this.productService = productService
+  }
 
-const filePath = path.join(__dirname, '../data/en.openfoodfacts.org.products.csv')
+  /**
+   * Fetches products based on a search query.
+   *
+   * @param {object} req - The request object.
+   * @param {object} res - The response object.
+   * @param {function} next - The next middleware function.
+   */
+  async search(req, res, next) {
+    try {
+      const query = req.query.q || ''
+      const result = await this.productService.search(query)
+      res.json(result)
+    } catch (error) {
+      next(error)
+    }
+  }
 
-let allProducts = [];
-
-fs.createReadStream(filePath)
-  .pipe(csv({ separator: '\t' }))
-  .on('data', (data) => {
-    allProducts.push(data)
-  })
-  .on('end', () => {
-    console.log('CSV loaded:', allProducts.length, 'rows')
-  })
-
-exports.getProducts = (req, res) => {
-  const { search } = req.query;
-  const results = allProducts.filter((p) =>
-    p.product_name && p.product_name.toLowerCase().includes(search.toLowerCase())
-  )
-  res.json(results.slice(0, 20)) // Limit to 20 results
+  /**
+   * Fetches all products.
+   *
+   * @param {object} req - The request object.
+   * @param {object} res - The response object.
+   * @param {function} next - The next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
+  async findAll(req, res, next) {
+    try {
+      const products = await this.productService.findAll()
+      res.json(products)
+    } catch (error) {
+      next(error)
+    }
+  }
 }
