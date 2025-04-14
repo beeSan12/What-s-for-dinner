@@ -6,7 +6,7 @@
 
 import express from 'express'
 import dotenv from 'dotenv'
-import { container, TYPES } from '../../../config/inversify.config.js'
+import { container, PRODUCTTYPES } from '../../../config/inversify.config.js'
 // import { container } from '../../../config/inversify.config.js'
 // import { TYPES } from '../../../config/types.js'
 
@@ -29,21 +29,21 @@ dotenv.config()
 //   productController.search(req, res, next))
 // GET products/search
 router.get('/search', (req, res, next) =>
-  container.get(TYPES.ProductController).search(req, res, next))
+  container.get(PRODUCTTYPES.ProductController).search(req, res, next))
 
 // Provide req.doc to the route if :id is present in the route path.
 router.param('id', (req, res, next, id) =>
-  container.get(TYPES.ProductController).loadProductDocument(req, res, next, id))
+  container.get(PRODUCTTYPES.ProductController).loadProductDocument(req, res, next, id))
 
 // Map HTTP verbs and route paths to controller action methods.
 
 // GET products
 router.route('/')
-  .get((req, res, next) => container.get(TYPES.ProductController).findAll(req, res, next))
+  .get((req, res, next) => container.get(PRODUCTTYPES.ProductController).findAll(req, res, next))
 
 // GET products/:id
 router.route('/:id')
-  .get((req, res, next) => container.get(TYPES.ProductController).find(req, res, next))
+  .get((req, res, next) => container.get(PRODUCTTYPES.ProductController).find(req, res, next))
 
 
 export { router as productRouter }
