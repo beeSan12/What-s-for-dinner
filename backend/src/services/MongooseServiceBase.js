@@ -21,7 +21,25 @@ import { hasErrorOfType } from '../lib/util.js'
 import { MongooseRepositoryBase } from '../repositories/MongooseRepositoryBase.js'
 
 /**
- * Encapsulates a task service.
+ * Defines document actions.
+ *
+ * @readonly
+ * @enum {string}
+ * @property {string} Create - The document will be created.
+ * @property {string} Replace - The document will be replaced.
+ * @property {string} Update - The document will be updated.
+ * @type {object}
+ */
+const DocumentAction = Enum({
+  Create: 'Create',
+  Replace: 'Replace',
+  Update: 'Update',
+  Delete: 'Delete'
+})
+
+
+/**
+ * Encapsulates a service.
  */
 export class MongooseServiceBase {
   /**
@@ -47,6 +65,13 @@ export class MongooseServiceBase {
    */
   constructor (repository) {
     this.#repository = repository
+
+    this.#actionToEnsureExpectedProperties = {
+      [DocumentAction.Create]: this.#repository.model.hasPropertiesToCreateDocument.bind(this.#repository.model),
+      [DocumentAction.Replace]: this.#repository.model.hasPropertiesToReplaceDocument.bind(this.#repository.model),
+      [DocumentAction.Update]: this.#repository.model.hasPropertiesToUpdateDocument.bind(this.#repository.model),
+      [DocumentAction.Delete]: this.#repository.model.hasPropertiesToDeleteDocument.bind(this.#repository.model)
+    }
   }
 
   /**
@@ -98,6 +123,24 @@ export class MongooseServiceBase {
     }
   }
 
+    /**
+   * Inserts a new document.
+   *
+   * @param {object} data - ...
+   * @returns {Promise<object>} Promise resolved with the created document as a plain JavaScript object.
+   */
+    async insert (data) {
+      // Ensure that data contains the required properties.
+      this.#ensureExpectedProperties(data, DocumentAction.Create)
+  
+      try {
+        // Create a new document.
+        return await this.#repository.insert(data)
+      } catch (error) {
+        this.#handleError(error, 'Failed to insert document.')
+      }
+    }
+    
   /**
    * Searches for documents.
    *
