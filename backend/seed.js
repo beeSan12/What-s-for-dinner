@@ -15,6 +15,7 @@ import { ProductModel } from './src/models/ProductModel.js'
 dotenv.config()
 
 const foodFactsData = process.env.PATH_TO_DATA
+const maxImport = 10000
 
 // Connect to MongoDB
 await mongoose.connect(process.env.DB_CONNECTION_STRING)
@@ -30,6 +31,12 @@ let count = 0
 fs.createReadStream(foodFactsData)
   .pipe(csv({ separator: '\t' }))
   .on('data', async (row) => {
+    if (count >= maxImport) {
+      console.log(`Max limit (${maxImport}) reached. Stopping import.`)
+      mongoose.disconnect()
+      process.exit()
+    }
+  
     try {
       if (row.product_name && row.brands && row.image_url) {
         await ProductModel.create({
