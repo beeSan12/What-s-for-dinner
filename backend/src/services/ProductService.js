@@ -11,6 +11,15 @@ import { MongooseServiceBase } from './MongooseServiceBase.js'
  * Encapsulates a task service.
  */
 export class ProductService extends MongooseServiceBase {
+  /**
+   * Searches for products by name.
+   *
+   * @param {string} name - The name to search for.
+   * @returns {Promise<object[]>} A list of matching products.
+   */
+  async searchByName(name) {
+    return this.search({ product_name: new RegExp(name, 'i') })
+  }
 }
 
 // /**

@@ -27,6 +27,9 @@ dotenv.config()
 // // GET products by category
 // router.get('/search', (req, res, next) =>
 //   productController.search(req, res, next))
+// GET products/search
+router.get('/search', (req, res, next) =>
+  container.get(TYPES.ProductController).search(req, res, next))
 
 // Provide req.doc to the route if :id is present in the route path.
 router.param('id', (req, res, next, id) =>
@@ -41,7 +44,6 @@ router.route('/')
 // GET products/:id
 router.route('/:id')
   .get((req, res, next) => container.get(TYPES.ProductController).find(req, res, next))
-
 
 
 export { router as productRouter }
