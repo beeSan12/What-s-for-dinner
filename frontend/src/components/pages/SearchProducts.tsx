@@ -16,19 +16,26 @@ interface Product {
   image_url?: string
 }
 
+/**
+ * SearchProducts component
+ */
 const SearchProducts: React.FC = () => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
 
+  /**
+   * Handles the search action when the user clicks the search button or presses Enter.
+   * It fetches product data from the backend API based on the user's query.
+   */
   const handleSearch = async () => {
     if (!query.trim()) return
     setLoading(true)
 
     try {
-      const response = await fetch(`/api/products/search?name=${encodeURIComponent(query)}`)
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/search?name=${encodeURIComponent(query)}`)
       const data = await response.json()
-      setResults(data.data || []) // eftersom vi returnerar { data, pagination } från service
+      setResults(data.data || []) // Ensure data is an array
     } catch (err) {
       console.error('Error fetching products:', err)
     } finally {
