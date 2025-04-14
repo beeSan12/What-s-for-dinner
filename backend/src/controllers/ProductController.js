@@ -5,7 +5,7 @@
  */
 
 // Application modules.
-import { NotModifiedError } from '../lib/errors/NotModifiedError.js'
+// import { NotModifiedError } from '../lib/errors/NotModifiedError.js'
 import { convertToHttpError } from '../lib/util.js'
 import { ProductService } from '../services/ProductService.js'
 import { logger } from '../config/winston.js'
@@ -96,6 +96,23 @@ export class ProductController {
     }
   }
 
+  /**
+   * Sends a JSON response containing products that match the search criteria.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   */
+  async search(req, res, next) {
+    try {
+      const { name } = req.query
+      const result = await this.#service.searchByName(name)
+      res.json(result)
+    } catch (error) {
+      next(convertToHttpError(error))
+    }
+  }
+
 
   /**
    * Sets the pagination headers.
@@ -180,21 +197,21 @@ export class ProductController {
   //   }
   // }
 
-  /**
-   * Searches for products by name.
-   *
-   * @param {object} req - The request object.
-   * @param {object} res - The response object.
-   * @param {function} next - The next middleware function.
-   * @returns {Promise<void>} - A promise that resolves when the response is sent.
-   */
-  async search(req, res, next) {
-    try {
-      const { name } = req.query
-      const result = await this.productService.searchByName(name)
-      res.json(result)
-    } catch (err) {
-      next(err)
-    }
-  }
+  // /**
+  //  * Searches for products by name.
+  //  *
+  //  * @param {object} req - The request object.
+  //  * @param {object} res - The response object.
+  //  * @param {function} next - The next middleware function.
+  //  * @returns {Promise<void>} - A promise that resolves when the response is sent.
+  //  */
+  // async search(req, res, next) {
+  //   try {
+  //     const { name } = req.query
+  //     const result = await this.productService.searchByName(name)
+  //     res.json(result)
+  //   } catch (err) {
+  //     next(err)
+  //   }
+  // }
 }

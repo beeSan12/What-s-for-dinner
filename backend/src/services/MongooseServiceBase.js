@@ -99,6 +99,20 @@ export class MongooseServiceBase {
   }
 
   /**
+   * Searches for documents.
+   *
+   * @param {object} filter - The filter to apply to the query.
+   * @returns {Promise<object>} Promise resolved with the found documents.
+   */
+  async search(filter) {
+    try {
+      return await this.#repository.get(filter)
+    } catch (error) {
+      this.#handleError(error, 'Failed to search documents.')
+    }
+  }
+
+  /**
    * Handles an error.
    *
    * @param {Error} error - The error to handle.
