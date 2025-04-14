@@ -6,8 +6,8 @@
 
 import express from 'express'
 import dotenv from 'dotenv'
-import { container } from '../config/inversify.config.js'
-import { TYPES } from '../config/types.js'
+import { container } from '../../../config/inversify.config.js'
+import { TYPES } from '../../../config/types.js'
 
 export const router = express.Router()
 
@@ -16,7 +16,7 @@ dotenv.config()
 const productController = container.get(TYPES.ProductController)
 
 // GET all products
-router.get('/products', (req, res, next) =>
+router.get('/', (req, res, next) =>
   productController.getAll(req, res, next))
 
 // GET a product by ID
