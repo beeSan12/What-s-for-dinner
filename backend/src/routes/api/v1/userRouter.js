@@ -7,11 +7,12 @@ dotenv.config()
 export const router = express.Router()
 
 // Register
-router.route('/register')
-router.post((req, res, next) => container.get(USERTYPES.UserController).register(req, res, next))
+router.post('/register', (req, res, next) =>
+  container.get(USERTYPES.UserController).register(req, res, next)
+)
 
 // Login
-router.route('/login')
-router.post((req, res, next) => container.get(USERTYPES.UserController).login(req, res, next))
-
+router.post('/login', (req, res, next) =>
+  container.get(USERTYPES.UserController).login(req, res, next)
+)
 export { router as userRouter }
