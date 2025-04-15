@@ -27,13 +27,14 @@ dotenv.config()
 // // GET products by category
 // router.get('/search', (req, res, next) =>
 //   productController.search(req, res, next))
-// GET products/search
-router.get('/search', (req, res, next) =>
-  container.get(PRODUCTTYPES.ProductController).search(req, res, next))
 
 // Provide req.doc to the route if :id is present in the route path.
 router.param('id', (req, res, next, id) =>
   container.get(PRODUCTTYPES.ProductController).loadProductDocument(req, res, next, id))
+
+// GET products/search
+router.route('/search')
+  .get((req, res, next) => container.get(PRODUCTTYPES.ProductController).search(req, res, next))
 
 // Map HTTP verbs and route paths to controller action methods.
 

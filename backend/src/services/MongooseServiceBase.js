@@ -8,6 +8,7 @@
 import mongoose from 'mongoose'
 
 // Application modules.
+import { Enum } from '../lib/Enum.js'
 import {
   ApplicationError,
   ConcurrencyError,
