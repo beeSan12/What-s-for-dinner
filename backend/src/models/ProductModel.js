@@ -7,13 +7,13 @@
 import mongoose from 'mongoose'
 
 const productSchema = new mongoose.Schema({
-  product_name: String,
-  brands: String,
-  categories: String,
-  ingredients_text: String,
-  nutriscore_grade: String,
-  nova_group: Number,
-  image_url: String
+  product_name: { type: String, required: true },
+  brands: { type: String, required: false },
+  categories: { type: String, required: false },
+  ingredients_text: { type: String, required: false },
+  nutriscore_grade: { type: String, required: false },
+  nova_group: { type: Number, required: false },
+  image_url: { type: String, required: false }
 }, { timestamps: true })
 
 export const ProductModel = mongoose.model('Product', productSchema)
