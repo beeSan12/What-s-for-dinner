@@ -83,7 +83,7 @@ export class MongooseServiceBase {
    * @param {number} [params.perPage=20] - The number of documents per page.
    * @returns {Promise<object>} Promise resolved with all documents.
    */
-  async get ({ page = 1, perPage = 20 } = {}) {
+  async get ({ page = 1, perPage = 20, filter = {} } = {}) {
     try {
       page = Math.max(page, 1)
 
@@ -91,6 +91,7 @@ export class MongooseServiceBase {
       perPage = Math.min(perPage, 100)
 
       return await this.#repository.get(
+        filter,
         null,
         null,
         {
@@ -124,23 +125,37 @@ export class MongooseServiceBase {
     }
   }
 
-    /**
+  /**
+   * Gets a single document by filter.
+   *
+   * @param {object} filter - The filter object to match the document.
+   * @returns {Promise<object>} Promise resolved with the found document.
+   */
+  async getOne(filter) {
+    try {
+      return await this.#repository.getOne(filter)
+    } catch (error) {
+      this.#handleError(error, 'Failed to get document.')
+    }
+  }
+
+  /**
    * Inserts a new document.
    *
    * @param {object} data - ...
    * @returns {Promise<object>} Promise resolved with the created document as a plain JavaScript object.
    */
-    async insert (data) {
-      // Ensure that data contains the required properties.
-      // this.#ensureExpectedProperties(data, DocumentAction.Create)
-  
-      try {
-        // Create a new document.
-        return await this.#repository.insert(data)
-      } catch (error) {
-        this.#handleError(error, 'Failed to insert document.')
-      }
+  async insert (data) {
+    // Ensure that data contains the required properties.
+    // this.#ensureExpectedProperties(data, DocumentAction.Create)
+
+    try {
+      // Create a new document.
+      return await this.#repository.insert(data)
+    } catch (error) {
+      this.#handleError(error, 'Failed to insert document.')
     }
+  }
     
   /**
    * Searches for documents.
@@ -155,6 +170,65 @@ export class MongooseServiceBase {
       this.#handleError(error, 'Failed to search documents.')
     }
   }
+
+  /**
+   * Updates, or replaces, a document.
+   *
+   * @param {mongoose.Document} doc - The documents to update or replace.
+   * @param {object} updateData - The new data to update, or replace, the existing document with.
+   * @param {boolean} replace - If true, the document will be replaced, otherwise it will be partially updated.
+   * @returns {Promise<object>} Promise resolved with the updated, or replaced, document.
+   */
+  async updateOrReplace (doc, updateData, replace = false) {
+    // Ensure that updateData contains the required properties.
+    this.#ensureExpectedProperties(updateData,
+      replace ? DocumentAction.Replace : DocumentAction.Update)
+
+    // Copy the data to the document.
+    doc.set(updateData)
+
+    try {
+      // Validate the document.
+      await doc.validate()
+
+      // Check if the document is modified.
+      if (!doc.isModified()) {
+        throw new NotModifiedError()
+      }
+
+      // Save the document.
+      return await this.#repository.save(doc)
+    } catch (error) {
+      this.#handleError(error, 'Failed to update document.')
+    }
+  }
+
+  /**
+   * Deletes a document.
+   *
+   * @param {mongoose.Document} doc - The documents to delete.
+   * @param {object} deleteData - The delete data of the document to delete.
+   * @returns {Promise<object>} Promise resolved with the removed document.
+   */
+  async delete (doc, deleteData) {
+    // Ensure that updateData contains the required properties.
+    this.#ensureExpectedProperties(deleteData, DocumentAction.Delete)
+
+    // If there is a version key, set it to the value of the document.
+    // (A version key is required only if concurrency is enabled.)
+    if (Object.keys(deleteData).length > 0) {
+      doc.set(deleteData)
+    }
+
+    try {
+      // Delete the document.
+      return await this.#repository.delete(doc)
+    } catch (error) {
+      this.#handleError(error, 'Failed to delete document.')
+    }
+  }
+
+
 
   /**
    * Handles an error.

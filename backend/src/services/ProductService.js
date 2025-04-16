@@ -21,23 +21,43 @@ export class ProductService extends MongooseServiceBase {
     return this.search({ product_name: new RegExp(name, 'i') })
   }
 
-   /**
-   * Inserts a new product if it doesn't already exist.
-   *
-   * @param {object} data - Product data to insert.
-   * @returns {Promise<object>} - The created product document.
+  /**
+   * Return combined list from both sources.
+   * @param {string} userId
+   * @param {string} nameFilter
    */
-   async insert(data) {
-    // Check if a product with the same name already exists
-    const existing = await this.search({ product_name: new RegExp(`^${data.product_name}$`, 'i') })
+  async getAllProducts(userId, nameFilter) {
+    const regex = nameFilter ? new RegExp(nameFilter, 'i') : undefined
 
-    if (existing.length > 0) {
-      throw new Error(`Product with name "${data.product_name}" already exists.`)
-    }
-
-    // Insert the new product
-    return this.insert(data)
+    const standardProducts = await this.search(regex ? { product_name: regex } : {})
+    const userProducts = await this.userProductService.getAllByUser(userId, nameFilter)
+  
+    // Combine and remove duplicates by product_name
+    const combined = [...userProducts, ...standardProducts.data || standardProducts]
+  
+    const unique = Array.from(
+      new Map(combined.map(p => [p.product_name.toLowerCase(), p])).values()
+    )
+    return unique
   }
+
+  //  /**
+  //  * Inserts a new product if it doesn't already exist.
+  //  *
+  //  * @param {object} data - Product data to insert.
+  //  * @returns {Promise<object>} - The created product document.
+  //  */
+  //  async insert(data) {
+  //   // Check if a product with the same name already exists
+  //   const existing = await this.search({ product_name: new RegExp(`^${data.product_name}$`, 'i') })
+
+  //   if (existing.length > 0) {
+  //     throw new Error(`Product with name "${data.product_name}" already exists.`)
+  //   }
+
+  //   // Insert the new product
+  //   return this.insert(data)
+  // }
 }
 
 // /**

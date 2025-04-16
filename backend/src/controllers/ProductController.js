@@ -105,9 +105,20 @@ export class ProductController {
    */
   async search(req, res, next) {
     try {
-      const { name } = req.query
-      const result = await this.#service.searchByName(name)
-      res.json(result)
+      const name = req.query.name?.toString() || ''
+      const userId = req.user?.id
+  
+      // Search for products by name.
+      // If userId is provided, search for products by name and userId.
+      const globalResults = await this.#service.searchByName(name)
+      const userResults = userId
+        ? await this.#service.userProductService.searchByNameAndUser(name, userId)
+        : []
+  
+      // Combine the results.
+      const combined = [...globalResults, ...userResults]
+  
+      res.json({ data: combined })
     } catch (error) {
       next(convertToHttpError(error))
     }
