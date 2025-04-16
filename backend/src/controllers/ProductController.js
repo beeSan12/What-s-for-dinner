@@ -113,6 +113,24 @@ export class ProductController {
     }
   }
 
+  /**
+   * Creates a new product.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
+  async createCustom(req, res, next) {
+    try {
+      const productData = req.body
+      const saved = await this.#service.insert(productData)
+      res.status(201).json(saved)
+    } catch (err) {
+      next(err)
+    }
+  }
+
 
   /**
    * Sets the pagination headers.

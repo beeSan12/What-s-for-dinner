@@ -1,7 +1,7 @@
 /**
  * @file Defines the product schema.
  * @module productSchema
- * @author Mats Loock
+ * @author Beatriz Sanssi
  */
 
 import mongoose from 'mongoose'

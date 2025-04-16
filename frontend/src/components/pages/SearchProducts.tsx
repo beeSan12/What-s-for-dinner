@@ -16,13 +16,18 @@ interface Product {
   image_url?: string
 }
 
+interface Props {
+  onProductSelect?: (product: Product | { custom: true; product_name: string; _id: string }) => void
+}
+
 /**
  * SearchProducts component
  */
-const SearchProducts: React.FC = () => {
+const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
+  const [searched, setSearched] = useState(false)
 
   /**
    * Handles the search action when the user clicks the search button or presses Enter.
@@ -31,6 +36,7 @@ const SearchProducts: React.FC = () => {
   const handleSearch = async () => {
     if (!query.trim()) return
     setLoading(true)
+    setSearched(true)
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/search?name=${encodeURIComponent(query)}`)
@@ -60,20 +66,53 @@ const SearchProducts: React.FC = () => {
 
       {loading && <p>Loading...</p>}
 
-      <div style={{ marginTop: '2rem' }}>
-        {results.length === 0 && !loading && <p>No results yet. Try searching!</p>}
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {results.map((product) => (
-            <li key={product._id} style={{ marginBottom: '1rem', borderBottom: '1px solid #ccc', paddingBottom: '1rem' }}>
-              <strong>{product.product_name}</strong> <br />
-              <em>Brand:</em> {product.brands} <br />
-              {product.image_url && <img src={product.image_url} alt={product.product_name} style={{ height: '100px', marginTop: '0.5rem' }} />}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ul style={{ listStyle: 'none', padding: 0, marginTop: '1.5rem' }}>
+        {results.map((product) => (
+          <li key={product._id} style={{ marginBottom: '1rem', borderBottom: '1px solid #ccc', paddingBottom: '1rem' }}>
+            <strong>{product.product_name}</strong> <br />
+            <em>Brand:</em> {product.brands} <br />
+            {product.image_url && (
+              <img src={product.image_url} alt={product.product_name} style={{ height: '80px', marginTop: '0.5rem' }} />
+            )}
+            <br />
+            <button onClick={() => onProductSelect?.(product)}>
+              Add to list
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {!loading && searched && results.length === 0 && query.trim() && (
+        <div style={{ marginTop: '2rem' }}>
+          <p>No product found. Add custom product:</p>
+          <button
+            onClick={async () => {
+              try {
+                const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/custom`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ product_name: query })
+                })
+
+                if (res.ok) {
+                  const saved = await res.json()
+                  alert(`“${saved.product_name}” added to database!`)
+                } else {
+                  alert('Something went wrong when saving the custom product.')
+                }
+              } catch (err) {
+                console.error(err)
+                alert('Error adding product.')
+              }
+            }}
+          >
+            Add “{query}”
+          </button>
+        </div>
+      )}
     </div>
   )
 }
+
 
 export default SearchProducts

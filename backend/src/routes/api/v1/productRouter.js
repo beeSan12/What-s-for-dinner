@@ -46,5 +46,8 @@ router.route('/')
 router.route('/:id')
   .get((req, res, next) => container.get(PRODUCTTYPES.ProductController).find(req, res, next))
 
-
+// POST /products/custom — add a custom product
+router.route('/custom')
+  .post((req, res, next) => container.get(PRODUCTTYPES.ProductController).createCustom(req, res, next))
+  
 export { router as productRouter }

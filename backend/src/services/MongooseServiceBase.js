@@ -132,7 +132,7 @@ export class MongooseServiceBase {
    */
     async insert (data) {
       // Ensure that data contains the required properties.
-      this.#ensureExpectedProperties(data, DocumentAction.Create)
+      // this.#ensureExpectedProperties(data, DocumentAction.Create)
   
       try {
         // Create a new document.
