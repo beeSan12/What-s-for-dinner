@@ -29,6 +29,13 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
 
+  // State for custom product form
+  const [showCustomProductForm, setShowCustomProductForm] = useState(false)
+  const [customName, setCustomName] = useState('')
+  const [customBrand, setCustomBrand] = useState('')
+  const [customCategory, setCustomCategory] = useState('')
+  const [customImageUrl, setCustomImageUrl] = useState('')
+
   /**
    * Handles the search action when the user clicks the search button or presses Enter.
    * It fetches product data from the backend API based on the user's query.
@@ -46,6 +53,41 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
       console.error('Error fetching products:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  /**
+   * Handles the addition of a custom product.
+   * It sends a POST request to the backend API with the custom product details.
+   */
+  const handleAddCustomProduct = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/custom`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_name: query,
+          brands: customBrand,
+          categories: customCategory,
+          image_url: customImageUrl || undefined
+        })
+      })
+
+      if (res.ok) {
+        const saved = await res.json()
+        alert(`“${saved.product_name}” added to database! ✅`)
+
+        // Reset form
+        setShowCustomProductForm(false)
+        setCustomBrand('')
+        setCustomCategory('')
+        setCustomImageUrl('')
+      } else {
+        alert('Something went wrong when saving the custom product.')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Error adding product.')
     }
   }
 
@@ -85,29 +127,37 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
       {!loading && searched && results.length === 0 && query.trim() && (
         <div style={{ marginTop: '2rem' }}>
           <p>No product found. Add custom product:</p>
-          <button
-            onClick={async () => {
-              try {
-                const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/custom`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ product_name: query })
-                })
-
-                if (res.ok) {
-                  const saved = await res.json()
-                  alert(`“${saved.product_name}” added to database!`)
-                } else {
-                  alert('Something went wrong when saving the custom product.')
-                }
-              } catch (err) {
-                console.error(err)
-                alert('Error adding product.')
-              }
-            }}
-          >
-            Add “{query}”
-          </button>
+          {!showCustomProductForm ? (
+            <button onClick={() => setShowCustomProductForm(true)}>Add “{query}”</button>
+          ) : (
+            <div style={{ marginTop: '1rem' }}>
+              <input
+                placeholder="Name"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                style={{ display: 'block', marginBottom: '0.5rem', padding: '0.3rem' }}
+              />
+              <input
+                placeholder="Brand"
+                value={customBrand}
+                onChange={(e) => setCustomBrand(e.target.value)}
+                style={{ display: 'block', marginBottom: '0.5rem', padding: '0.3rem' }}
+              />
+              <input
+                placeholder="Category"
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                style={{ display: 'block', marginBottom: '0.5rem', padding: '0.3rem' }}
+              />
+              <input
+                placeholder="Image URL (optional)"
+                value={customImageUrl}
+                onChange={(e) => setCustomImageUrl(e.target.value)}
+                style={{ display: 'block', marginBottom: '0.5rem', padding: '0.3rem' }}
+              />
+              <button onClick={handleAddCustomProduct}>Submit Product</button>
+            </div>
+          )}
         </div>
       )}
     </div>
