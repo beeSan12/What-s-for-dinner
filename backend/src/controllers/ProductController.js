@@ -116,9 +116,12 @@ export class ProductController {
         : []
   
       // Combine the results.
-      const combined = [...globalResults, ...userResults]
+      const results = [
+        ...globalProducts.map(p => ({ ...p.toObject?.() || p, source: 'global' })),
+        ...userProducts.map(p => ({ ...p.toObject?.() || p, source: 'custom' }))
+      ]
   
-      res.json({ data: combined })
+      res.json({ data: results })
     } catch (error) {
       next(convertToHttpError(error))
     }
