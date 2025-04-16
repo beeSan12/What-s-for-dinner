@@ -14,6 +14,7 @@ interface Product {
   brands: string
   categories?: string
   image_url?: string
+  source: 'custom' | 'global'
 }
 
 interface Props {
@@ -117,6 +118,7 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
               <img src={product.image_url} alt={product.product_name} style={{ height: '80px', marginTop: '0.5rem' }} />
             )}
             <br />
+            <em>Source:</em> {product.source === 'custom' ? 'Your product' : 'Global'} <br />
             <button onClick={() => onProductSelect?.(product)}>
               Add to list
             </button>
