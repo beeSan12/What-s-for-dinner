@@ -22,6 +22,11 @@ import { ShoppingListModel } from '../models/ShoppingListModel.js'
 import { ShoppingListRepository } from '../repositories/ShoppingListRepository.js'
 import { ShoppingListService } from '../services/ShoppingListService.js'
 import { ShoppingListController } from '../controllers/ShoppingListController.js'
+// User Product modules
+import { UserProductModel } from '../models/UserProductModel.js'
+import { UserProductRepository } from '../repositories/UserProductRepository.js'
+import { UserProductService } from '../services/UserProductService.js'
+import { UserProductController } from '../controllers/UserProductController.js'
 
 /**
  * The TYPES object contains the identifiers for the dependencies in the application.
@@ -47,6 +52,13 @@ export const SHOPPINGLISTTYPES = {
   ShoppingListModel: Symbol.for('ShoppingListModel')
 }
 
+export const USERPRODUCTTYPES = {
+  UserProductController: Symbol.for('UserProductController'),
+  UserProductRepository: Symbol.for('UserProductRepository'),
+  UserProductService: Symbol.for('UserProductService'),
+  UserProductModel: Symbol.for('UserProductModel')
+}
+
 /**
  * Decorate the classes with InversifyJS decorators.
  * This is necessary for InversifyJS to recognize the classes as injectable.
@@ -59,6 +71,7 @@ decorate(injectable(), ProductController)
 decorate(inject(PRODUCTTYPES.ProductModel), ProductRepository, 0)
 decorate(inject(PRODUCTTYPES.ProductRepository), ProductService, 0)
 decorate(inject(PRODUCTTYPES.ProductService), ProductController, 0)
+decorate(inject(USERPRODUCTTYPES.UserProductService), ProductService, 1)
 
 // Decorate User classes
 decorate(injectable(), UserRepository)
@@ -77,6 +90,15 @@ decorate(injectable(), ShoppingListController)
 decorate(inject(SHOPPINGLISTTYPES.ShoppingListModel), ShoppingListRepository, 0)
 decorate(inject(SHOPPINGLISTTYPES.ShoppingListRepository), ShoppingListService, 0)
 decorate(inject(SHOPPINGLISTTYPES.ShoppingListService), ShoppingListController, 0)
+
+// Decorate User Product classes
+decorate(injectable(), UserProductRepository)
+decorate(injectable(), UserProductService)
+decorate(injectable(), UserProductController)
+
+decorate(inject(USERPRODUCTTYPES.UserProductModel), UserProductRepository, 0)
+decorate(inject(USERPRODUCTTYPES.UserProductRepository), UserProductService, 0)
+decorate(inject(USERPRODUCTTYPES.UserProductService), UserProductController, 0)
 
 export const container = new Container()
 
@@ -102,3 +124,9 @@ container.bind(SHOPPINGLISTTYPES.ShoppingListController).to(ShoppingListControll
 container.bind(SHOPPINGLISTTYPES.ShoppingListRepository).to(ShoppingListRepository).inSingletonScope()
 container.bind(SHOPPINGLISTTYPES.ShoppingListService).to(ShoppingListService).inSingletonScope()
 container.bind(SHOPPINGLISTTYPES.ShoppingListModel).toConstantValue(ShoppingListModel)
+
+// User Product bindings
+container.bind(USERPRODUCTTYPES.UserProductController).to(UserProductController).inSingletonScope()
+container.bind(USERPRODUCTTYPES.UserProductRepository).to(UserProductRepository).inSingletonScope()
+container.bind(USERPRODUCTTYPES.UserProductService).to(UserProductService).inSingletonScope()
+container.bind(USERPRODUCTTYPES.UserProductModel).toConstantValue(UserProductModel)
