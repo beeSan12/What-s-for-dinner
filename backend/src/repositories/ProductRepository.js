@@ -6,4 +6,8 @@
 
 import { MongooseRepositoryBase } from './MongooseRepositoryBase.js'
 
-export class ProductRepository extends MongooseRepositoryBase {}
+export class ProductRepository extends MongooseRepositoryBase {
+  constructor(model) {
+    super(model)
+  }
+}
