@@ -23,14 +23,14 @@ export const PRODUCTTYPES = {
   ProductController: Symbol.for('ProductController'),
   ProductRepository: Symbol.for('ProductRepository'),
   ProductService: Symbol.for('ProductService'),
-  ProductModelClass: Symbol.for('ProductModelClass')
+  ProductModel: Symbol.for('ProductModel')
 }
 
 export const USERTYPES = {
   UserController: Symbol.for('UserController'),
   UserRepository: Symbol.for('UserRepository'),
   UserService: Symbol.for('UserService'),
-  UserModelClass: Symbol.for('UserModelClass')
+  UserModel: Symbol.for('UserModel')
 }
 
 /**
@@ -42,7 +42,7 @@ decorate(injectable(), ProductRepository)
 decorate(injectable(), ProductService)
 decorate(injectable(), ProductController)
 
-decorate(inject(PRODUCTTYPES.ProductModelClass), ProductRepository, 0)
+decorate(inject(PRODUCTTYPES.ProductModel), ProductRepository, 0)
 decorate(inject(PRODUCTTYPES.ProductRepository), ProductService, 0)
 decorate(inject(PRODUCTTYPES.ProductService), ProductController, 0)
 
@@ -51,7 +51,7 @@ decorate(injectable(), UserRepository)
 decorate(injectable(), UserService)
 decorate(injectable(), UserController)
 
-decorate (inject(USERTYPES.UserModelClass), UserRepository, 0)
+decorate (inject(USERTYPES.UserModel), UserRepository, 0)
 decorate (inject(USERTYPES.UserRepository), UserService, 0)
 decorate (inject(USERTYPES.UserService), UserController, 0)
 export const container = new Container()
@@ -65,10 +65,10 @@ export const container = new Container()
 container.bind(PRODUCTTYPES.ProductController).to(ProductController).inSingletonScope()
 container.bind(PRODUCTTYPES.ProductRepository).to(ProductRepository).inSingletonScope()
 container.bind(PRODUCTTYPES.ProductService).to(ProductService).inSingletonScope()
-container.bind(PRODUCTTYPES.ProductModelClass).toConstantValue(ProductModel)
+container.bind(PRODUCTTYPES.ProductModel).toConstantValue(ProductModel)
 
 // User bindings
 container.bind(USERTYPES.UserController).to(UserController).inSingletonScope()
 container.bind(USERTYPES.UserRepository).to(UserRepository).inSingletonScope()
 container.bind(USERTYPES.UserService).to(UserService).inSingletonScope()
-container.bind(USERTYPES.UserModelClass).toConstantValue(UserModel)
+container.bind(USERTYPES.UserModel).toConstantValue(UserModel)

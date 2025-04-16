@@ -67,12 +67,12 @@ export class MongooseServiceBase {
   constructor (repository) {
     this.#repository = repository
 
-    this.#actionToEnsureExpectedProperties = {
-      [DocumentAction.Create]: this.#repository.model.hasPropertiesToCreateDocument.bind(this.#repository.model),
-      [DocumentAction.Replace]: this.#repository.model.hasPropertiesToReplaceDocument.bind(this.#repository.model),
-      [DocumentAction.Update]: this.#repository.model.hasPropertiesToUpdateDocument.bind(this.#repository.model),
-      [DocumentAction.Delete]: this.#repository.model.hasPropertiesToDeleteDocument.bind(this.#repository.model)
-    }
+    // this.#actionToEnsureExpectedProperties = {
+    //   [DocumentAction.Create]: this.#repository.model.hasPropertiesToCreateDocument.bind(this.#repository.model),
+    //   [DocumentAction.Replace]: this.#repository.model.hasPropertiesToReplaceDocument.bind(this.#repository.model),
+    //   [DocumentAction.Update]: this.#repository.model.hasPropertiesToUpdateDocument.bind(this.#repository.model),
+    //   [DocumentAction.Delete]: this.#repository.model.hasPropertiesToDeleteDocument.bind(this.#repository.model)
+    // }
   }
 
   /**
