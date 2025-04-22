@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react'
 import { apiFetch } from '../../utils/apiFetch'
+import { LuArrowBigRight, LuArrowBigLeft } from "react-icons/lu";
 
 interface Product {
   _id: string
@@ -20,16 +21,20 @@ interface Product {
 
 interface Props {
   onProductSelect?: (product: Product | { custom: true; product_name: string; _id: string }) => void
+  maxResults?: number // Optional prop to limit the number of results displayed
+  currentPage?: number // Optional prop for pagination
+  setCurrentPage?: React.Dispatch<React.SetStateAction<number>> // Optional prop for pagination
 }
 
 /**
  * SearchProducts component
  */
-const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
+const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0) // State for pagination
 
   // State for custom product form
   const [showCustomProductForm, setShowCustomProductForm] = useState(false)
@@ -98,7 +103,7 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h1>Search Products</h1>
+      {/* <h1>Search Products</h1> */}
       <input
         type="text"
         placeholder="Enter product name (e.g. coffee)"
@@ -107,15 +112,18 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         style={{ padding: '0.5rem', width: '300px' }}
       />
-      <button onClick={handleSearch} style={{ marginLeft: '1rem', padding: '0.5rem 1rem' }}>
+      <button onClick={handleSearch} style={{ marginLeft: '1rem', padding: '0.5rem 1rem', marginTop: '1rem' }}>
         Search
       </button>
 
       {loading && <p>Loading...</p>}
 
       <ul style={{ listStyle: 'none', padding: 0, marginTop: '1.5rem' }}>
-        {results.map((product) => (
-          <li key={product._id} style={{ marginBottom: '1rem', borderBottom: '1px solid #ccc', paddingBottom: '1rem' }}>
+      {(maxResults && currentPage !== undefined
+        ? results.slice(currentPage * maxResults, (currentPage + 1) * maxResults)
+        : results
+      ).map((product) => (
+          <li key={product._id} style={{ marginBottom: '1rem', borderBottom: '1px solid #ccc', paddingBottom: '1rem', color: '#2f4f4f' }}>
             <strong>{product.product_name}</strong> <br />
             <em>Brand:</em> {product.brands} <br />
             {product.image_url && (
@@ -129,6 +137,27 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
           </li>
         ))}
       </ul>
+
+      {maxResults && results.length > maxResults && currentPage !== undefined && setCurrentPage && (
+        <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
+            style={styles.paginationBtn}
+          >
+            <LuArrowBigLeft style={{ marginRight: '0.5rem' }} />
+            Prev
+          </button>
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={(currentPage + 1) * maxResults >= results.length}
+            style={styles.paginationBtn}
+          >
+            Next
+            <LuArrowBigRight style={{ marginLeft: '0.5rem' }} />
+          </button>
+        </div>
+      )}
 
       {!loading && searched && results.length === 0 && query.trim() && (
         <div style={{ marginTop: '2rem' }}>
@@ -170,5 +199,20 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
   )
 }
 
+const styles = {
+  paginationBtn: {
+    backgroundColor: "#2f4f4f",
+    color: "white",
+    padding: "0.5rem 1rem",
+    fontWeight: "bold",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    fontSize: '20px',
+  }
+}
 
 export default SearchProducts

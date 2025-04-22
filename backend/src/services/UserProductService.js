@@ -19,7 +19,12 @@ export class UserProductService extends MongooseServiceBase {
    * @returns {Promise<object[]>} A list of matching products.
    */
   async searchByNameAndUser(name, userId) {
-    return this.search({ userId,product_name: new RegExp(name, 'i') })
+    return this.search({
+      filter: {
+        userId,
+        product_name: new RegExp(name, 'i')
+      }
+    })
   }
 
   /**
