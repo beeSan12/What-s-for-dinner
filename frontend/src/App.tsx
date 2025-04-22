@@ -3,12 +3,14 @@ import SearchProducts from './components/pages/SearchProducts';
 import CreateShoppingList from "./components/pages/CreateShoppingList";
 import Home from './components/pages/Home';
 import Login from './components/pages/Login';
+// import Register from './components/pages/Register';
 
 function App() {
   return (
     <Router>
       <Routes>
       <Route path="/login" element={<Login />} />
+      {/* <Route path="/register" element={<Register />} /> */}
         {/* <Route element={<Layout />}>
         </Route> */}
         {/* <Route path="/" element={<Home />} />
