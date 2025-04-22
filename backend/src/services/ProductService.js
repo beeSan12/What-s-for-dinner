@@ -18,6 +18,9 @@ export class ProductService extends MongooseServiceBase {
    * @returns {Promise<object[]>} A list of matching products.
    */
   async searchByName(name) {
+    if (!name) {
+      throw new Error('Missing search term')
+    }
     return this.search({ product_name: new RegExp(name, 'i') })
   }
 

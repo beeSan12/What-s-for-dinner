@@ -2,11 +2,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SearchProducts from './components/pages/SearchProducts';
 import CreateShoppingList from "./components/pages/CreateShoppingList";
 import Home from './components/pages/Home';
+import Login from './components/pages/Login';
 
 function App() {
   return (
     <Router>
       <Routes>
+      <Route path="/login" element={<Login />} />
         {/* <Route element={<Layout />}>
         </Route> */}
         {/* <Route path="/" element={<Home />} />

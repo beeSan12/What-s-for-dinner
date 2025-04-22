@@ -8,6 +8,7 @@
 // import { NotModifiedError } from '../lib/errors/NotModifiedError.js'
 import { convertToHttpError } from '../lib/util.js'
 import { ProductService } from '../services/ProductService.js'
+import { UserProductService } from '../services/UserProductService.js'
 import { logger } from '../config/winston.js'
 
 /**
@@ -18,17 +19,21 @@ export class ProductController {
    * The service.
    *
    * @type {ProductService}
+   * @type {UserProductService}
    */
   #service
+  #userProductService
 
   /**
    * Initializes a new instance.
    *
-   * @param {ProductService} service - A service instantiated from a class with the same capabilities as TaskService.
+   * @param {ProductService} service - A service instantiated from a class with the same capabilities as ProductService.
+   * @param {UserProductService} userProductService - A service instantiated from a class with the same capabilities as UserProductService.
    */
-  constructor (service) {
+  constructor (service, userProductService) {
     logger.silly('ProductController constructor')
     this.#service = service
+    this.#userProductService = userProductService
   }
 
    /**
@@ -107,12 +112,13 @@ export class ProductController {
     try {
       const name = req.query.name?.toString() || ''
       const userId = req.user?.id
+      logger.info(`🔍 Searching for: ${name}, userId: ${userId}`)
   
       // Search for products by name.
       // If userId is provided, search for products by name and userId.
-      const globalResults = await this.#service.searchByName(name)
-      const userResults = userId
-        ? await this.#service.userProductService.searchByNameAndUser(name, userId)
+      const globalProducts = await this.#service.searchByName(name)
+      const userProducts = userId
+        ? await this.#userProductService.searchByNameAndUser(name, userId)
         : []
   
       // Combine the results.
