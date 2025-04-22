@@ -102,7 +102,7 @@ const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={styles.container}>
       {/* <h1>Search Products</h1> */}
       <input
         type="text"
@@ -110,7 +110,7 @@ const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-        style={{ padding: '0.5rem', width: '300px' }}
+        style={styles.input}
       />
       <button onClick={handleSearch} style={{ marginLeft: '1rem', padding: '0.5rem 1rem', marginTop: '1rem' }}>
         Search
@@ -118,16 +118,16 @@ const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
 
       {loading && <p>Loading...</p>}
 
-      <ul style={{ listStyle: 'none', padding: 0, marginTop: '1.5rem' }}>
-      {(maxResults && currentPage !== undefined
-        ? results.slice(currentPage * maxResults, (currentPage + 1) * maxResults)
-        : results
-      ).map((product) => (
-          <li key={product._id} style={{ marginBottom: '1rem', borderBottom: '1px solid #ccc', paddingBottom: '1rem', color: '#2f4f4f' }}>
+      <ul style={styles.resultList}>
+        {(maxResults && currentPage !== undefined
+          ? results.slice(currentPage * maxResults, (currentPage + 1) * maxResults)
+          : results
+        ).map((product) => (
+          <li key={product._id} style={styles.productItem}>
             <strong>{product.product_name}</strong> <br />
             <em>Brand:</em> {product.brands} <br />
             {product.image_url && (
-              <img src={product.image_url} alt={product.product_name} style={{ height: '80px', marginTop: '0.5rem' }} />
+              <img src={product.image_url} alt={product.product_name} style={styles.productImage} />
             )}
             <br />
             <em>Source:</em> {product.source === 'custom' ? 'Your product' : 'Global'} <br />
@@ -139,13 +139,13 @@ const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
       </ul>
 
       {maxResults && results.length > maxResults && currentPage !== undefined && setCurrentPage && (
-        <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+        <div style={styles.paginationContainer}>          
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
             disabled={currentPage === 0}
             style={styles.paginationBtn}
           >
-            <LuArrowBigLeft style={{ marginRight: '0.5rem' }} />
+            <LuArrowBigLeft />
             Prev
           </button>
           <button
@@ -154,42 +154,22 @@ const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
             style={styles.paginationBtn}
           >
             Next
-            <LuArrowBigRight style={{ marginLeft: '0.5rem' }} />
+            <LuArrowBigRight />
           </button>
         </div>
       )}
 
       {!loading && searched && results.length === 0 && query.trim() && (
-        <div style={{ marginTop: '2rem' }}>
+        <div style={styles.customProductBox}>
           <p>No product found. Add custom product:</p>
           {!showCustomProductForm ? (
             <button onClick={() => setShowCustomProductForm(true)}>Add “{query}”</button>
           ) : (
-            <div style={{ marginTop: '1rem' }}>
-              <input
-                placeholder="Name"
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-                style={{ display: 'block', marginBottom: '0.5rem', padding: '0.3rem' }}
-              />
-              <input
-                placeholder="Brand"
-                value={customBrand}
-                onChange={(e) => setCustomBrand(e.target.value)}
-                style={{ display: 'block', marginBottom: '0.5rem', padding: '0.3rem' }}
-              />
-              <input
-                placeholder="Category"
-                value={customCategory}
-                onChange={(e) => setCustomCategory(e.target.value)}
-                style={{ display: 'block', marginBottom: '0.5rem', padding: '0.3rem' }}
-              />
-              <input
-                placeholder="Image URL (optional)"
-                value={customImageUrl}
-                onChange={(e) => setCustomImageUrl(e.target.value)}
-                style={{ display: 'block', marginBottom: '0.5rem', padding: '0.3rem' }}
-              />
+            <div style={styles.customForm}>
+              <input placeholder="Name" value={customName} onChange={(e) => setCustomName(e.target.value)} style={styles.customInput} />
+              <input placeholder="Brand" value={customBrand} onChange={(e) => setCustomBrand(e.target.value)} style={styles.customInput} />
+              <input placeholder="Category" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} style={styles.customInput} />
+              <input placeholder="Image URL (optional)" value={customImageUrl} onChange={(e) => setCustomImageUrl(e.target.value)} style={styles.customInput} />
               <button onClick={handleAddCustomProduct}>Submit Product</button>
             </div>
           )}
@@ -200,6 +180,39 @@ const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
 }
 
 const styles = {
+  container: {
+    padding: '2rem'
+  },
+  input: {
+    padding: '0.5rem',
+    width: '300px'
+  },
+  searchBtn: {
+    marginLeft: '1rem',
+    marginTop: '1rem',
+    padding: '0.5rem 1rem'
+  },
+  resultList: {
+    listStyle: 'none',
+    padding: 0,
+    marginTop: '1.5rem'
+  },
+  productItem: {
+    marginBottom: '1rem',
+    borderBottom: '1px solid #ccc',
+    paddingBottom: '1rem',
+    color: '#2f4f4f'
+  },
+  productImage: {
+    height: '80px',
+    marginTop: '0.5rem'
+  },
+  paginationContainer: {
+    marginTop: '10px',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '1rem'
+  },
   paginationBtn: {
     backgroundColor: "#2f4f4f",
     color: "white",
@@ -212,7 +225,19 @@ const styles = {
     alignItems: "center",
     gap: "0.5rem",
     fontSize: '20px',
+  },
+  customProductBox: {
+    marginTop: '2rem'
+  },
+  customForm: {
+    marginTop: '1rem'
+  },
+  customInput: {
+    display: 'block',
+    marginBottom: '0.5rem',
+    padding: '0.3rem'
   }
-}
+} as const
+
 
 export default SearchProducts
