@@ -4,6 +4,11 @@
  * @author Beatriz Sanssi
  */
 
+import { ShoppingListService } from '../services/ShoppingListService.js'
+import { logger } from '../config/winston.js'
+import { convertToHttpError } from '../lib/util.js'
+
+
 /**
  * Encapsulates a controller.
  */
@@ -11,10 +16,18 @@ export class ShoppingListController {
   /**
    * The service.
    *
-   * @type {ProductService}
+   * @type {ShoppingListService}
+   */
+    #service
+
+  /**
+   * Initializes a new instance.
+   *
+   * @param {ShoppingListService} service 
    */
   constructor(service) {
-    this.service = service
+    logger.silly('ShoppingListController constructor')
+    this.#service = service
   }
 
   /**
@@ -26,11 +39,16 @@ export class ShoppingListController {
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    */
   async search(req, res, next) {
-    const results = await this.service.searchProductsByName(req.query.name)
-    if (results.length === 0) {
-      return res.json({ message: 'No product found', showAddCustomOption: true })
+    try {
+      const results = await this.#service.searchProductsByName(req.query.name)
+      if (results.length === 0) {
+        return res.json({ message: 'No product found', showAddCustomOption: true })
+      }
+      res.json(results)
+      }
+    catch (error) {
+      next(convertToHttpError(error))
     }
-    res.json(results)
   }
 
   /**
@@ -42,10 +60,15 @@ export class ShoppingListController {
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    */
   async addToList(req, res, next) {
-    const { listId, productId, quantity } = req.body
-    const product = { productId, quantity }
-    const result = await this.service.addProductToList(listId, product)
-    res.json(result)
+    try {
+      const { listId, productId, quantity } = req.body
+      const product = { productId, quantity }
+      const result = await this.#service.addProductToList(listId, product)
+      res.json(result)
+    }
+    catch (error) {
+      next(convertToHttpError(error))
+    }
   }
 
   /**
@@ -57,8 +80,13 @@ export class ShoppingListController {
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    */
   async addCustomProduct(req, res, next) {
-    const { listId, name, quantity } = req.body
-    const result = await this.service.createCustomProductAndAdd(listId, { product_name: name, quantity })
-    res.json(result)
+    try {
+      const { listId, name, quantity } = req.body
+      const result = await this.#service.createCustomProductAndAdd(listId, { product_name: name, quantity })
+      res.json(result)
+    }
+    catch (error) {
+      next(convertToHttpError(error))
+    }
   }
 }

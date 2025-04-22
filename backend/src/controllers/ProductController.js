@@ -116,10 +116,16 @@ export class ProductController {
   
       // Search for products by name.
       // If userId is provided, search for products by name and userId.
-      const globalProducts = await this.#service.searchByName(name)
+      console.log('🔎 Calling global search...')
+      const globalProducts = (await this.#service.search({
+        filter: { name: new RegExp(name, 'i') }
+      })).data
+      console.log('🔎 Calling user search...')
       const userProducts = userId
-        ? await this.#userProductService.searchByNameAndUser(name, userId)
-        : []
+      ? (await this.#userProductService.search({
+          filter: { name: new RegExp(name, 'i'), userId }
+        })).data
+      : []
   
       // Combine the results.
       const results = [

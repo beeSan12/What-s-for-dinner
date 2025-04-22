@@ -8,12 +8,15 @@
 import express from 'express'
 
 // Application modules.
-import { authenticate } from '../../../middlewares/authenticate.js'
 import { router as productRouter } from './productRouter.js'
 import { router as userRouter } from './userRouter.js'
+import { router as shoppingListRouter } from './shoppingListRouter.js'
+import { router as userProductRouter } from './userProductRouter.js'
 
 export const router = express.Router()
 
 router.get('/', (req, res) => res.json({ message: 'Hooray! Welcome to version 1 of this very simple RESTful API!' }))
-router.use('/products', authenticate, productRouter)
+router.use('/products', productRouter)
 router.use('/user', userRouter)
+router.use('/shoppinglist', shoppingListRouter)
+router.use('/userproducts', userProductRouter)
