@@ -7,10 +7,13 @@
 
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
 
 // Application modules.
 import { MongooseServiceBase } from './MongooseServiceBase.js'
 import { UnauthorizedError } from '../lib/errors/index.js'
+
+dotenv.config()
 
 /**
  * Encapsulates the user service.
@@ -32,8 +35,8 @@ export class UserService extends MongooseServiceBase {
       throw new Error('User already exists')
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-    return await this.insert({ email, password: hashedPassword })
+    const insertedUser = await this.insert({ email, password })
+    return insertedUser
   }
 
   /**
@@ -46,9 +49,11 @@ export class UserService extends MongooseServiceBase {
    */
   async login({ email, password }) {
     // Check if the user exists 
-    const users = await this.search({ email })
-    const user = users[0]
-
+    const result = await this.search({ email })
+    const user = result.data[0]
+    console.log('Found user:', user)
+    console.log('Plain password:', password)
+    console.log('Hashed password:', user?.password)
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedError('Wrong credentials')
     }

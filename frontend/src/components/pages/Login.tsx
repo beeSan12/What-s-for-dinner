@@ -56,6 +56,12 @@ const LoginForm = () => {
         {loading && <p>Loading...</p>}
         <p>{message}</p>
         <button onClick={handleSubmit}>Login</button>
+        <p style={styles.text}>
+          No Account?{" "}
+          <a href="/register" style={styles.link}>
+            Register here
+          </a>
+        </p>
       </div>
     </div>
   )
@@ -73,6 +79,7 @@ const styles = {
     boxSizing: 'border-box',
     backgroundRepeat: "no-repeat",
     width: "100vw",
+    gap: "20px",
   },
   pictureDiv: {
     display: 'flex',
@@ -116,6 +123,16 @@ const styles = {
     marginTop: "10px",
     fontSize: "16px",
     backgroundColor: "#b0c4de",
+  },
+  text: {
+    marginTop: "10px",
+    fontSize: "14px",
+    color: "#696969",
+    fontWeight: "bold",
+  },
+  link: {
+    color: "#007bff",
+    textDecoration: "none",
   },
 } as const
 
