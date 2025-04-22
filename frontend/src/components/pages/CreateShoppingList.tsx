@@ -33,8 +33,14 @@ export default function CreateShoppingList() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [unit, setUnit] = useState<string>("st");
-  // const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(0)
+  const itemsPerPage = 3
 
+  // Pagination logic
+  const paginatedItems = shoppingList.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  )
 
   /**
    * Handles the selection of a product from the search results.
@@ -97,7 +103,7 @@ export default function CreateShoppingList() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ name: listName, items: shoppingList })
+      body: JSON.stringify({ name: listName, items: shoppingList, date: new Date().toISOString() })
     });
 
     if (res.ok) alert("List saved!");
@@ -111,53 +117,101 @@ export default function CreateShoppingList() {
         <h1>New shopping list</h1>
       </div>
       <div style={styles.createContainer}>
-      <input
-          type="text"
-          placeholder="Name your list"
-          value={listName}
-          onChange={(e) => setListName(e.target.value)}
-          style={styles.input}
-        />
+        <div style={{ flex: 1, maxWidth: '45%', display: 'flex', flexDirection: 'column', overflowY: 'auto', maxHeight: '60vh' }}>
+        {/* <input
+            type="text"
+            placeholder="Name your list"
+            value={listName}
+            onChange={(e) => setListName(e.target.value)}
+            style={styles.input}
+          /> */}
 
-        <SearchProducts onProductSelect={handleProductSelect} />
+          <SearchProducts
+            onProductSelect={handleProductSelect}
+            maxResults={3}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />  
 
-        {selectedProduct && (
-          <div style={styles.formContainer}>
-            <h3>{selectedProduct.product_name}</h3>
-            <input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              placeholder="Quantity"
-              style={styles.input}
-            />
-            <select value={unit} onChange={(e) => setUnit(e.target.value)} style={styles.input}>
-              <option value="st">st</option>
-              <option value="g">g</option>
-              <option value="kg">kg</option>
-              <option value="ml">ml</option>
-              <option value="l">l</option>
-            </select>
-            <button onClick={handleAddProduct} style={styles.button}>Add to list</button>
-          </div>
-        )}
-
-        <div style={styles.shoppingList}>
-          {shoppingList.map(item => (
-            <div key={item._id} style={styles.listItem}>
-              {item.product_name} – {item.quantity} {item.unit}
-              <button onClick={() => handleRemoveProduct(item._id)} style={{ marginLeft: '10px' }}>
-                Remove
-              </button>
+          {selectedProduct && (
+            <div style={styles.formContainer}>
+              <h3>{selectedProduct.product_name}</h3>
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                placeholder="Quantity"
+                style={styles.input}
+              />
+              <select value={unit} onChange={(e) => setUnit(e.target.value)} style={styles.input}>
+                <option value="st">st</option>
+                <option value="g">g</option>
+                <option value="kg">kg</option>
+                <option value="ml">ml</option>
+                <option value="l">l</option>
+              </select>
+              <button onClick={handleAddProduct} style={styles.button}>Add to list</button>
             </div>
-          ))}
+          )}
         </div>
 
-        <button onClick={handleSaveList} style={{ ...styles.button, marginTop: '30px' }}>Save List</button>
+        <div style={{ flex: 1, maxWidth: '45%', display: 'flex', flexDirection: 'column' }}>
+          <input
+            type="text"
+            placeholder="Name your list"
+            value={listName}
+            onChange={(e) => setListName(e.target.value)}
+            style={styles.input}
+          />
+          <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
+            <h2>{listName}</h2>
+            <p>{new Date().toLocaleDateString()}</p>
+          </div>
+
+          <div style={styles.shoppingList}>
+            {paginatedItems.map((item) => (
+              <div key={item._id} style={styles.card}>
+                <p><strong>{item.product_name}</strong></p>
+                <p>{item.quantity} {item.unit}</p>
+                <button
+                  onClick={() => handleRemoveProduct(item._id)}
+                  style={styles.removeBtn}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+
+            <div style={{ marginTop: '10px' }}>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+                disabled={currentPage === 0}
+                style={styles.paginationBtn}
+              >
+                ⬅️ Prev
+              </button>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    (prev + 1) * itemsPerPage < shoppingList.length ? prev + 1 : prev
+                  )
+                }
+                disabled={(currentPage + 1) * itemsPerPage >= shoppingList.length}
+                style={styles.paginationBtn}
+              >
+                Next ➡️
+              </button>
+            </div>
+          </div>
+
+          <button onClick={handleSaveList} style={{ ...styles.button, marginTop: '30px' }}>
+            Save List
+          </button>
+        </div>
       </div>
     </div>
-  );
+  )
 }
 
 const styles = {
@@ -217,20 +271,21 @@ const styles = {
   },
   createContainer: {
     gap: "20px",
-    marginTop: "500px",
+
     fontFamily: "'Poppins', sans-serif",
     fontSize: "18px",
     fontWeight: "bold",
-    display: "grid",
+    display: "flex",
+    flexDirection: "row",
     padding: "20px",
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: "10px",
-    maxWidth: "700px",
-    maxHeight: "300px",
-    height: "100%",
+    maxWidth: "1000px",
+    marginTop: "100px",
     width: "100%",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
+    fontColor: '#2f4f4f',
   },
   input: {
     maxWidth: "100%",
@@ -268,6 +323,7 @@ const styles = {
     maxWidth: "500px",
     width: "100%",
     overflowY: "auto",
+    fontColor: '#2f4f4f',
   },
   shoppingList: {
     backgroundColor: "#dcdcdc",
@@ -279,6 +335,34 @@ const styles = {
     width: "100%",
     maxHeight: "200px",
     overflowY: "auto",
+    color: '#2f4f4f',
   },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+    padding: "15px",
+    marginBottom: "15px",
+    textAlign: "left",
+    fontColor: '#2f4f4f',
+  },
+  removeBtn: {
+    backgroundColor: "#b22222",
+    color: "#fff",
+    padding: "5px 10px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
+  },
+  paginationBtn: {
+    margin: "5px",
+    padding: "6px 10px",
+    borderRadius: "5px",
+    border: "none",
+    backgroundColor: "#4682b4",
+    color: "white",
+    cursor: "pointer",
+    fontWeight: "bold",
+  }
 } as const
 

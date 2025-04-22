@@ -35,7 +35,11 @@ export class UserService extends MongooseServiceBase {
       throw new Error('User already exists')
     }
 
-    const insertedUser = await this.insert({ email, password })
+    // Hash and salt the password
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10)
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+  
+    const insertedUser = await this.insert({ email, password: hashedPassword })
     return insertedUser
   }
 
@@ -49,8 +53,8 @@ export class UserService extends MongooseServiceBase {
    */
   async login({ email, password }) {
     // Check if the user exists 
-    const result = await this.search({ email })
-    const user = result.data[0]
+    const user = await this.getOne({ email })
+    // const user = result.data[0]
     console.log('Found user:', user)
     console.log('Plain password:', password)
     console.log('Hashed password:', user?.password)
