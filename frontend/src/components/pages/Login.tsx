@@ -5,6 +5,8 @@
  * @author Beatriz Sanssi
  */
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import imageWoman from '../../images/woman-shopping.png'
 
 /**
@@ -16,6 +18,7 @@ const LoginForm = () => {
   const [message, setMessage] = useState('')
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   /**
    * Handles the login action when the user clicks the login button.
@@ -34,6 +37,7 @@ const LoginForm = () => {
       if (response.ok) {
         localStorage.setItem('token', data.token)
         setMessage('Login successful!')
+        navigate('/')
       } else {
         setMessage(data.error || 'Login failed')
       }
@@ -58,9 +62,9 @@ const LoginForm = () => {
         <button onClick={handleSubmit}>Login</button>
         <p style={styles.text}>
           No Account?{" "}
-          <a href="/register" style={styles.link}>
+          <Link to="/register" style={styles.link}>
             Register here
-          </a>
+          </Link>
         </p>
       </div>
     </div>
