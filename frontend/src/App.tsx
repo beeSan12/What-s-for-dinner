@@ -3,30 +3,23 @@ import SearchProducts from './components/pages/SearchProducts';
 import CreateShoppingList from "./components/pages/CreateShoppingList";
 import Home from './components/pages/Home';
 import Login from './components/pages/Login';
-// import Register from './components/pages/Register';
+import PublicRoute from './components/context/PublicRoute';
+import Register from './components/pages/Register';
+import Navbar from './components/types/Navbar'
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
-      <Route path="/login" element={<Login />} />
-      {/* <Route path="/register" element={<Register />} /> */}
-        {/* <Route element={<Layout />}>
-        </Route> */}
-        {/* <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} /> */}
-      </Routes>
-      <Routes>
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
         <Route path="/" element={<Home />} />
-        {/* <Route path="/products" element={<Products />} />
-        <Route path="/products/:id" element={<ProductDetail />} /> */}
         <Route path="/search" element={<SearchProducts />} />
         <Route path="/create-shopping-list" element={<CreateShoppingList />} />
-
       </Routes>
     </Router>
-  );
+  )
 }
 
 export default App;
