@@ -71,7 +71,7 @@ decorate(injectable(), ProductController)
 decorate(inject(PRODUCTTYPES.ProductModel), ProductRepository, 0)
 decorate(inject(PRODUCTTYPES.ProductRepository), ProductService, 0)
 decorate(inject(PRODUCTTYPES.ProductService), ProductController, 0)
-decorate(inject(USERPRODUCTTYPES.UserProductService), ProductService, 1)
+decorate(inject(USERPRODUCTTYPES.UserProductService), ProductController, 1)
 
 // Decorate User classes
 decorate(injectable(), UserRepository)
