@@ -7,6 +7,7 @@
  */
 
 import React, { useState } from 'react'
+import { apiFetch } from '../../utils/apiFetch'
 
 interface Product {
   _id: string
@@ -47,7 +48,7 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
     setSearched(true)
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/search?name=${encodeURIComponent(query)}`)
+      const response = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/search?name=${encodeURIComponent(query)}`)
       const data = await response.json()
       setResults(data.data || []) // Ensure data is an array
     } catch (err) {
@@ -63,9 +64,12 @@ const SearchProducts: React.FC<Props> = ({onProductSelect}) => {
    */
   const handleAddCustomProduct = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/products/custom`, {
+      const token = localStorage.getItem('token')
+      const res = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/custom`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json' },
         body: JSON.stringify({
           product_name: query,
           brands: customBrand,

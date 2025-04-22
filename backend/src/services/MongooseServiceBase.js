@@ -163,9 +163,12 @@ export class MongooseServiceBase {
    * @param {object} filter - The filter to apply to the query.
    * @returns {Promise<object>} Promise resolved with the found documents.
    */
-  async search(filter) {
+  async search({ filter = {}, page = 1, perPage = 20 } = {}) {
     try {
-      return await this.#repository.get(filter)
+      return await this.#repository.get(filter, null, null, {
+        limit: perPage,
+        skip: (page - 1) * perPage
+      })
     } catch (error) {
       this.#handleError(error, 'Failed to search documents.')
     }

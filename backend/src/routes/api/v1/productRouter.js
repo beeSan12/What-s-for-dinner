@@ -6,6 +6,7 @@
 
 import express from 'express'
 import dotenv from 'dotenv'
+import { authenticate } from '../../../middlewares/authenticate.js'
 import { container, PRODUCTTYPES } from '../../../config/inversify.config.js'
 // import { container } from '../../../config/inversify.config.js'
 // import { TYPES } from '../../../config/types.js'
@@ -34,20 +35,20 @@ router.param('id', (req, res, next, id) =>
 
 // GET products/search
 router.route('/search')
-  .get((req, res, next) => container.get(PRODUCTTYPES.ProductController).search(req, res, next))
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).search(req, res, next))
 
 // Map HTTP verbs and route paths to controller action methods.
 
 // GET products
 router.route('/')
-  .get((req, res, next) => container.get(PRODUCTTYPES.ProductController).findAll(req, res, next))
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).findAll(req, res, next))
 
 // GET products/:id
 router.route('/:id')
-  .get((req, res, next) => container.get(PRODUCTTYPES.ProductController).find(req, res, next))
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).find(req, res, next))
 
 // POST /products/custom — add a custom product
 router.route('/custom')
-  .post((req, res, next) => container.get(PRODUCTTYPES.ProductController).createCustom(req, res, next))
+  .post(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).createCustom(req, res, next))
   
 export { router as productRouter }

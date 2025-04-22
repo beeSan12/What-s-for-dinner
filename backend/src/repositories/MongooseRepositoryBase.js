@@ -36,27 +36,32 @@ export class MongooseRepositoryBase {
    * @param {object} filter - Filter to apply to the query.
    * @param {object|string|string[]} [projection] - Fields to return.
    * @param {object} [options] - See Query.prototype.setOptions().
+   * @param {object} [queryOptions] - Options for pagination.
    * @example
    * // Passing options
    * await myModelRepository.get({ name: /john/i }, null, { skip: 10 }).exec()
    * @returns {Promise<object>} Promise resolved with the found documents and pagination data.
    */
-  async get (filter, projection = null, options = null) {
+  async get (filter, projection = null, options = null, queryOptions = {}) {
     try {
+      const limit = queryOptions.limit || 20
+      const skip = queryOptions.skip || 0
+  
       const documents = await this.model
         .find(filter, projection, options)
+        .limit(limit)
+        .skip(skip)
         .exec()
-
-      const perPage = options?.limit || 20
-      const count = await this.model.countDocuments()
-
+  
+      const count = await this.model.countDocuments(filter)
+  
       return {
         data: documents,
         pagination: {
           totalCount: count,
-          page: (options?.skip || 0) / perPage + 1,
-          perPage,
-          totalPages: Math.ceil(count / perPage)
+          page: skip / limit + 1,
+          perPage: limit,
+          totalPages: Math.ceil(count / limit)
         }
       }
     } catch (error) {

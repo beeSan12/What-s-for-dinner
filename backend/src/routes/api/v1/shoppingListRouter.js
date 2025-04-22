@@ -6,6 +6,7 @@
 
 import express from 'express'
 import dotenv from 'dotenv'
+import { authenticate } from '../../../middlewares/authenticate.js'
 import { container, SHOPPINGLISTTYPES } from '../../../config/inversify.config.js'
 
 export const router = express.Router()
