@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react'
 import { apiFetch } from '../../utils/apiFetch'
-import { LuArrowBigRight, LuArrowBigLeft } from "react-icons/lu";
+import { LuArrowBigRight, LuArrowBigLeft } from "react-icons/lu"
 
 interface Product {
   _id: string
@@ -24,17 +24,27 @@ interface Props {
   maxResults?: number // Optional prop to limit the number of results displayed
   currentPage?: number // Optional prop for pagination
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>> // Optional prop for pagination
+  minimalLayout?: boolean
 }
 
 /**
  * SearchProducts component
  */
-const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
+const SearchProducts: React.FC<Props> = ({
+  onProductSelect,
+  maxResults,
+  currentPage,
+  setCurrentPage,
+  minimalLayout
+}) => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
-  const [currentPage, setCurrentPage] = useState(0) // State for pagination
+  const [internalPage, setInternalPage] = useState(0)
+
+  const activePage = currentPage ?? internalPage
+  const updatePage = setCurrentPage ?? setInternalPage 
 
   // State for custom product form
   const [showCustomProductForm, setShowCustomProductForm] = useState(false)
@@ -102,74 +112,82 @@ const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
   }
 
   return (
-    <div style={styles.container}>
-      {/* <h1>Search Products</h1> */}
+    <div style={minimalLayout ? undefined : styles.container}>
       <input
         type="text"
         placeholder="Enter product name (e.g. coffee)"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-        style={styles.input}
+        style={minimalLayout ? undefined : styles.input}
       />
-      <button onClick={handleSearch} style={{ marginLeft: '1rem', padding: '0.5rem 1rem', marginTop: '1rem' }}>
+      <button
+        onClick={handleSearch}
+        style={minimalLayout ? undefined : styles.searchBtn}
+      >
         Search
       </button>
 
       {loading && <p>Loading...</p>}
 
-      <ul style={styles.resultList}>
-        {(maxResults && currentPage !== undefined
-          ? results.slice(currentPage * maxResults, (currentPage + 1) * maxResults)
+      <ul style={minimalLayout ? undefined : styles.resultList}>
+        {(maxResults
+          ? results.slice(activePage * maxResults, (activePage + 1) * maxResults)
           : results
         ).map((product) => (
-          <li key={product._id} style={styles.productItem}>
-            <strong>{product.product_name}</strong> <br />
-            <em>Brand:</em> {product.brands} <br />
+          <li key={product._id} style={minimalLayout ? styles.compactTextStyle : styles.productItem}>
+            <strong style={minimalLayout ? styles.compactTextStyle : undefined}>
+              {product.product_name}
+            </strong><br />
+            <em style={minimalLayout ? styles.compactTextStyle : undefined}>Brand:</em>{' '}
+            <span style={minimalLayout ? styles.compactTextStyle : undefined}>{product.brands}</span><br />
             {product.image_url && (
-              <img src={product.image_url} alt={product.product_name} style={styles.productImage} />
+              <img
+                src={product.image_url}
+                alt={product.product_name}
+                style={minimalLayout ? styles.compactImageStyle : styles.productImage}
+              />
             )}
             <br />
-            <em>Source:</em> {product.source === 'custom' ? 'Your product' : 'Global'} <br />
-            <button onClick={() => onProductSelect?.(product)}>
-              Add to list
-            </button>
+            <em style={minimalLayout ? styles.compactTextStyle : undefined}>Source:</em>{' '}
+            {product.source === 'custom' ? 'Your product' : 'Global'}<br />
+            <button onClick={() => onProductSelect?.(product)}>Add to list</button>
           </li>
         ))}
       </ul>
 
-      {maxResults && results.length > maxResults && currentPage !== undefined && setCurrentPage && (
-        <div style={styles.paginationContainer}>          
+      {maxResults && results.length > maxResults && (
+        <div style={minimalLayout ? undefined : styles.paginationContainer}>
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-            disabled={currentPage === 0}
-            style={styles.paginationBtn}
+           onClick={() => updatePage((prev: number) => Math.max(prev - 1, 0))}
+            disabled={activePage === 0}
+            style={minimalLayout ? undefined : styles.paginationBtn}
           >
-            <LuArrowBigLeft />
-            Prev
+            <LuArrowBigLeft /> Prev
           </button>
           <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={(currentPage + 1) * maxResults >= results.length}
-            style={styles.paginationBtn}
+            onClick={() => updatePage((prev: number) =>
+              (prev + 1) * maxResults! < results.length ? prev + 1 : prev
+            )}
+            disabled={(activePage + 1) * maxResults >= results.length}
+            style={minimalLayout ? undefined : styles.paginationBtn}
           >
-            Next
-            <LuArrowBigRight />
+            Next <LuArrowBigRight />
           </button>
         </div>
       )}
 
-      {!loading && searched && results.length === 0 && query.trim() && (
-        <div style={styles.customProductBox}>
+       {!loading && searched && results.length === 0 && query.trim() && (
+        <div style={minimalLayout ? undefined : styles.customProductBox}>
           <p>No product found. Add custom product:</p>
           {!showCustomProductForm ? (
             <button onClick={() => setShowCustomProductForm(true)}>Add “{query}”</button>
           ) : (
-            <div style={styles.customForm}>
-              <input placeholder="Name" value={customName} onChange={(e) => setCustomName(e.target.value)} style={styles.customInput} />
-              <input placeholder="Brand" value={customBrand} onChange={(e) => setCustomBrand(e.target.value)} style={styles.customInput} />
-              <input placeholder="Category" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} style={styles.customInput} />
-              <input placeholder="Image URL (optional)" value={customImageUrl} onChange={(e) => setCustomImageUrl(e.target.value)} style={styles.customInput} />
+            <div style={minimalLayout ? undefined : styles.customForm}>
+              <input placeholder="Name" value={customName} onChange={(e) => setCustomName(e.target.value)} style={minimalLayout ? undefined : styles.customInput} />
+              <input placeholder="Brand" value={customBrand} onChange={(e) => setCustomBrand(e.target.value)} style={minimalLayout ? undefined : styles.customInput} />
+              <input placeholder="Category" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} style={minimalLayout ? undefined : styles.customInput} />
+              <input placeholder="Image URL (optional)" value={customImageUrl} onChange={(e) => setCustomImageUrl(e.target.value)} style={minimalLayout ? styles.compactImageStyle : styles.customInput} />
               <button onClick={handleAddCustomProduct}>Submit Product</button>
             </div>
           )}
@@ -181,7 +199,16 @@ const SearchProducts: React.FC<Props> = ({onProductSelect, maxResults}) => {
 
 const styles = {
   container: {
-    padding: '2rem'
+    width: '100%',
+    display: 'block',
+    padding: '20px',
+    alignItems: 'flex-start',
+    // padding: '20px',
+    // display: 'flex',
+    // flexDirection: 'row', 
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // gap: '20px',
   },
   input: {
     padding: '0.5rem',
@@ -227,7 +254,10 @@ const styles = {
     fontSize: '20px',
   },
   customProductBox: {
-    marginTop: '2rem'
+    marginTop: '2rem',
+    color: '#2f4f4f',
+    fontWeight: 'bold',
+    fontSize: '1.2rem',
   },
   customForm: {
     marginTop: '1rem'
@@ -236,7 +266,17 @@ const styles = {
     display: 'block',
     marginBottom: '0.5rem',
     padding: '0.3rem'
-  }
+  },
+  compactImageStyle: {
+    height: '60px',
+    maxWidth: '100px',
+    objectFit: 'contain',
+  },
+  compactTextStyle: {
+    fontSize: '14px',
+    color: '#2f4f4f',
+    lineHeight: '1.3',
+  },
 } as const
 
 

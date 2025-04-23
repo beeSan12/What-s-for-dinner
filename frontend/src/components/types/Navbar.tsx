@@ -19,7 +19,7 @@ export default function Navbar() {
     // Check if token exists in local storage
     const token = localStorage.getItem('token')
     setIsLoggedIn(!!token)
-  }, [localStorage.getItem('token')]) // Dependency array to re-run effect when token changes
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
