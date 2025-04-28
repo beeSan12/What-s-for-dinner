@@ -89,4 +89,24 @@ export class ShoppingListController {
       next(convertToHttpError(error))
     }
   }
+
+  /**
+   * Creates a new shopping list.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+   */
+  async createList(req, res, next) {
+    try {
+      const { name, items } = req.body
+      const userId = req.user.id
+      const result = await this.#service.createList(name, userId, items)
+      res.json(result)
+    }
+    catch (error) {
+      next(convertToHttpError(error))
+    }
+  }
 }

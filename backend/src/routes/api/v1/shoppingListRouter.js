@@ -14,7 +14,7 @@ export const router = express.Router()
 dotenv.config()
 
 router.post('/', authenticate, (req, res, next) =>
-  container.get(SHOPPINGLISTTYPES.ShoppingListController).create(req, res, next)
+  container.get(SHOPPINGLISTTYPES.ShoppingListController).createList(req, res, next)
 )
 
 export { router as shoppingListRouter }

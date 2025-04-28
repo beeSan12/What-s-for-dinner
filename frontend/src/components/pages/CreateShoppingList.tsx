@@ -118,7 +118,7 @@ export default function CreateShoppingList() {
     try {
       const token = localStorage.getItem('token')
       const res = await apiFetch(
-        `${import.meta.env.VITE_API_BASE_URL}/shoppinglists`,
+        `${import.meta.env.VITE_API_BASE_URL}/shoppinglist`,
         {
           method: 'POST',
           headers: {
