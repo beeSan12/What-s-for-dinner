@@ -1,0 +1,25 @@
+/**
+ * This component is used to protect routes that should only be accessible to authenticated users.
+ *
+ * @component PrivateRoute
+ * @author Beatriz Sanssi
+ */
+
+import { Navigate, Outlet } from 'react-router-dom'
+import { useAuth } from './AuthContext'
+
+/**
+ * PrivateRoute component that checks if the user is authenticated before rendering its children.
+ *
+ * @returns {JSX.Element} The PrivateRoute component or a redirect to the login page if the user is not authenticated.
+ */
+const PrivateRoute = () => {
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) return <p>Loading…</p>
+  if (!isAuthenticated) return <Navigate to="/login" replace />
+
+  return <Outlet />
+}
+
+export default PrivateRoute
