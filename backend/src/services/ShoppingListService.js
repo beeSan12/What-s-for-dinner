@@ -44,4 +44,26 @@ export class ShoppingListService extends MongooseServiceBase {
   async searchProductsByName(name) {
     return this.repository.model.db.model('Product').find({ product_name: new RegExp(name, 'i') })
   }
+
+  /**
+   * Creates a new shopping list.
+   *
+   * @param {string} name - The name of the shopping list.
+   * @param {string} userId - The ID of the user who owns the list.
+   * @returns {Promise<object>} The created shopping list.
+   */
+  async createList(name, userId, items) {
+    const formattedProducts = items.map(item => ({
+      productId: item._id,
+      quantity: `${item.quantity} ${item.unit}`
+    }))
+  
+    const newList = await this.insert({
+      name,
+      userId,
+      products: formattedProducts
+    })
+  
+    return newList
+  }
 }
