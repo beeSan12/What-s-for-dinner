@@ -29,6 +29,8 @@ interface Props {
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>> // Optional prop for pagination
   minimalLayout?: boolean
   showSelectButton?: boolean // Optional prop to show select button
+  customInputStyle?: React.CSSProperties
+  customButtonStyle?: React.CSSProperties
 }
 
 /**
@@ -41,7 +43,9 @@ const SearchProducts: React.FC<Props> = ({
   currentPage,
   setCurrentPage,
   minimalLayout,
-  showSelectButton
+  showSelectButton,
+  customInputStyle,
+  customButtonStyle
 }) => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Product[]>([])
@@ -142,11 +146,11 @@ const SearchProducts: React.FC<Props> = ({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-        style={minimalLayout ? undefined : styles.input}
+        style={customInputStyle || (minimalLayout ? undefined : styles.input)}
       />
       <button
         onClick={handleSearch}
-        style={minimalLayout ? undefined : styles.searchBtn}
+        style={customButtonStyle || (minimalLayout ? undefined : styles.searchBtn)}
       >
         Search
       </button>
@@ -160,8 +164,15 @@ const SearchProducts: React.FC<Props> = ({
           {/* //<li key={product._id} style={minimalLayout ? styles.compactTextStyle : styles.productItem}> */}
             <div style={styles.productInfo}>
               <div style={styles.productDetails}>
-                <strong>{product.product_name}</strong><br />
-                <em>Brand:</em> {product.brands}<br />
+              <div>
+                <strong>{product.product_name}</strong>
+              </div>
+              <div style={styles.inlineText}>
+                <em>Brand:</em> <span>{product.brands}</span>
+              </div>
+              <div style={styles.inlineText}>
+                <em>Source:</em> {product.source === 'custom' ? 'Your product' : 'Global'}
+              </div>
                 {product.image_url && (
                   <img
                     src={product.image_url}
@@ -171,7 +182,6 @@ const SearchProducts: React.FC<Props> = ({
                   />
                 )}
                 <br />
-                <em>Source:</em> {product.source === 'custom' ? 'Your product' : 'Global'}
               </div>
               {enlargedImage && (
                 <div style={styles.overlay} onClick={() => setEnlargedImage(null)}>
@@ -298,7 +308,8 @@ const styles = {
   },
   input: {
     padding: '0.5rem',
-    width: '300px'
+    width: '300px',
+    
   },
   searchBtn: {
     marginLeft: '1rem',
@@ -403,6 +414,11 @@ const styles = {
     justifyContent: 'center',
     zIndex: 1100,
   },
+  inlineText: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+  }
 } as const
 
 
