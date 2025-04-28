@@ -12,6 +12,7 @@ import { apiFetch } from '../../utils/apiFetch'
 import SearchProducts from '../types/SearchProducts'
 import coupleWritingList from '../../images/CoupleWritingList.png'
 import { FaRegEdit } from 'react-icons/fa'
+import { MdClose } from 'react-icons/md'
 
 interface Product {
   _id: string
@@ -170,6 +171,8 @@ export default function CreateShoppingList() {
             setCurrentPage={setCurrentPage}
             minimalLayout={true}
             showSelectButton={true}
+            customInputStyle={styles.searchInput}
+            customButtonStyle={styles.searchButton}
           />
 
           {/* {products.map((product) => (
@@ -182,32 +185,72 @@ export default function CreateShoppingList() {
           ))} */}
 
           {selectedProduct && (
-            <div style={styles.formContainer}>
-              <h3>{selectedProduct.product_name}</h3>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                placeholder="Quantity"
-                style={styles.input}
-              />
-              <select
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-                style={styles.input}
-              >
-                <option value="st">st</option>
-                <option value="g">g</option>
-                <option value="kg">kg</option>
-                <option value="ml">ml</option>
-                <option value="l">l</option>
-              </select>
-              <button onClick={handleAddProduct} style={styles.button}>
-                Add to list
-              </button>
-            </div>
-          )}
+             <div style={styles.overlay} onClick={() => setSelectedProduct(null)}>
+             <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+               <button
+                 onClick={() => setSelectedProduct(null)}
+                 style={styles.closeButton}
+               >
+                 <MdClose />
+               </button>
+               <h2 style={styles.modalTitle}>{selectedProduct.product_name}</h2>
+               <input
+                 type="number"
+                 min="1"
+                 value={quantity}
+                 onChange={(e) => setQuantity(Number(e.target.value))}
+                 placeholder="Quantity"
+                 style={styles.input}
+               />
+               <select
+                 value={unit}
+                 onChange={(e) => setUnit(e.target.value)}
+                 style={styles.input}
+               >
+                 <option value="st">st</option>
+                 <option value="g">g</option>
+                 <option value="kg">kg</option>
+                 <option value="ml">ml</option>
+                 <option value="l">l</option>
+               </select>
+               <button
+                 onClick={() => {
+                   handleAddProduct()
+                   setSelectedProduct(null) // Stäng efter att ha lagt till
+                 }}
+                 style={styles.button}
+               >
+                 Add to list
+               </button>
+             </div>
+           </div>
+         )}
+          {/* //   <div style={styles.formContainer}>
+          //     <p>{selectedProduct.product_name}</p>
+          //     <input */}
+          {/* //       type="number"
+          //       min="1"
+          //       value={quantity}
+          //       onChange={(e) => setQuantity(Number(e.target.value))}
+          //       placeholder="Quantity"
+          //       style={styles.input}
+          //     />
+          //     <select
+          //       value={unit}
+          //       onChange={(e) => setUnit(e.target.value)}
+          //       style={styles.input}
+          //     >
+          //       <option value="st">st</option>
+          //       <option value="g">g</option>
+          //       <option value="kg">kg</option>
+          //       <option value="ml">ml</option>
+          //       <option value="l">l</option>
+          //     </select>
+          //     <button onClick={handleAddProduct} style={styles.button}>
+          //       Add to list
+          //     </button>
+          //   </div>
+          // )} */}
         </div>
 
         <div style={styles.rightColumn}>
@@ -247,16 +290,17 @@ export default function CreateShoppingList() {
 
           <div style={styles.shoppingList}>
             {paginatedItems.map((item) => (
-              <div key={item._id} style={styles.card}>
-                <p><strong>{item.product_name}</strong></p>
-                <p>{item.quantity} {item.unit}</p>
-                <button
-                  onClick={() => handleRemoveProduct(item._id)}
-                  style={styles.removeBtn}
-                >
-                  Remove
-                </button>
+              <div key={item._id} style={styles.cardRow}>
+              <div style={styles.itemInfo}>
+                <strong>{item.product_name}</strong> — {item.quantity} {item.unit}
               </div>
+              <button
+                onClick={() => handleRemoveProduct(item._id)}
+                style={styles.removeBtn}
+              >
+                Remove
+              </button>
+            </div>
             ))}
 
             {/* <div style={{ marginTop: '10px' }}>
@@ -420,6 +464,23 @@ const styles = {
     margin: '10px',
     flex: 1,
   },
+  searchInput: {
+    maxWidth: '100%',
+    padding: '8px',
+    fontSize: '16px',
+    margin: '10px',
+  },
+  searchButton: {
+    width: '100%',
+    maxWidth: '100px',
+    padding: '10px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    backgroundColor: '#2f4f4f',
+    color: 'white',
+    borderRadius: '6px',
+    border: 'none',
+  },
   listItem: {
     maxWidth: '100%',
     width: '400px',
@@ -441,39 +502,89 @@ const styles = {
     cursor: 'pointer',
     transition: 'background 0.3s',
   },
-  formContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: '10px',
-    padding: '20px',
-    margin: '20px',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '500px',
-    height: '100%',
-    width: '100%',
-    overflowY: 'auto',
-    color: '#2f4f4f',
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
   },
+  modal: {
+    backgroundColor: 'white',
+    borderRadius: '10px',
+    padding: '30px',
+    minWidth: '300px',
+    position: 'relative',
+    boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    background: 'none',
+    border: 'none',
+    fontSize: '24px',
+    cursor: 'pointer',
+  },
+  modalTitle: {
+    marginBottom: '20px',
+    color: '#2f4f4f',
+    fontSize: '20px',
+    fontWeight: 'bold',
+  },
+  // formContainer: {
+  //   backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  //   borderRadius: '10px',
+  //   padding: '10px',
+  //   margin: '20px',
+  //   boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+  //   maxWidth: '400px',
+  //   height: '100%',
+  //   width: '90%',
+  //   minHeight: '200px',
+  //   overflowY: 'auto',
+  //   color: '#2f4f4f',
+  // },
   shoppingList: {
     backgroundColor: '#dcdcdc',
     opacity: 0.9,
     borderRadius: '10px',
-    padding: '20px',
-    margin: '20px',
+    padding: '0px',
+    margin: '10px',
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '400px',
+    maxWidth: '500px',
     width: '100%',
     minHeight: '200px',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '100%',
     overflowY: 'auto',
     color: '#2f4f4f',
+    fontSize: '12px',
   },
-  card: {
+  cardRow: {
     backgroundColor: '#fff',
     borderRadius: '10px',
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
     padding: '15px',
-    marginBottom: '15px',
-    textAlign: 'left',
+    margin: '15px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     color: '#2f4f4f',
+    maxWidth: '400px',
+    width: '100%',
+  },
+  itemInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontWeight: 'bold',
   },
   removeBtn: {
     backgroundColor: '#b22222',

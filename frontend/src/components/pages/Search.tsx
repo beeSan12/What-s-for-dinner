@@ -23,7 +23,7 @@ export default function Search() {
 
 const styles = {
   page: {
-    backgroundColor: '#bc8f8f', // rosa
+    backgroundColor: '#bc8f8f',
     minHeight: '100%',
     maxWidth: '100%',
     width: '100vw',
