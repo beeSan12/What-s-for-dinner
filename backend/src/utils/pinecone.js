@@ -6,10 +6,12 @@
  * @author Beatriz Sanssi
  */
 
-import { PineconeClient } from '@pinecone-database/pinecone'
+import pkg from '@pinecone-database/pinecone'
 import dotenv from 'dotenv'
 
 dotenv.config()
+
+const { PineconeClient } = pkg
 
 /**
  * Pinecone client instance.

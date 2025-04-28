@@ -6,17 +6,15 @@
  * @author Beatriz Sanssi 
  */
 
-import { Configuration, OpenAIApi } from 'openai'
+import OpenAI from 'openai'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
 // Load environment variables from .env file
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
-
-const openai = new OpenAIApi(configuration)
 
 /**
  * Creates an embedding for the given text using OpenAI's API.
