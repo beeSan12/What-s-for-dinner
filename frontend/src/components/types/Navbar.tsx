@@ -5,11 +5,11 @@
  * @author Beatriz Sanssi
  */
 
-import { FaHome, FaSearch, FaUnlock } from "react-icons/fa"
-import { IoCreate, IoLogOutOutline } from "react-icons/io5"
-import { RiUserAddLine } from "react-icons/ri"
-import { Link, useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { FaHome, FaSearch, FaUnlock } from 'react-icons/fa'
+import { IoCreate, IoLogOutOutline } from 'react-icons/io5'
+import { RiUserAddLine } from 'react-icons/ri'
+import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)

@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { apiFetch } from '../../utils/apiFetch'
 import SearchProducts from '../types/SearchProducts'
 import coupleWritingList from '../../images/CoupleWritingList.png'
+import { FaRegEdit } from 'react-icons/fa'
 
 interface Product {
   _id: string
@@ -29,6 +30,7 @@ interface ShoppingItem extends Product {
 export default function CreateShoppingList() {
   // const listId = ""
   const [listName, setListName] = useState<string>('')
+  const [editingName, setEditingName] = useState<boolean>(true)
   const [shoppingList, setShoppingList] = useState<ShoppingItem[]>([])
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [quantity, setQuantity] = useState<number>(1)
@@ -123,16 +125,7 @@ export default function CreateShoppingList() {
         <h1>New shopping list</h1>
       </div>
       <div style={styles.createContainer}>
-        <div
-          style={{
-            flex: 1,
-            maxWidth: '45%',
-            display: 'flex',
-            flexDirection: 'column',
-            overflowY: 'auto',
-            maxHeight: '60vh',
-          }}
-        >
+        <div style={styles.leftColumn}>
           {/* <input
             type="text"
             placeholder="Name your list"
@@ -180,35 +173,46 @@ export default function CreateShoppingList() {
           )}
         </div>
 
-        <div
-          style={{
-            flex: 1,
-            maxWidth: '45%',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Name your list"
-            value={listName}
-            onChange={(e) => setListName(e.target.value)}
-            style={styles.input}
-          />
-          <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-            <h2>{listName}</h2>
-            <p>{new Date().toLocaleDateString()}</p>
-          </div>
+        <div style={styles.rightColumn}>
+        {editingName ? (
+            <div style={styles.nameInputContainer}>
+              <input
+                type="text"
+                placeholder="Name your list"
+                value={listName}
+                onChange={e => setListName(e.target.value)}
+                style={styles.input}
+              />
+              <button
+                onClick={() => {
+                  if (listName.trim() === '') {
+                    alert('Please enter a name.')
+                    return
+                  }
+                  setEditingName(false)
+                }}
+                style={styles.button}
+              >
+                Save name
+              </button>
+            </div>
+          ) : (
+            <div style={styles.nameDisplayContainer}>
+              <h2 style={styles.listNameHeading}>{listName}</h2>
+              <button
+                onClick={() => setEditingName(true)}
+                style={styles.editNameBtn}
+              >
+                <FaRegEdit size={20} />
+              </button>
+            </div>
+          )}
 
           <div style={styles.shoppingList}>
             {paginatedItems.map((item) => (
               <div key={item._id} style={styles.card}>
-                <p>
-                  <strong>{item.product_name}</strong>
-                </p>
-                <p>
-                  {item.quantity} {item.unit}
-                </p>
+                <p><strong>{item.product_name}</strong></p>
+                <p>{item.quantity} {item.unit}</p>
                 <button
                   onClick={() => handleRemoveProduct(item._id)}
                   style={styles.removeBtn}
@@ -218,7 +222,7 @@ export default function CreateShoppingList() {
               </div>
             ))}
 
-            <div style={{ marginTop: '10px' }}>
+            {/* <div style={{ marginTop: '10px' }}>
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
                 disabled={currentPage === 0}
@@ -241,7 +245,7 @@ export default function CreateShoppingList() {
               >
                 Next ➡️
               </button>
-            </div>
+            </div> */}
           </div>
 
           <button
@@ -329,10 +333,47 @@ const styles = {
     alignItems: 'center',
     fontColor: '#2f4f4f',
   },
+  leftColumn: {
+    flex: 1,
+    maxWidth: '45%',
+    display: 'flex',
+    flexDirection: 'column',
+    overflowY: 'auto',
+    maxHeight: '60vh',
+  },
+  rightColumn: {
+    flex: 1,
+    maxWidth: '45%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
   headerDiv: {
     color: '#2f4f4f',
     fontSize: '30px',
     fontWeight: 'bold',
+  },
+  nameInputContainer: {
+    display: 'flex',
+    gap: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  nameDisplayContainer: {
+    display: 'flex',
+    gap: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  listNameHeading: { 
+    color: '#2f4f4f',
+    alignConten: 'center',
+    justifyContent: 'center',
+  },
+  editNameBtn: {
+    padding: '5px 10px',
+    fontSize: 14,
+    cursor: 'pointer',
   },
   input: {
     maxWidth: '100%',
@@ -340,6 +381,7 @@ const styles = {
     padding: '10px',
     fontSize: '16px',
     margin: '10px',
+    flex: 1,
   },
   listItem: {
     maxWidth: '100%',
@@ -369,19 +411,21 @@ const styles = {
     margin: '20px',
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
     maxWidth: '500px',
+    height: '100%',
     width: '100%',
     overflowY: 'auto',
     color: '#2f4f4f',
   },
   shoppingList: {
     backgroundColor: '#dcdcdc',
+    opacity: 0.9,
     borderRadius: '10px',
     padding: '20px',
     margin: '20px',
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
     maxWidth: '400px',
     width: '100%',
-    maxHeight: '200px',
+    minHeight: '200px',
     overflowY: 'auto',
     color: '#2f4f4f',
   },
