@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import imageWoman from '../../images/woman-shopping.png'
+import { useAuth } from '../context/AuthContext'
 
 /**
  * LoginForm component
@@ -18,6 +19,7 @@ const LoginForm = () => {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -41,9 +43,11 @@ const LoginForm = () => {
       })
       const data = await response.json()
       if (response.ok) {
-        localStorage.setItem('token', data.token)
+        login(data.token) 
+        // localStorage.setItem('token', data.token)
         setError('')
-        navigate('/')
+        navigate('/', { replace: true })
+        // navigate('/')
       } else {
         setError(data.error || 'Login failed')
       }

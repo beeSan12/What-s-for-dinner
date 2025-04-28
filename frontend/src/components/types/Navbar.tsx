@@ -8,24 +8,25 @@
 import { FaHome, FaSearch, FaUnlock } from 'react-icons/fa'
 import { IoCreate, IoLogOutOutline } from 'react-icons/io5'
 import { RiUserAddLine } from 'react-icons/ri'
-import { Link, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const navigate = useNavigate()
+  const { isAuthenticated, logout } = useAuth()
+  // const [isLoggedIn, setIsLoggedIn] = useState(false)
+  // const navigate = useNavigate()
 
-  useEffect(() => {
-    // Check if token exists in local storage
-    const token = localStorage.getItem('token')
-    setIsLoggedIn(!!token)
-  }, [])
+  // useEffect(() => {
+  //   // Check if token exists in local storage
+  //   const token = localStorage.getItem('token')
+  //   setIsLoggedIn(!!token)
+  // }, [])
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    setIsLoggedIn(false)
-    navigate('/login')
-  }
+  // const handleLogout = () => {
+  //   localStorage.removeItem('token')
+  //   setIsLoggedIn(false)
+  //   navigate('/login')
+  // }
 
   return (
     <div style={styles.navbar}>    
@@ -33,7 +34,7 @@ export default function Navbar() {
         <FaHome size={20} />
         <span style={styles.label}>Home</span>
       </Link>
-      {isLoggedIn ? (
+      {isAuthenticated ? (
         <>
          <Link to="/search" style={styles.link}>
             <FaSearch size={20} />
@@ -43,7 +44,7 @@ export default function Navbar() {
             <IoCreate size={20} />
             <span style={styles.label}>Create List</span>
           </Link>
-          <button onClick={handleLogout} style={{ ...styles.link, ...styles.button }}>
+          <button onClick={logout} style={{ ...styles.link, ...styles.button }}>
             <IoLogOutOutline size={20} />
             <span style={styles.label}>Logout</span>
           </button>        
