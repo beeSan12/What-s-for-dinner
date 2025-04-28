@@ -14,6 +14,8 @@ const Home: React.FC = () => {
       <h1>Welcome to Whats For Dinner 🍽️</h1>
       <ul>
         <li><Link to="/search">Search for products</Link></li>
+        <li><Link to="/find-recipe">Find a recipe</Link></li>
+        <li><Link to="/search-query">Ask a question</Link></li>
       </ul>
     </div>
   )
