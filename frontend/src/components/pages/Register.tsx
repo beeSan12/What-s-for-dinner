@@ -46,7 +46,8 @@ export default function Register() {
         setError(data.message || "Registration failed")
       }
     } catch (err) {
-      setError("An error occurred during registration")
+      console.error('Registration error:', err)
+      setError('An error occurred during registration')
     }
 
     setLoading(false)

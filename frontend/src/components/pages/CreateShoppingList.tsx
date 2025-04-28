@@ -171,6 +171,7 @@ export default function CreateShoppingList() {
             setCurrentPage={setCurrentPage}
             minimalLayout={true}
             showSelectButton={true}
+            hideSearchButton={false}
             customInputStyle={styles.searchInput}
             customButtonStyle={styles.searchButton}
           />

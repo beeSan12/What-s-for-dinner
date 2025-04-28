@@ -29,6 +29,7 @@ interface Props {
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>> // Optional prop for pagination
   minimalLayout?: boolean
   showSelectButton?: boolean // Optional prop to show select button
+  hideSearchButton?: boolean 
   customInputStyle?: React.CSSProperties
   customButtonStyle?: React.CSSProperties
 }
@@ -44,6 +45,7 @@ const SearchProducts: React.FC<Props> = ({
   setCurrentPage,
   minimalLayout,
   showSelectButton,
+  hideSearchButton,
   customInputStyle,
   customButtonStyle
 }) => {
@@ -148,13 +150,15 @@ const SearchProducts: React.FC<Props> = ({
         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         style={customInputStyle || (minimalLayout ? undefined : styles.input)}
       />
-      <button
-        onClick={handleSearch}
-        style={customButtonStyle || (minimalLayout ? undefined : styles.searchBtn)}
-      >
-        Search
-      </button>
-
+      {!hideSearchButton && (
+        <button
+          onClick={handleSearch}
+          style={customButtonStyle || (minimalLayout ? undefined : styles.searchBtn)}
+        >
+          Search
+        </button>
+      )}
+      
       {loading && <p>Loading...</p>}
 
       {/* <ul style={minimalLayout ? undefined : styles.resultList}> */}
