@@ -32,6 +32,7 @@ export default function CreateShoppingList() {
   const [listName, setListName] = useState<string>('')
   const [editingName, setEditingName] = useState<boolean>(true)
   const [shoppingList, setShoppingList] = useState<ShoppingItem[]>([])
+  // const [products, setProducts] = useState<Product[]>([])
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [quantity, setQuantity] = useState<number>(1)
   const [unit, setUnit] = useState<string>('st')
@@ -51,14 +52,18 @@ export default function CreateShoppingList() {
    * @returns {void}
    */
   const handleProductSelect = (product: Product) => {
-    const newItem: ShoppingItem = {
-      ...product,
-      quantity: 1,
-      unit: 'st',
-    }
-    setShoppingList(prev => [...prev, newItem])
-    // setSelectedProduct(product)
+    setSelectedProduct(product)
+    setQuantity(1)
+    setUnit('st')
   }
+  //   const newItem: ShoppingItem = {
+  //     ...product,
+  //     quantity: 1,
+  //     unit: 'st',
+  //   }
+  //   setShoppingList(prev => [...prev, newItem])
+  //   // setSelectedProduct(product)
+  // }
 
   /**
    * Handles the addition of a product to the shopping list.
@@ -104,26 +109,41 @@ export default function CreateShoppingList() {
    * @returns {Promise<void>}
    */
   const handleSaveList = async () => {
-    const token = localStorage.getItem('token')
-    const res = await apiFetch(
-      `${import.meta.env.VITE_API_BASE_URL}/shoppinglists`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: listName,
-          items: shoppingList,
-          date: new Date().toISOString(),
-        }),
-      },
-    )
+    if (!listName.trim()) {
+      alert('Please enter a list name.')
+      return
+    }
 
-    if (res.ok) alert('List saved!')
-    else alert('Could not save list.')
-  }
+    try {
+      const token = localStorage.getItem('token')
+      const res = await apiFetch(
+        `${import.meta.env.VITE_API_BASE_URL}/shoppinglists`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: listName,
+            items: shoppingList,
+            date: new Date().toISOString(),
+          })
+        })
+  
+        if (res.ok) {
+          alert('List saved successfully!')
+          setListName('')
+          setShoppingList([])
+          setSelectedProduct(null)
+        } else {
+          alert('Failed to save the list.')
+        }
+      } catch (error) {
+        console.error('Error saving list:', error)
+        alert('Error saving list.')
+      }
+    }
 
   return (
     <div style={styles.container}>
@@ -143,12 +163,23 @@ export default function CreateShoppingList() {
             <p>Search Products</p>
           </div>
           <SearchProducts
+            // onResults={setProducts}
             onProductSelect={handleProductSelect}
             maxResults={3}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             minimalLayout={true}
+            showSelectButton={true}
           />
+
+          {/* {products.map((product) => (
+            <div key={product._id} style={{ marginTop: '10px' }}>
+              <p><strong>{product.product_name}</strong></p>
+              <button onClick={() => handleProductSelect(product)} style={styles.button}>
+                Select
+              </button>
+            </div>
+          ))} */}
 
           {selectedProduct && (
             <div style={styles.formContainer}>
