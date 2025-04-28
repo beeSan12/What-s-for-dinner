@@ -30,6 +30,7 @@ import { limiter } from './config/rateLimiter.js'
 import { logger } from './config/winston.js'
 import { sessionMiddleware } from './config/session.js'
 import { router } from './routes/router.js'
+import { initPinecone } from './utils/pinecone.js'
 // import { errorHandler } from './middleware/errorHandler.js'
 // import { setUserLocals } from './middleware/setUserLocals.js'
 
@@ -46,6 +47,9 @@ try {
 
   // Create an Express application.
   const app = express()
+
+  // Initialize Pinecone.
+  await initPinecone()
 
   // Set various HTTP headers for app security
   app.use(helmet({

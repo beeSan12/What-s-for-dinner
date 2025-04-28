@@ -27,6 +27,8 @@ import { UserProductModel } from '../models/UserProductModel.js'
 import { UserProductRepository } from '../repositories/UserProductRepository.js'
 import { UserProductService } from '../services/UserProductService.js'
 import { UserProductController } from '../controllers/UserProductController.js'
+// Embedding modules
+import { EmbeddingController } from '../controllers/EmbeddingController.js'
 
 /**
  * The TYPES object contains the identifiers for the dependencies in the application.
@@ -57,6 +59,10 @@ export const USERPRODUCTTYPES = {
   UserProductRepository: Symbol.for('UserProductRepository'),
   UserProductService: Symbol.for('UserProductService'),
   UserProductModel: Symbol.for('UserProductModel')
+}
+
+export const EMBEDDINGTYPES = {
+  EmbeddingController: Symbol.for('EmbeddingController')
 }
 
 /**
@@ -130,3 +136,6 @@ container.bind(USERPRODUCTTYPES.UserProductController).to(UserProductController)
 container.bind(USERPRODUCTTYPES.UserProductRepository).to(UserProductRepository).inSingletonScope()
 container.bind(USERPRODUCTTYPES.UserProductService).to(UserProductService).inSingletonScope()
 container.bind(USERPRODUCTTYPES.UserProductModel).toConstantValue(UserProductModel)
+
+// Embedding bindings
+container.bind(EMBEDDINGTYPES.EmbeddingController).to(EmbeddingController).inSingletonScope()
