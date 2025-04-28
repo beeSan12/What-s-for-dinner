@@ -51,7 +51,13 @@ export default function CreateShoppingList() {
    * @returns {void}
    */
   const handleProductSelect = (product: Product) => {
-    setSelectedProduct(product)
+    const newItem: ShoppingItem = {
+      ...product,
+      quantity: 1,
+      unit: 'st',
+    }
+    setShoppingList(prev => [...prev, newItem])
+    // setSelectedProduct(product)
   }
 
   /**

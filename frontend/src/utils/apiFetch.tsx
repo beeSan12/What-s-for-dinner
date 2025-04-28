@@ -13,15 +13,37 @@
  * @param options The options for the fetch request, such as method, headers, body, etc.
  * @returns {Promise<Response>} The response from the fetch request.
  */
-export const apiFetch = (url: string, options: RequestInit = {}) => {
+export const apiFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
+// export const apiFetch = (url: string, options: RequestInit = {}) => {
   const token = localStorage.getItem('token')
 
-  return fetch(url, {
+  const response = await fetch(url, {
     ...options,
     headers: {
       ...(options.headers || {}),
-      'Authorization': `Bearer ${token}`,
+      'Authorization': token ? `Bearer ${token}` : '',
       'Content-Type': 'application/json'
     }
   })
+
+  if (response.status === 401) {
+    // Token has expired or is invalid
+    localStorage.removeItem('token')
+    // Redirect to login page
+    window.location.href = '/login'
+    // Do not return the response
+    // Instead, reject the promise with an error
+    return Promise.reject(new Error('Unauthorized'))
+  }
+
+  return response
 }
+//   return fetch(url, {
+//     ...options,
+//     headers: {
+//       ...(options.headers || {}),
+//       'Authorization': `Bearer ${token}`,
+//       'Content-Type': 'application/json'
+//     }
+//   })
+// }
