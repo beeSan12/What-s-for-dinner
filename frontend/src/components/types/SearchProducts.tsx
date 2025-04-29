@@ -1,7 +1,7 @@
 /**
  * This component allows users to search for products by name.
  * It fetches data from the backend API and displays the results.
- * 
+ *
  * @component SearchProducts
  * @author Beatriz Sanssi
  */
@@ -29,7 +29,7 @@ interface Props {
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>> // Optional prop for pagination
   minimalLayout?: boolean
   showSelectButton?: boolean // Optional prop to show select button
-  hideSearchButton?: boolean 
+  hideSearchButton?: boolean
   customInputStyle?: React.CSSProperties
   customButtonStyle?: React.CSSProperties
 }
@@ -47,7 +47,7 @@ const SearchProducts: React.FC<Props> = ({
   showSelectButton,
   hideSearchButton,
   customInputStyle,
-  customButtonStyle
+  customButtonStyle,
 }) => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Product[]>([])
@@ -57,7 +57,7 @@ const SearchProducts: React.FC<Props> = ({
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null)
 
   const activePage = currentPage ?? internalPage
-  const updatePage = setCurrentPage ?? setInternalPage 
+  const updatePage = setCurrentPage ?? setInternalPage
 
   // State for custom product form
   const [showCustomProductForm, setShowCustomProductForm] = useState(false)
@@ -76,7 +76,9 @@ const SearchProducts: React.FC<Props> = ({
     setSearched(true)
 
     try {
-      const response = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/search?name=${encodeURIComponent(query)}`)
+      const response = await apiFetch(
+        `${import.meta.env.VITE_API_BASE_URL}/products/search?name=${encodeURIComponent(query)}`,
+      )
       const data = await response.json()
       console.log('Fetched products:', data)
       setResults(data.data || []) // Ensure data is an array
@@ -95,25 +97,29 @@ const SearchProducts: React.FC<Props> = ({
   const handleAddCustomProduct = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/custom`, {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_name: customName || query,
-          brands: customBrand,
-          categories: customCategory,
-          image_url: customImageUrl || undefined
-        })
-      })
+      const res = await apiFetch(
+        `${import.meta.env.VITE_API_BASE_URL}/products/custom`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            product_name: customName || query,
+            brands: customBrand,
+            categories: customCategory,
+            image_url: customImageUrl || undefined,
+          }),
+        },
+      )
 
       if (res.ok) {
         const saved = await res.json()
         alert(`“${saved.product_name}” added to database!`)
 
         // Update the results with the new custom product
-        setResults(prev => [...prev, saved])
+        setResults((prev) => [...prev, saved])
 
         // Reset form
         setShowCustomProductForm(false)
@@ -129,7 +135,6 @@ const SearchProducts: React.FC<Props> = ({
       alert('Error adding product.')
     }
   }
-
 
   /**
    * Slices the results array based on the current page and maxResults.
@@ -153,7 +158,9 @@ const SearchProducts: React.FC<Props> = ({
       {!hideSearchButton && (
         <button
           onClick={handleSearch}
-          style={customButtonStyle || (minimalLayout ? undefined : styles.searchBtn)}
+          style={
+            customButtonStyle || (minimalLayout ? undefined : styles.searchBtn)
+          }
         >
           Search
         </button>
@@ -163,49 +170,73 @@ const SearchProducts: React.FC<Props> = ({
 
       {/* <ul style={minimalLayout ? undefined : styles.resultList}> */}
       <div style={minimalLayout ? undefined : styles.resultList}>
-        {sliceResults.map(product => (
-          <div key={product._id} style={minimalLayout ? styles.compactTextStyle : styles.productItem}>
-          {/* //<li key={product._id} style={minimalLayout ? styles.compactTextStyle : styles.productItem}> */}
+        {sliceResults.map((product) => (
+          <div
+            key={product._id}
+            style={minimalLayout ? styles.compactTextStyle : styles.productItem}
+          >
+            {/* //<li key={product._id} style={minimalLayout ? styles.compactTextStyle : styles.productItem}> */}
             <div style={styles.productInfo}>
               <div style={styles.productDetails}>
-              <div>
-                <strong>{product.product_name}</strong>
-              </div>
-              <div style={styles.inlineText}>
-                <em>Brand:</em> <span>{product.brands}</span>
-              </div>
-              <div style={styles.inlineText}>
-                <em>Source:</em> {product.source === 'custom' ? 'Your product' : 'Global'}
-              </div>
+                <div>
+                  <strong>{product.product_name}</strong>
+                </div>
+                <div style={styles.inlineText}>
+                  <em>Brand:</em> <span>{product.brands}</span>
+                </div>
+                <div style={styles.inlineText}>
+                  <em>Source:</em>{' '}
+                  {product.source === 'custom' ? 'Your product' : 'Global'}
+                </div>
                 {product.image_url && (
                   <img
                     src={product.image_url}
                     alt={product.product_name}
-                    style={minimalLayout ? styles.compactImageStyle : styles.productImage}
+                    style={
+                      minimalLayout
+                        ? styles.compactImageStyle
+                        : styles.productImage
+                    }
                     onClick={() => setEnlargedImage(product.image_url || null)}
                   />
                 )}
                 <br />
               </div>
               {enlargedImage && (
-                <div style={styles.overlay} onClick={() => setEnlargedImage(null)}>
-                  <div style={styles.closeButton} onClick={(e) => { e.stopPropagation(); setEnlargedImage(null); }}>
+                <div
+                  style={styles.overlay}
+                  onClick={() => setEnlargedImage(null)}
+                >
+                  <div
+                    style={styles.closeButton}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setEnlargedImage(null)
+                    }}
+                  >
                     <MdClose />
                   </div>
-                  <img src={enlargedImage} alt="Enlarged product" style={styles.enlargedImage} />
+                  <img
+                    src={enlargedImage}
+                    alt="Enlarged product"
+                    style={styles.enlargedImage}
+                  />
                 </div>
               )}
               {showSelectButton && (
-                <button onClick={() => onProductSelect(product)} style={styles.selectButton}>
+                <button
+                  onClick={() => onProductSelect(product)}
+                  style={styles.selectButton}
+                >
                   Select
                 </button>
               )}
             </div>
           </div>
-        // </li>
-      ))}
-    </div>
-    {/* </ul> */}
+          // </li>
+        ))}
+      </div>
+      {/* </ul> */}
 
       {/* <ul style={minimalLayout ? undefined : styles.resultList}>
         {(maxResults
@@ -236,16 +267,18 @@ const SearchProducts: React.FC<Props> = ({
       {maxResults && results.length > maxResults && (
         <div style={minimalLayout ? undefined : styles.paginationContainer}>
           <button
-           onClick={() => updatePage((prev: number) => Math.max(prev - 1, 0))}
+            onClick={() => updatePage((prev: number) => Math.max(prev - 1, 0))}
             disabled={activePage === 0}
             style={minimalLayout ? undefined : styles.paginationBtn}
           >
             <LuArrowBigLeft /> Prev
           </button>
           <button
-            onClick={() => updatePage((prev: number) =>
-              (prev + 1) * maxResults! < results.length ? prev + 1 : prev
-            )}
+            onClick={() =>
+              updatePage((prev: number) =>
+                (prev + 1) * maxResults! < results.length ? prev + 1 : prev,
+              )
+            }
             disabled={(activePage + 1) * maxResults >= results.length}
             style={minimalLayout ? undefined : styles.paginationBtn}
           >
@@ -254,17 +287,41 @@ const SearchProducts: React.FC<Props> = ({
         </div>
       )}
 
-       {!loading && searched && results.length === 0 && query.trim() && (
+      {!loading && searched && results.length === 0 && query.trim() && (
         <div style={minimalLayout ? undefined : styles.customProductBox}>
           <p>No product found. Add custom product:</p>
           {!showCustomProductForm ? (
-            <button onClick={() => setShowCustomProductForm(true)}>Add “{query}”</button>
+            <button onClick={() => setShowCustomProductForm(true)}>
+              Add “{query}”
+            </button>
           ) : (
             <div style={minimalLayout ? undefined : styles.customForm}>
-              <input placeholder="Name" value={customName} onChange={(e) => setCustomName(e.target.value)} style={minimalLayout ? undefined : styles.customInput} />
-              <input placeholder="Brand" value={customBrand} onChange={(e) => setCustomBrand(e.target.value)} style={minimalLayout ? undefined : styles.customInput} />
-              <input placeholder="Category" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} style={minimalLayout ? undefined : styles.customInput} />
-              <input placeholder="Image URL (optional)" value={customImageUrl} onChange={(e) => setCustomImageUrl(e.target.value)} style={minimalLayout ? styles.compactImageStyle : styles.customInput} />
+              <input
+                placeholder="Name"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                style={minimalLayout ? undefined : styles.customInput}
+              />
+              <input
+                placeholder="Brand"
+                value={customBrand}
+                onChange={(e) => setCustomBrand(e.target.value)}
+                style={minimalLayout ? undefined : styles.customInput}
+              />
+              <input
+                placeholder="Category"
+                value={customCategory}
+                onChange={(e) => setCustomCategory(e.target.value)}
+                style={minimalLayout ? undefined : styles.customInput}
+              />
+              <input
+                placeholder="Image URL (optional)"
+                value={customImageUrl}
+                onChange={(e) => setCustomImageUrl(e.target.value)}
+                style={
+                  minimalLayout ? styles.compactImageStyle : styles.customInput
+                }
+              />
               <button onClick={handleAddCustomProduct}>Submit Product</button>
             </div>
           )}
@@ -282,7 +339,7 @@ const styles = {
     alignItems: 'flex-start',
     // padding: '20px',
     // display: 'flex',
-    // flexDirection: 'row', 
+    // flexDirection: 'row',
     // justifyContent: 'center',
     // alignItems: 'center',
     // gap: '20px',
@@ -302,31 +359,30 @@ const styles = {
     maxWidth: '70%',
   },
   selectButton: {
-  backgroundColor: '#2f4f4f',
-  color: 'white',
-  border: 'none',
-  borderRadius: '6px',
-  padding: '8px 16px',
-  cursor: 'pointer',
-  fontWeight: 'bold',
+    backgroundColor: '#2f4f4f',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    padding: '8px 16px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
   },
   input: {
     padding: '0.5rem',
     width: '300px',
-    
   },
   searchBtn: {
     marginLeft: '1rem',
     marginTop: '1rem',
-    padding: '0.5rem 1rem'
+    padding: '0.5rem 1rem',
   },
   resultList: {
     listStyle: 'none',
     padding: '5px',
     marginTop: '1.5rem',
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
-    gap: '10px', 
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '10px',
     flex: 1,
     width: '100%',
   },
@@ -334,11 +390,11 @@ const styles = {
     marginBottom: '1rem',
     borderBottom: '1px solid #ccc',
     paddingBottom: '1rem',
-    color: '#2f4f4f'
+    color: '#2f4f4f',
   },
   productImage: {
     height: '80px',
-    marginTop: '0.5rem'
+    marginTop: '0.5rem',
   },
   paginationContainer: {
     marginTop: '10px',
@@ -348,16 +404,16 @@ const styles = {
     padding: '10px',
   },
   paginationBtn: {
-    backgroundColor: "#2f4f4f",
-    color: "white",
-    padding: "0.5rem 1rem",
-    fontWeight: "bold",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
+    backgroundColor: '#2f4f4f',
+    color: 'white',
+    padding: '0.5rem 1rem',
+    fontWeight: 'bold',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
     fontSize: '20px',
   },
   customProductBox: {
@@ -367,12 +423,12 @@ const styles = {
     fontSize: '1.2rem',
   },
   customForm: {
-    marginTop: '1rem'
+    marginTop: '1rem',
   },
   customInput: {
     display: 'block',
     marginBottom: '0.5rem',
-    padding: '0.3rem'
+    padding: '0.3rem',
   },
   compactImageStyle: {
     height: '60px',
@@ -422,8 +478,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '4px',
-  }
+  },
 } as const
-
 
 export default SearchProducts

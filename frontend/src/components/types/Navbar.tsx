@@ -1,6 +1,6 @@
 /**
  * The navbar component is a navigation bar that provides links to different pages of the application.
- * 
+ *
  * @component Navbar
  * @author Beatriz Sanssi
  */
@@ -29,14 +29,14 @@ export default function Navbar() {
   // }
 
   return (
-    <div style={styles.navbar}>    
-       <Link to="/" style={styles.link}>
+    <div style={styles.navbar}>
+      <Link to="/" style={styles.link}>
         <FaHome size={20} />
         <span style={styles.label}>Home</span>
       </Link>
       {isAuthenticated ? (
         <>
-         <Link to="/search" style={styles.link}>
+          <Link to="/search" style={styles.link}>
             <FaSearch size={20} />
             <span style={styles.label}>Search</span>
           </Link>
@@ -47,7 +47,7 @@ export default function Navbar() {
           <button onClick={logout} style={{ ...styles.link, ...styles.button }}>
             <IoLogOutOutline size={20} />
             <span style={styles.label}>Logout</span>
-          </button>        
+          </button>
         </>
       ) : (
         <>
@@ -67,36 +67,36 @@ export default function Navbar() {
 
 const styles = {
   navbar: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "30px",
-    padding: "0px",
-    position: "fixed",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '30px',
+    padding: '0px',
+    position: 'fixed',
     left: 0,
-    width: "100%",
-    backgroundColor: "#1e1e1e",
-    color: "#fff",
+    width: '100%',
+    backgroundColor: '#1e1e1e',
+    color: '#fff',
     zIndex: 1000,
-    borderBottom: "3px solid #444"
+    borderBottom: '3px solid #444',
   },
   link: {
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    textDecoration: "none",
-    color: "#fff",
-    fontSize: "14px"
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    textDecoration: 'none',
+    color: '#fff',
+    fontSize: '14px',
   },
   label: {
-    marginTop: "3px",
-    fontSize: "12px"
+    marginTop: '3px',
+    fontSize: '12px',
   },
   button: {
-    border: "none",
-    background: "none",
-    cursor: "pointer",
-    color: "white",
-    textDecoration: "underline"
+    border: 'none',
+    background: 'none',
+    cursor: 'pointer',
+    color: 'white',
+    textDecoration: 'underline',
   },
 } as const

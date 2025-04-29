@@ -1,21 +1,18 @@
 /**
  * This component allows users to search for products by name.
- * 
+ *
  * @component Search
  * @author Beatriz Sanssi
  */
 
 import SearchProducts from '../types/SearchProducts'
 
-
 export default function Search() {
-
-
   return (
     <div style={styles.page}>
       <div style={styles.card}>
         <h2 style={styles.heading}>Search for Products</h2>
-        <SearchProducts />
+        <SearchProducts onProductSelect={() => {}} />
       </div>
     </div>
   )

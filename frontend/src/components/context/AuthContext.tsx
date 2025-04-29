@@ -5,7 +5,13 @@
  * @author Beatriz Sanssi
  */
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 
 /**
@@ -65,9 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, loading, login, logout }}
-    >
+    <AuthContext.Provider value={{ isAuthenticated, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

@@ -36,7 +36,10 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<Search />} />
-            <Route path="/create-shopping-list" element={<CreateShoppingList />} />
+            <Route
+              path="/create-shopping-list"
+              element={<CreateShoppingList />}
+            />
             <Route path="/find-recipe" element={<FindRecipes />} />
             <Route path="/search-query" element={<SearchQuery />} />
           </Route>

@@ -1,6 +1,6 @@
 /**
  * This component is used to protect routes that should only be accessible to unauthenticated users.
- * 
+ *
  * @component PublicRoute
  * @author Beatriz Sanssi
  */

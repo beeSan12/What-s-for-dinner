@@ -2,7 +2,7 @@
  * This component is responsible for the registration page of the application.
  * It allows users to create a new account by providing their personal information.
  * After successful registration, users are redirected to the login page.
- * 
+ *
  * @component Register
  * @author Beatriz Sanssi
  */
@@ -11,39 +11,42 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Register() {
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState("")
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError("")
+    setError('')
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
+      setError('Passwords do not match')
       setLoading(false)
       return
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/user/register`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        },
+      )
 
       const data = await response.json()
 
       if (response.ok) {
-        navigate("/login")
+        navigate('/login')
       } else {
-        setError(data.message || "Registration failed")
+        setError(data.message || 'Registration failed')
       }
     } catch (err) {
       console.error('Registration error:', err)
@@ -62,41 +65,43 @@ export default function Register() {
           type="text"
           placeholder="First Name"
           value={firstName}
-          onChange={e => setFirstName(e.target.value)}
+          onChange={(e) => setFirstName(e.target.value)}
           required
         />
         <input
           type="text"
           placeholder="Last Name"
           value={lastName}
-          onChange={e => setLastName(e.target.value)}
+          onChange={(e) => setLastName(e.target.value)}
           required
         />
         <input
           type="email"
           placeholder="Email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
         <input
           type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
-          onChange={e => setConfirmPassword(e.target.value)}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
         <button type="submit" disabled={loading}>
-          {loading ? "Registering..." : "Register"}
+          {loading ? 'Registering...' : 'Register'}
         </button>
-        <p>Already have an account? <a href="/login">Login here</a></p>
+        <p>
+          Already have an account? <a href="/login">Login here</a>
+        </p>
       </form>
     </div>
   )

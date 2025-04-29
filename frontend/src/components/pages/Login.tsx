@@ -1,6 +1,6 @@
 /**
  * This component allows users to log in to the application.
- * 
+ *
  * @component LoginForm
  * @author Beatriz Sanssi
  */
@@ -16,7 +16,7 @@ import { useAuth } from '../context/AuthContext'
 const LoginForm = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState("")
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { login } = useAuth()
@@ -24,7 +24,7 @@ const LoginForm = () => {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (token) {
-      navigate('/')  // Redirect to home if already logged in
+      navigate('/') // Redirect to home if already logged in
     }
   }, [navigate])
 
@@ -33,17 +33,20 @@ const LoginForm = () => {
    * It sends a POST request to the backend API with the user's credentials.
    */
   const handleSubmit = async () => {
-    setLoading(true);
-    setError("");
+    setLoading(true)
+    setError('')
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/user/login`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        },
+      )
       const data = await response.json()
       if (response.ok) {
-        login(data.token) 
+        login(data.token)
         // localStorage.setItem('token', data.token)
         setError('')
         navigate('/', { replace: true })
@@ -66,13 +69,22 @@ const LoginForm = () => {
       <div style={styles.loginBox}>
         <h1 style={styles.heading}>Login</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" />
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" />
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+        />
         {loading && <p>Loading...</p>}
-  
+
         <button onClick={handleSubmit}>Login</button>
         <p style={styles.text}>
-          No Account?{" "}
+          No Account?{' '}
           <Link to="/register" style={styles.link}>
             Register here
           </Link>
@@ -85,16 +97,16 @@ const LoginForm = () => {
 const styles = {
   container: {
     display: 'flex',
-    flexDirection: 'row', 
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
-    backgroundColor: "#b0c4de",
+    backgroundColor: '#b0c4de',
     padding: '20px',
     boxSizing: 'border-box',
-    backgroundRepeat: "no-repeat",
-    width: "100vw",
-    gap: "20px",
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',
+    gap: '20px',
   },
   pictureDiv: {
     display: 'flex',
@@ -102,10 +114,10 @@ const styles = {
     alignItems: 'center',
   },
   image: {
-    position: "absolute",
-    left: "80px",
-    maxHeight: "60%",
-    zIndex: 1
+    position: 'absolute',
+    left: '80px',
+    maxHeight: '60%',
+    zIndex: 1,
   },
   // overlay: {
   //   position: "absolute",
@@ -132,24 +144,24 @@ const styles = {
     margin: '20px',
   },
   heading: {
-    color: "#333",
-    fontSize: "20px",
+    color: '#333',
+    fontSize: '20px',
   },
   button: {
-    width: "100%",
-    marginTop: "10px",
-    fontSize: "16px",
-    backgroundColor: "#b0c4de",
+    width: '100%',
+    marginTop: '10px',
+    fontSize: '16px',
+    backgroundColor: '#b0c4de',
   },
   text: {
-    marginTop: "10px",
-    fontSize: "14px",
-    color: "#696969",
-    fontWeight: "bold",
+    marginTop: '10px',
+    fontSize: '14px',
+    color: '#696969',
+    fontWeight: 'bold',
   },
   link: {
-    color: "#007bff",
-    textDecoration: "none",
+    color: '#007bff',
+    textDecoration: 'none',
   },
 } as const
 

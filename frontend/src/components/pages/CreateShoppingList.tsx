@@ -118,22 +118,23 @@ export default function CreateShoppingList() {
             name: listName,
             items: shoppingList,
             date: new Date().toISOString(),
-          })
-        })
-  
-        if (res.ok) {
-          alert('List saved successfully!')
-          setListName('')
-          setShoppingList([])
-          setSelectedProduct(null)
-        } else {
-          alert('Failed to save the list.')
-        }
-      } catch (error) {
-        console.error('Error saving list:', error)
-        alert('Error saving list.')
+          }),
+        },
+      )
+
+      if (res.ok) {
+        alert('List saved successfully!')
+        setListName('')
+        setShoppingList([])
+        setSelectedProduct(null)
+      } else {
+        alert('Failed to save the list.')
       }
+    } catch (error) {
+      console.error('Error saving list:', error)
+      alert('Error saving list.')
     }
+  }
 
   return (
     <div style={styles.container}>
@@ -159,56 +160,61 @@ export default function CreateShoppingList() {
           />
 
           {selectedProduct && (
-             <div style={styles.overlay} onClick={() => setSelectedProduct(null)}>
-             <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-               <button
-                 onClick={() => setSelectedProduct(null)}
-                 style={styles.closeButton}
-               >
-                 <MdClose />
-               </button>
-               <h2 style={styles.modalTitle}>{selectedProduct.product_name}</h2>
-               <input
-                 type="number"
-                 min="1"
-                 value={quantity}
-                 onChange={(e) => setQuantity(Number(e.target.value))}
-                 placeholder="Quantity"
-                 style={styles.input}
-               />
-               <select
-                 value={unit}
-                 onChange={(e) => setUnit(e.target.value)}
-                 style={styles.input}
-               >
-                 <option value="st">st</option>
-                 <option value="g">g</option>
-                 <option value="kg">kg</option>
-                 <option value="ml">ml</option>
-                 <option value="l">l</option>
-               </select>
-               <button
-                 onClick={() => {
-                   handleAddProduct()
-                   setSelectedProduct(null) // Stäng efter att ha lagt till
-                 }}
-                 style={styles.button}
-               >
-                 Add to list
-               </button>
-             </div>
-           </div>
-         )}
+            <div
+              style={styles.overlay}
+              onClick={() => setSelectedProduct(null)}
+            >
+              <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => setSelectedProduct(null)}
+                  style={styles.closeButton}
+                >
+                  <MdClose />
+                </button>
+                <h2 style={styles.modalTitle}>
+                  {selectedProduct.product_name}
+                </h2>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  placeholder="Quantity"
+                  style={styles.input}
+                />
+                <select
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                  style={styles.input}
+                >
+                  <option value="st">st</option>
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="l">l</option>
+                </select>
+                <button
+                  onClick={() => {
+                    handleAddProduct()
+                    setSelectedProduct(null) // Stäng efter att ha lagt till
+                  }}
+                  style={styles.button}
+                >
+                  Add to list
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div style={styles.rightColumn}>
-        {editingName ? (
+          {editingName ? (
             <div style={styles.nameInputContainer}>
               <input
                 type="text"
                 placeholder="Name your list"
                 value={listName}
-                onChange={e => setListName(e.target.value)}
+                onChange={(e) => setListName(e.target.value)}
                 style={styles.input}
               />
               <button
@@ -239,16 +245,17 @@ export default function CreateShoppingList() {
           <div style={styles.shoppingList}>
             {paginatedItems.map((item) => (
               <div key={item._id} style={styles.cardRow}>
-              <div style={styles.itemInfo}>
-                <strong>{item.product_name}</strong> — {item.quantity} {item.unit}
+                <div style={styles.itemInfo}>
+                  <strong>{item.product_name}</strong> — {item.quantity}{' '}
+                  {item.unit}
+                </div>
+                <button
+                  onClick={() => handleRemoveProduct(item._id)}
+                  style={styles.removeBtn}
+                >
+                  Remove
+                </button>
               </div>
-              <button
-                onClick={() => handleRemoveProduct(item._id)}
-                style={styles.removeBtn}
-              >
-                Remove
-              </button>
-            </div>
             ))}
           </div>
 
@@ -353,7 +360,7 @@ const styles = {
     alignItems: 'center',
     marginBottom: 10,
   },
-  listNameHeading: { 
+  listNameHeading: {
     color: '#2f4f4f',
     alignConten: 'center',
     justifyContent: 'center',
