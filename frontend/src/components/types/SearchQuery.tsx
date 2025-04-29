@@ -10,9 +10,8 @@ import { apiFetch } from '../../utils/apiFetch'
 
 interface EmbeddingMatch {
   id: string
-  metadata: {
-    text: string
-  }
+  text: string
+  score: number
 }
 
 /**
@@ -47,7 +46,7 @@ export default function SearchQuery() {
 
       <ul>
         {results.map((match) => (
-          <li key={match.id}>{match.metadata?.text}</li>
+          <li key={match.id}>{match.text}</li>
         ))}
       </ul>
     </div>

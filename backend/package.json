@@ -9,6 +9,7 @@
     "lint": "npx eslint ./src || exit 0",
     "lint:fix": "npx eslint ./src --fix || exit 0",
     "seed": "node seed.js",
+    "seed-embeddings": "node seedEmbeddings.js",
     "start": "node src/server.js",
     "dev": "nodemon --inspect --env-file=.env src/server.js"
   },
@@ -40,5 +41,10 @@
     "openai": "^4.96.0",
     "reflect-metadata": "^0.2.2",
     "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@lnu/eslint-config": "^1.1.10",
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.31.0"
   }
 }

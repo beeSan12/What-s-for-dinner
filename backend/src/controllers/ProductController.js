@@ -36,7 +36,7 @@ export class ProductController {
     this.#userProductService = userProductService
   }
 
-   /**
+  /**
    * Provide req.doc to the route if :id is present.
    *
    * @param {object} req - Express request object.
@@ -44,7 +44,7 @@ export class ProductController {
    * @param {Function} next - Express next middleware function.
    * @param {string} id - The value of the id for the product to load.
    */
-   async loadProductDocument (req, res, next, id) {
+  async loadProductDocument (req, res, next, id) {
     try {
       req.doc = await this.#service.getById(id)
       next()
@@ -108,12 +108,12 @@ export class ProductController {
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
    */
-  async search(req, res, next) {
+  async search (req, res, next) {
     try {
       const name = req.query.name?.toString() || ''
       const userId = req.user?.id
       logger.info(`🔍 Searching for: ${name}, userId: ${userId}`)
-  
+
       // Search for products by name.
       // If userId is provided, search for products by name and userId.
       console.log('🔎 Calling global search...')
@@ -122,17 +122,17 @@ export class ProductController {
       })).data
       console.log('🔎 Calling user search...')
       const userProducts = userId
-      ? (await this.#userProductService.search({
-          filter: { product_name: new RegExp(name, 'i'), userId }
-        })).data
-      : []
-  
+        ? (await this.#userProductService.search({
+            filter: { product_name: new RegExp(name, 'i'), userId }
+          })).data
+        : []
+
       // Combine the results.
       const results = [
         ...globalProducts.map(p => ({ ...p.toObject?.() || p, source: 'global' })),
         ...userProducts.map(p => ({ ...p.toObject?.() || p, source: 'custom' }))
       ]
-  
+
       res.json({ data: results })
     } catch (error) {
       next(convertToHttpError(error))
@@ -147,7 +147,7 @@ export class ProductController {
    * @param {Function} next - Express next middleware function.
    * @returns {Promise<void>} - A promise that resolves when the response is sent.
    */
-  async createCustom(req, res, next) {
+  async createCustom (req, res, next) {
     try {
       const productData = req.body
       const saved = await this.#service.insert(productData)
@@ -156,7 +156,6 @@ export class ProductController {
       next(err)
     }
   }
-
 
   /**
    * Sets the pagination headers.
@@ -197,15 +196,13 @@ export class ProductController {
     res.set('Link', linkHeader)
   }
 
-
-
-// /**
-//  * Controller for handling product-related requests.
-//  */
-// export class ProductController {
-//   constructor(productService) {
-//     this.productService = productService
-//   }
+  // /**
+  //  * Controller for handling product-related requests.
+  //  */
+  // export class ProductController {
+  //   constructor(productService) {
+  //     this.productService = productService
+  //   }
 
   // /**
   //  * Fetches all products.

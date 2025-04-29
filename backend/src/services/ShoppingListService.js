@@ -2,7 +2,7 @@
  * @file This file contains the ShoppingListService class
  * @module ShoppingListService
  * @author Beatriz Sanssi
-*/
+ */
 
 // Application modules.
 import { MongooseServiceBase } from './MongooseServiceBase.js'
@@ -16,8 +16,9 @@ export class ShoppingListService extends MongooseServiceBase {
    *
    * @param {string} listId - The ID of the shopping list.
    * @param {object} product - The product to add.
+   * @returns {Promise<object>} The updated shopping list.
    */
-  async addProductToList(listId, product) {
+  async addProductToList (listId, product) {
     const list = await this.getById(listId)
     list.products.push(product)
     return await list.save()
@@ -30,7 +31,7 @@ export class ShoppingListService extends MongooseServiceBase {
    * @param {object} productData - The data for the custom product.
    * @returns {Promise<object>} The updated shopping list.
    */
-  async createCustomProductAndAdd(listId, productData) {
+  async createCustomProductAndAdd (listId, productData) {
     const newProduct = await this.repository.model.db.model('Product').create(productData)
     return this.addProductToList(listId, { productId: newProduct._id, customName: productData.product_name })
   }
@@ -41,7 +42,7 @@ export class ShoppingListService extends MongooseServiceBase {
    * @param {string} name - The name to search for.
    * @returns {Promise<object[]>} A list of matching products.
    */
-  async searchProductsByName(name) {
+  async searchProductsByName (name) {
     return this.repository.model.db.model('Product').find({ product_name: new RegExp(name, 'i') })
   }
 
@@ -50,20 +51,21 @@ export class ShoppingListService extends MongooseServiceBase {
    *
    * @param {string} name - The name of the shopping list.
    * @param {string} userId - The ID of the user who owns the list.
+   * @param {Array<object>} items - The items to include in the list.
    * @returns {Promise<object>} The created shopping list.
    */
-  async createList(name, userId, items) {
+  async createList (name, userId, items) {
     const formattedProducts = items.map(item => ({
       productId: item._id,
       quantity: `${item.quantity} ${item.unit}`
     }))
-  
+
     const newList = await this.insert({
       name,
       userId,
       products: formattedProducts
     })
-  
+
     return newList
   }
 }

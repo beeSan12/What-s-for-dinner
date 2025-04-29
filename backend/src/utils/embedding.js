@@ -2,7 +2,7 @@
  * This file creates an embedding for a given text using the Hugging Face API.
  *
  * @module embedding
- * @author Beatriz Sanssi 
+ * @author Beatriz Sanssi
  */
 
 import OpenAI from 'openai'
@@ -18,7 +18,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
  * @returns {Promise<Array<number>>} - A promise that resolves to the embedding array.
  * @throws {Error} - If the OpenAI API request fails.
  */
-export async function createEmbedding(text) {
+export async function createEmbedding (text) {
   const res = await openai.embeddings.create({
     model: 'text-embedding-ada-002',
     input: text

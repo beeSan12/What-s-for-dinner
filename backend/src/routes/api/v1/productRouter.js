@@ -12,7 +12,6 @@ import { container, PRODUCTTYPES } from '../../../config/inversify.config.js'
 // import { TYPES } from '../../../config/types.js'
 
 export const router = express.Router()
-
 dotenv.config()
 
 // const productController = container.get(TYPES.ProductController)
@@ -50,5 +49,5 @@ router.route('/:id')
 // POST /products/custom — add a custom product
 router.route('/custom')
   .post(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).createCustom(req, res, next))
-  
+
 export { router as productRouter }

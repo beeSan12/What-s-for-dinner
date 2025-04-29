@@ -39,7 +39,7 @@ export class UserProductController {
    * @param {Function} next - Express next middleware function.
    * @param {string} id - The value of the id for the product to load.
    */
-    async loadProductDocument (req, res, next, id) {
+  async loadProductDocument (req, res, next, id) {
     try {
       req.doc = await this.#service.getById(id)
       next()
@@ -48,7 +48,7 @@ export class UserProductController {
     }
   }
 
-   /**
+  /**
    * Sends a JSON response containing a product.
    *
    * @param {string} userId - The ID of the user.
@@ -56,7 +56,7 @@ export class UserProductController {
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
    */
-   async find (userId, req, res, next) {
+  async find (userId, req, res, next) {
     try {
       res.json(req.doc)
     } catch (error) {
@@ -72,9 +72,9 @@ export class UserProductController {
    * @param {Function} next - Express next middleware function.
    * @returns {Promise<void>} - A promise that resolves when the response is sent.
    */
-  async createCustom(req, res, next) {
+  async createCustom (req, res, next) {
     try {
-      const userId = req.user.id
+      // const userId = req.user.id
       const productData = req.body
       const saved = await this.#service.insert(productData)
       res.status(201).json(saved)
@@ -91,7 +91,7 @@ export class UserProductController {
    * @param {Function} next - Express next middleware function.
    * @returns {Promise<void>} - A promise that resolves when the response is sent.
    */
-  async update(req, res, next) {
+  async update (req, res, next) {
     try {
       const { id } = req.params
       const userId = req.user.id
@@ -111,7 +111,7 @@ export class UserProductController {
    * @param {Function} next - Express next middleware function.
    * @returns {Promise<void>} - A promise that resolves when the response is sent.
    */
-  async remove(req, res, next) {
+  async remove (req, res, next) {
     try {
       const { id } = req.params
       const userId = req.user.id
@@ -129,7 +129,7 @@ export class UserProductController {
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
    */
-  async findAll(req, res, next) {
+  async findAll (req, res, next) {
     try {
       const userId = req.user.id
       const nameFilter = req.query.name?.toString() || undefined

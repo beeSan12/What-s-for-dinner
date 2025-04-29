@@ -13,6 +13,7 @@ import { router as userRouter } from './userRouter.js'
 import { router as shoppingListRouter } from './shoppingListRouter.js'
 import { router as userProductRouter } from './userProductRouter.js'
 import { router as embeddingRouter } from './embeddingRouter.js'
+import { router as recipeRouter } from './recipeRouter.js'
 
 export const router = express.Router()
 
@@ -22,3 +23,4 @@ router.use('/user', userRouter)
 router.use('/shoppinglist', shoppingListRouter)
 router.use('/userproducts', userProductRouter)
 router.use('/embeddings', embeddingRouter)
+router.use('/recipes', recipeRouter)

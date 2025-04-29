@@ -9,6 +9,7 @@ import mongoose from 'mongoose'
 const schema = new mongoose.Schema({
   productId: String,
   text: String,
+  metadata: Object,
   embedding: [Number]
 })
 

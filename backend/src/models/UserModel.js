@@ -5,7 +5,6 @@
  * @version 1.0.0
  */
 
-import bcrypt from 'bcryptjs'
 import mongoose from 'mongoose'
 
 // Create a schema.

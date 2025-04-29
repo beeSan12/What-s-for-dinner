@@ -36,7 +36,7 @@ export class UserController {
    * @param {Function} next - Express next middleware function.
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    */
-  async register(req, res, next) {
+  async register (req, res, next) {
     const result = await this.#service.register(req.body)
     res.json(result)
   }
@@ -49,7 +49,7 @@ export class UserController {
    * @param {Function} next - Express next middleware function.
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    */
-  async login(req, res, next) {
+  async login (req, res, next) {
     const result = await this.#service.login(req.body)
     res.json(result)
   }

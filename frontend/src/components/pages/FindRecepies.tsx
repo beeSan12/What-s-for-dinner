@@ -16,8 +16,12 @@ interface Product {
 
 interface EmbeddingMatch extends Product {
   id: string
+  score: number
   metadata: {
-    text: string
+    product_name: string
+    brands?: string
+    image_url?: string
+    categories?: string[]
   }
 }
 
@@ -56,6 +60,10 @@ export default function FindRecipes() {
     setResults(data)
   }
 
+  const handleGenerateRecipe = (id: string) => {
+    console.log('Generate recipe for product ID:', id)
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
@@ -70,9 +78,33 @@ export default function FindRecipes() {
             hideSearchButton={true}
         />
         <button style={styles.button} onClick={searchBasedOnProducts}>Find Recipes</button>
-        <ul>
-          {results.map((match) => (
-            <li key={match.id}>{match.metadata?.text}</li>
+        <ul style={styles.grid}>
+          {results.map(hit => (
+            <li key={hit.id} style={styles.card}>
+              {hit.metadata.image_url && (
+                <img
+                  src={hit.metadata.image_url}
+                  alt={hit.metadata.product_name}
+                  style={styles.image}
+                />
+              )}
+              <h3 style={styles.title}>{hit.metadata.product_name}</h3>
+              {hit.metadata.brands && (
+                <p style={styles.subtitle}>{hit.metadata.brands}</p>
+              )}
+              {hit.metadata.categories && (
+                <p style={styles.categories}>
+                  ⚬ {hit.metadata.categories.join(', ')}
+                </p>
+              )}
+              <p style={styles.score}>Score: {hit.score.toFixed(3)}</p>
+              <button
+                style={styles.recipeButton}
+                onClick={() => handleGenerateRecipe(hit.id)}
+              >
+                Generera recept
+              </button>
+            </li>
           ))}
         </ul>
       </div>
@@ -144,5 +176,56 @@ const styles = {
     color: 'white',
     borderRadius: '6px',
     border: 'none',
+  },
+  listItem: {
+    color: '#2f4f4f',
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+    gap: '16px',
+    listStyleType: 'none',
+    padding: 0,
+    margin: 0
+  },
+  card: {
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    padding: '12px',
+    background: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px'
+  },
+  image: {
+    width: '100%',
+    borderRadius: '4px',
+    objectFit: 'cover'
+  },
+  title: {
+    margin: 0,
+    fontSize: '1.1rem'
+  },
+  subtitle: {
+    margin: 0,
+    fontStyle: 'italic',
+    color: '#555'
+  },
+  categories: {
+    margin: 0,
+    fontSize: '0.9rem',
+    color: '#666'
+  },
+  score: {
+    fontSize: '0.8rem',
+    color: '#666'
+  },
+  recipeButton: {
+    padding: '8px',
+    border: 'none',
+    borderRadius: '4px',
+    backgroundColor: '#2f4f4f',
+    color: '#fff',
+    cursor: 'pointer'
   },
 } as const
