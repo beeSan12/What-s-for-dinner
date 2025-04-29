@@ -51,12 +51,10 @@ export class RecipeController {
     try {
       const { hitIds, prompt } = req.body
       // Get metadata for the products
-      const result = await this.#embeddingService.search({
-        filter: { productId: { $in: hitIds } },
-        perPage: 1000
-      })
+      const result = await this.#embeddingService.findEmbeddingsByProductIds(hitIds, prompt)
+
       // Check if any products were found
-      const context = result.data.map(d =>
+      const context = result.map(d =>
         `• ${d.metadata.product_name}: ${d.text}`
       ).join('\n')
 

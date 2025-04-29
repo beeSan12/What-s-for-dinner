@@ -16,9 +16,24 @@ import { createEmbedding } from '../utils/embedding.js'
  * @returns {number} - The cosine similarity between the two vectors.
  */
 function cosineSimilarity (a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b)) {
+    console.error('cosineSimilarity: One or both vectors are not arrays', a, b)
+    return null
+  }
+  if (a.length !== b.length || a.length === 0) {
+    console.error('cosineSimilarity: Vectors have different lengths or are empty', a, b)
+    return null
+  }
+
   const dot = a.reduce((sum, val, i) => sum + val * b[i], 0)
   const normA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0))
   const normB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0))
+
+  if (normA === 0 || normB === 0) {
+    console.error('cosineSimilarity: Zero norm detected', normA, normB)
+    return null
+  }
+
   return dot / (normA * normB)
 }
 
@@ -37,13 +52,42 @@ export class EmbeddingService extends MongooseServiceBase {
 
     const result = await this.get({ perPage: 1000 }) // Hämta många embeddings
     const allDocs = result.data
+    const scored = allDocs.map(doc => {
+      console.log('→ doc.embedding =', doc.embedding)
+      return {
+        id: doc.productId,
+        text: doc.text,
+        score: cosineSimilarity(queryEmbedding, doc.embedding),
+        metadata: doc.metadata || {}
+      }
+    })
+
+    return scored.sort((a, b) => b.score - a.score).slice(0, 5)
+  }
+
+  /**
+   * Finds embeddings by a list of productIds and computes their score based on a query.
+   *
+   * @param {Array<string>} productIds - List of product IDs.
+   * @param {string} query - User's additional prompt (optional).
+   * @returns {Promise<Array>} - List of matched embeddings with a similarity score.
+   */
+  async findEmbeddingsByProductIds (productIds, query) {
+    const queryEmbedding = await createEmbedding(query || '')
+
+    const result = await this.search({
+      filter: { productId: { $in: productIds } },
+      perPage: 1000
+    })
+    const allDocs = result.data
 
     const scored = allDocs.map(doc => ({
       id: doc.productId,
       text: doc.text,
-      score: cosineSimilarity(queryEmbedding, doc.embedding)
+      score: cosineSimilarity(queryEmbedding, doc.embedding),
+      metadata: doc.metadata || {}
     }))
 
-    return scored.sort((a, b) => b.score - a.score).slice(0, 5)
+    return scored
   }
 }
