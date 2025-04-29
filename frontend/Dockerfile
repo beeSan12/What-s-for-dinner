@@ -2,6 +2,9 @@
 FROM node:20
 
 WORKDIR /app
+
+COPY ./frontend/.env .env
+
 COPY . .
 
 RUN npm install && npm run build && npm install -g serve
