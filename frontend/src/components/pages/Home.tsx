@@ -11,7 +11,7 @@ import { MdFoodBank } from 'react-icons/md'
 import { TbWorldQuestion } from 'react-icons/tb'
 import { ImSearch } from 'react-icons/im'
 import pizza from '../../images/pizza.jpg'
-import Header from '../../images/header.png'
+import Header from '../../images/Header.png'
 
 const Home: React.FC = () => {
   return (
