@@ -3,7 +3,7 @@ FROM node:20
 
 WORKDIR /app
 
-COPY .env .
+COPY .env .env
 
 COPY . .
 
