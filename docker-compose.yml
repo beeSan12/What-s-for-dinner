@@ -16,6 +16,10 @@ services:
       - "8083:8083"
     env_file:
       - ./backend/.env
+    environment:
+      - DB_CONNECTION_STRING=mongodb://root:secret@mongo:27017/wt2?authSource=admin
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
     volumes:
       - ./data:/app/data 
     depends_on:
