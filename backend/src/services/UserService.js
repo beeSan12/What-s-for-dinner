@@ -39,7 +39,12 @@ export class UserService extends MongooseServiceBase {
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10)
     const hashedPassword = await bcrypt.hash(password, saltRounds)
 
-    const insertedUser = await this.insert({ email, password: hashedPassword })
+    const insertedUser = await this.insert({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword
+    })
     return insertedUser
   }
 

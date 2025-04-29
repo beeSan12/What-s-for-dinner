@@ -9,6 +9,16 @@ import mongoose from 'mongoose'
 
 // Create a schema.
 const schema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: [true, 'First name is required.'],
+    trim: true
+  },
+  lastName: {
+    type: String,
+    required: [true, 'Last name is required.'],
+    trim: true
+  },
   email: {
     type: String,
     required: [true, 'Email address is required.'],
