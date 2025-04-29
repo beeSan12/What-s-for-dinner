@@ -1,6 +1,5 @@
 /**
- * This file creates an embedding for a given text using OpenAI's API.
- * It uses the OpenAI API client to send a request to the `text-embedding-ada-002` model.
+ * This file creates an embedding for a given text using the Hugging Face API.
  *
  * @module embedding
  * @author Beatriz Sanssi 
@@ -8,26 +7,21 @@
 
 import OpenAI from 'openai'
 import dotenv from 'dotenv'
-
 dotenv.config()
 
-// Load environment variables from .env file
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 /**
- * Creates an embedding for the given text using OpenAI's API.
+ * Creates an embedding for a given text using the OpenAI API.
  *
  * @param {string} text - The text to create an embedding for.
- * @returns {Promise<Array<number>>} - The embedding vector.
- * @throws {Error} - If the API request fails.
+ * @returns {Promise<Array<number>>} - A promise that resolves to the embedding array.
+ * @throws {Error} - If the OpenAI API request fails.
  */
 export async function createEmbedding(text) {
-  const response = await openai.createEmbedding({
+  const res = await openai.embeddings.create({
     model: 'text-embedding-ada-002',
-    input: text,
+    input: text
   })
-
-  return response.data.data[0].embedding
+  return res.data[0].embedding
 }

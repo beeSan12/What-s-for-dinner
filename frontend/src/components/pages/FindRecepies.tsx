@@ -38,7 +38,6 @@ export default function FindRecipes() {
    */
   const handleProductSelect = (product: { product_name: string }) => {
     setSelectedProducts(prev => [...prev, product.product_name])
-
   }
 
   /**
@@ -67,7 +66,6 @@ export default function FindRecipes() {
             onProductSelect={handleProductSelect}
             minimalLayout={true}
             customInputStyle={styles.searchInput}
-            customButtonStyle={styles.searchButton}
             showSelectButton={false}
             hideSearchButton={true}
         />
