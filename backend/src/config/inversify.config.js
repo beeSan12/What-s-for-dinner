@@ -28,6 +28,7 @@ import { UserProductRepository } from '../repositories/UserProductRepository.js'
 import { UserProductService } from '../services/UserProductService.js'
 import { UserProductController } from '../controllers/UserProductController.js'
 // Embedding modules
+import { EmbeddingModel } from '../models/EmbeddingModel.js'
 import { EmbeddingController } from '../controllers/EmbeddingController.js'
 
 /**
@@ -62,7 +63,8 @@ export const USERPRODUCTTYPES = {
 }
 
 export const EMBEDDINGTYPES = {
-  EmbeddingController: Symbol.for('EmbeddingController')
+  EmbeddingController: Symbol.for('EmbeddingController'),
+  EmbeddingModel: Symbol.for('EmbeddingModel')
 }
 
 /**
@@ -139,3 +141,4 @@ container.bind(USERPRODUCTTYPES.UserProductModel).toConstantValue(UserProductMod
 
 // Embedding bindings
 container.bind(EMBEDDINGTYPES.EmbeddingController).to(EmbeddingController).inSingletonScope()
+container.bind(EMBEDDINGTYPES.EmbeddingModel).toConstantValue(EmbeddingModel)
