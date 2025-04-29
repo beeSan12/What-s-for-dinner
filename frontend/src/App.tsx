@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Search from './components/pages/Search'
 import CreateShoppingList from './components/pages/CreateShoppingList'
 import FindRecipes from './components/pages/FindRecepies'
@@ -12,11 +12,19 @@ import Navbar from './components/types/Navbar'
 import { AuthProvider } from './components/context/AuthContext'
 
 function App() {
+  const isLoggedIn = localStorage.getItem('authToken') !== null
+
   return (
     <Router>
       <AuthProvider>
         <Navbar />
         <Routes>
+         <Route
+            path="/"
+            element={
+              isLoggedIn ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
+            }
+          />
           <Route
             path="/login"
             element={

@@ -7,8 +7,9 @@
  * @author Beatriz Sanssi
  */
 
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import imageWoman from '../../images/woman-shopping.png'
 
 export default function Register() {
   const [firstName, setFirstName] = useState('')
@@ -19,6 +20,11 @@ export default function Register() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) navigate('/')
+  }, [navigate])
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,51 +64,59 @@ export default function Register() {
 
   return (
     <div style={styles.container}>
-      <form onSubmit={handleRegister} style={styles.form}>
-        <h2>Register</h2>
+      <div style={styles.pictureDiv}>
+        <img src={imageWoman} alt="Shopping woman" style={styles.image} />
+      </div>
+      <div style={styles.loginBox}>
+        <h1 style={styles.heading}>Register</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <input
-          type="text"
-          placeholder="First Name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Last Name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-        <p>
-          Already have an account? <a href="/login">Login here</a>
+        <form onSubmit={handleRegister}>
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+          <button type="submit" style={styles.button} disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+        <p style={styles.text}>
+          Already have an account?{' '}
+          <Link to="/login" style={styles.link}>
+            Login here
+          </Link>
         </p>
-      </form>
+      </div>
     </div>
   )
 }
@@ -110,19 +124,61 @@ export default function Register() {
 const styles = {
   container: {
     display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#b0c4de',
+    padding: '20px',
+    boxSizing: 'border-box',
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',
+    gap: '20px',
   },
-  form: {
+  pictureDiv: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    padding: '2rem',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    width: '300px',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  image: {
+    position: 'absolute',
+    left: '80px',
+    maxHeight: '60%',
+    zIndex: 1,
+  },
+  loginBox: {
+    width: '90%',
+    maxWidth: '350px',
+    borderRadius: '10px',
+    position: 'relative',
+    justifyContent: 'space-between',
+    zIndex: 2,
+    background: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#f0f0f0',
+    opacity: 0.9,
+    padding: '30px',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+    textAlign: 'center',
+    margin: '20px',
+  },
+  heading: {
+    color: '#333',
+    fontSize: '20px',
+  },
+  button: {
+    width: '100%',
+    marginTop: '10px',
+    fontSize: '16px',
+    backgroundColor: '#b0c4de',
+  },
+  text: {
+    marginTop: '10px',
+    fontSize: '14px',
+    color: '#696969',
+    fontWeight: 'bold',
+  },
+  link: {
+    color: '#007bff',
+    textDecoration: 'none',
   },
 } as const
