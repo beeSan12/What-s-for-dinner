@@ -15,13 +15,13 @@ dotenv.config()
 
 // POST /embeddings/save
 router.route('/save')
-  .post(authenticate, (req, res, next) => 
+  .post(authenticate, (req, res, next) =>
     container.get(EMBEDDINGTYPES.EmbeddingController).saveEmbedding(req, res, next)
   )
 
 // POST /embeddings/search
 router.route('/search')
-  .post(authenticate, (req, res, next) => 
+  .post(authenticate, (req, res, next) =>
     container.get(EMBEDDINGTYPES.EmbeddingController).searchEmbedding(req, res, next)
   )
 

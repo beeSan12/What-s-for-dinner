@@ -5,9 +5,9 @@
  * @see {@link https://github.com/expressjs/session}
  */
 
+import crypto from 'crypto'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
-import crypto from 'crypto'
 import dotenv from 'dotenv'
 
 dotenv.config()

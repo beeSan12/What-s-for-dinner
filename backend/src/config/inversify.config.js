@@ -30,6 +30,13 @@ import { UserProductController } from '../controllers/UserProductController.js'
 // Embedding modules
 import { EmbeddingModel } from '../models/EmbeddingModel.js'
 import { EmbeddingController } from '../controllers/EmbeddingController.js'
+import { EmbeddingRepository } from '../repositories/EmbeddingRepository.js'
+import { EmbeddingService } from '../services/EmbeddingService.js'
+// Recipe modules
+import { RecipeController } from '../controllers/RecipeController.js'
+import { RecipeModel } from '../models/RecipeModel.js'
+import { RecipeRepository } from '../repositories/RecipeRepository.js'
+import { RecipeService } from '../services/RecipeService.js'
 
 /**
  * The TYPES object contains the identifiers for the dependencies in the application.
@@ -64,7 +71,16 @@ export const USERPRODUCTTYPES = {
 
 export const EMBEDDINGTYPES = {
   EmbeddingController: Symbol.for('EmbeddingController'),
-  EmbeddingModel: Symbol.for('EmbeddingModel')
+  EmbeddingModel: Symbol.for('EmbeddingModel'),
+  EmbeddingRepository: Symbol.for('EmbeddingRepository'),
+  EmbeddingService: Symbol.for('EmbeddingService')
+}
+
+export const RECIPETYPES = {
+  RecipeController: Symbol.for('RecipeController'),
+  RecipeModel: Symbol.for('RecipeModel'),
+  RecipeRepository: Symbol.for('RecipeRepository'),
+  RecipeService: Symbol.for('RecipeService')
 }
 
 /**
@@ -86,9 +102,9 @@ decorate(injectable(), UserRepository)
 decorate(injectable(), UserService)
 decorate(injectable(), UserController)
 
-decorate (inject(USERTYPES.UserModel), UserRepository, 0)
-decorate (inject(USERTYPES.UserRepository), UserService, 0)
-decorate (inject(USERTYPES.UserService), UserController, 0)
+decorate(inject(USERTYPES.UserModel), UserRepository, 0)
+decorate(inject(USERTYPES.UserRepository), UserService, 0)
+decorate(inject(USERTYPES.UserService), UserController, 0)
 
 // Decorate Shopping List classes
 decorate(injectable(), ShoppingListRepository)
@@ -107,6 +123,25 @@ decorate(injectable(), UserProductController)
 decorate(inject(USERPRODUCTTYPES.UserProductModel), UserProductRepository, 0)
 decorate(inject(USERPRODUCTTYPES.UserProductRepository), UserProductService, 0)
 decorate(inject(USERPRODUCTTYPES.UserProductService), UserProductController, 0)
+
+// Decorate Embedding classes
+decorate(injectable(), EmbeddingRepository)
+decorate(injectable(), EmbeddingService)
+decorate(injectable(), EmbeddingController)
+
+decorate(inject(EMBEDDINGTYPES.EmbeddingModel), EmbeddingRepository, 0)
+decorate(inject(EMBEDDINGTYPES.EmbeddingRepository), EmbeddingService, 0)
+decorate(inject(EMBEDDINGTYPES.EmbeddingService), EmbeddingController, 0)
+
+// Decorate Recipe classes
+decorate(injectable(), RecipeRepository)
+decorate(injectable(), RecipeService)
+decorate(injectable(), RecipeController)
+
+decorate(inject(RECIPETYPES.RecipeModel), RecipeRepository, 0)
+decorate(inject(RECIPETYPES.RecipeRepository), RecipeService, 0)
+decorate(inject(RECIPETYPES.RecipeService), RecipeController, 0)
+decorate(inject(EMBEDDINGTYPES.EmbeddingService), RecipeController, 1)
 
 export const container = new Container()
 
@@ -142,3 +177,11 @@ container.bind(USERPRODUCTTYPES.UserProductModel).toConstantValue(UserProductMod
 // Embedding bindings
 container.bind(EMBEDDINGTYPES.EmbeddingController).to(EmbeddingController).inSingletonScope()
 container.bind(EMBEDDINGTYPES.EmbeddingModel).toConstantValue(EmbeddingModel)
+container.bind(EMBEDDINGTYPES.EmbeddingRepository).to(EmbeddingRepository).inSingletonScope()
+container.bind(EMBEDDINGTYPES.EmbeddingService).to(EmbeddingService).inSingletonScope()
+
+// Recipe bindings
+container.bind(RECIPETYPES.RecipeController).to(RecipeController).inSingletonScope()
+container.bind(RECIPETYPES.RecipeModel).toConstantValue(RecipeModel)
+container.bind(RECIPETYPES.RecipeRepository).to(RecipeRepository).inSingletonScope()
+container.bind(RECIPETYPES.RecipeService).to(RecipeService).inSingletonScope()

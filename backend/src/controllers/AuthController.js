@@ -4,11 +4,11 @@
  * @author Beatriz Sanssi <bs222eh@student.lnu.se>
  */
 
-import { UserModel } from '../../models/UserModel.js'
-import { userController } from './UserController.js'
 import jwt from 'jsonwebtoken'
-import { UnauthorizedError, NotFoundError } from '../lib/errors/index.js'
 import dotenv from 'dotenv'
+import { UserModel } from '../../models/UserModel.js'
+import { UnauthorizedError, NotFoundError } from '../lib/errors/index.js'
+import { userController } from './UserController.js'
 dotenv.config()
 
 /**
@@ -47,19 +47,20 @@ export class AuthController {
    *
    * @param {string} token - The refresh token.
    * @returns {Promise<object>} An object with the new access token, the old refresh token, and the user.
-   * @throws {ApolloError} If the refresh token is invalid or expired.
+   * @throws {Error} If the refresh token is invalid or expired.
    */
   async refreshToken (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
       const user = await UserModel.findById(decoded.id)
       if (!user) {
-        throw new ApolloError('User not found', 'USER_NOT_FOUND', { id: decoded.id })
+        throw new UnauthorizedError('User not found', 'USER_NOT_FOUND', { id: decoded.id })
       }
       // if (!user) throw new UnauthorizedError('User not found')
       const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, { expiresIn: '30m' })
       return { token: newAccessToken, refreshToken: token, user: { id: user._id.toString(), email: user.email } }
     } catch (err) {
+      console.error('Error refreshing token:', err)
       throw new UnauthorizedError('Invalid or expired refresh token')
     }
   }
@@ -69,7 +70,7 @@ export class AuthController {
    *
    * @param {string} refreshToken - The refresh token.
    * @returns {Promise<object>} An object with the new access token.
-   * @throws {ApolloError} If the refresh token is invalid or expired.
+   * @throws {Error} If the refresh token is invalid or expired.
    */
   async refreshAccessToken (refreshToken) {
     try {
@@ -83,7 +84,8 @@ export class AuthController {
       const newToken = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' })
       return { token: newToken }
     } catch (err) {
-      throw new AuthenticationError('Invalid or expired refresh token')
+      console.error('Error refreshing access token:', err)
+      throw new UnauthorizedError('Invalid or expired refresh token')
     }
   }
 }

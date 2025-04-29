@@ -8,7 +8,7 @@
 import express from 'express'
 
 // Application modules.
-import { HttpError } from '../lib/errors/HttpError.js'
+// import { HttpError } from '../lib/errors/HttpError.js'
 import { router as v1Router } from './api/v1/router.js'
 // import HomeController from '../controllers/HomeController.js'
 

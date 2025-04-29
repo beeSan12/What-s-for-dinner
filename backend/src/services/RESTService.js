@@ -17,9 +17,10 @@ export class RESTService {
    *
    * @param {object} apiClient - The API client for making requests.
    */
-  constructor(apiClient) {
+  constructor (apiClient) {
     this.apiClient = apiClient
   }
+
   /**
    * Formats the date to a string.
    *

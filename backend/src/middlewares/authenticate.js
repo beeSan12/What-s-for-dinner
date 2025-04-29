@@ -10,13 +10,12 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-
 /**
  * Verifies the JWT token from the request headers.
  *
  * @param {object} req - Express request object.
  * @returns {object|null} The decoded token if valid, otherwise null.
- * @throws {AuthenticationError} If the token is invalid or expired.
+ * @throws {UnauthorizedError} If the token is invalid or expired.
  */
 export function verifyToken (req) {
   const authHeader = req.headers.authorization
@@ -39,7 +38,6 @@ export function verifyToken (req) {
  * @param {object} res - Express response object.
  * @param {Function} next - Express next middleware function.
  * @returns {void} Calls the next middleware function.
- * @throws {AuthenticationError} If the token is invalid or expired.
  */
 export function authenticate (req, res, next) {
   const authHeader = req.headers.authorization

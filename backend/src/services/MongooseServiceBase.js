@@ -38,7 +38,6 @@ const DocumentAction = Enum({
   Delete: 'Delete'
 })
 
-
 /**
  * Encapsulates a service.
  */
@@ -81,6 +80,7 @@ export class MongooseServiceBase {
    * @param {object} params - The query parameters.
    * @param {number} [params.page=1] - The page number.
    * @param {number} [params.perPage=20] - The number of documents per page.
+   * @param {object} [params.filter={}] - The filter to apply to the query.
    * @returns {Promise<object>} Promise resolved with all documents.
    */
   async get ({ page = 1, perPage = 20, filter = {} } = {}) {
@@ -131,7 +131,7 @@ export class MongooseServiceBase {
    * @param {object} filter - The filter object to match the document.
    * @returns {Promise<object>} Promise resolved with the found document.
    */
-  async getOne(filter) {
+  async getOne (filter) {
     try {
       return await this.#repository.getOne(filter)
     } catch (error) {
@@ -156,14 +156,17 @@ export class MongooseServiceBase {
       this.#handleError(error, 'Failed to insert document.')
     }
   }
-    
+
   /**
    * Searches for documents.
    *
-   * @param {object} filter - The filter to apply to the query.
+   * @param {object} params - The query parameters.
+   * @param {number} [params.page=1] - The page number.
+   * @param {number} [params.perPage=20] - The number of documents per page.
+   * @param {object} [params.filter={}] - The filter to apply to the query.
    * @returns {Promise<object>} Promise resolved with the found documents.
    */
-  async search({ filter = {}, page = 1, perPage = 20 } = {}) {
+  async search ({ filter = {}, page = 1, perPage = 20 } = {}) {
     try {
       return await this.#repository.get(filter, null, null, {
         limit: perPage,
@@ -231,8 +234,6 @@ export class MongooseServiceBase {
     }
   }
 
-
-
   /**
    * Handles an error.
    *
@@ -290,4 +291,3 @@ export class MongooseServiceBase {
     }
   }
 }
-

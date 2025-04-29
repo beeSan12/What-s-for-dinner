@@ -46,15 +46,15 @@ export class MongooseRepositoryBase {
     try {
       const limit = queryOptions.limit || 20
       const skip = queryOptions.skip || 0
-  
+
       const documents = await this.model
         .find(filter, projection, options)
         .limit(limit)
         .skip(skip)
         .exec()
-  
+
       const count = await this.model.countDocuments(filter)
-  
+
       return {
         data: documents,
         pagination: {
@@ -194,4 +194,3 @@ export class MongooseRepositoryBase {
     }
   }
 }
-
