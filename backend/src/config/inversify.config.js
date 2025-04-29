@@ -132,6 +132,7 @@ decorate(injectable(), EmbeddingController)
 decorate(inject(EMBEDDINGTYPES.EmbeddingModel), EmbeddingRepository, 0)
 decorate(inject(EMBEDDINGTYPES.EmbeddingRepository), EmbeddingService, 0)
 decorate(inject(EMBEDDINGTYPES.EmbeddingService), EmbeddingController, 0)
+decorate(inject(RECIPETYPES.RecipeService), EmbeddingController, 1)
 
 // Decorate Recipe classes
 decorate(injectable(), RecipeRepository)
