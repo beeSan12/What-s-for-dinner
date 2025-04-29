@@ -4,7 +4,7 @@
  * @author Beatriz Sanssi
  */
 
-import { createEmbedding } from '../utils/embedding.js'
+import { createEmbedding, askGptFallback } from '../utils/embedding.js'
 import { convertToHttpError } from '../lib/util.js'
 import { EmbeddingService } from '../services/EmbeddingService.js'
 import { RecipeService } from '../services/RecipeService.js'
@@ -100,20 +100,20 @@ export class EmbeddingController {
         const fallback = await askGptFallback(query)
         return res.json({ fallback })
       }
-  
+
       const isRecipePrompt = query.toLowerCase().includes('recipe') || query.toLowerCase().includes('cook') || query.toLowerCase().includes('make')
       let generatedRecipe = null
-  
+
       if (isRecipePrompt) {
         const topIds = products.slice(0, 3).map(p => p.id)
         const productEmbeddings = await this.#service.findEmbeddingsByProductIds(topIds, query)
-  
+
         const context = productEmbeddings.map(d => `• ${d.metadata.product_name}: ${d.text}`).join('\n')
-  
+
         const { recipe } = await this.#recipeService.generateRecipeFromService({ context, prompt: query })
         generatedRecipe = recipe
       }
-  
+
       res.json({
         products,
         recipe: generatedRecipe

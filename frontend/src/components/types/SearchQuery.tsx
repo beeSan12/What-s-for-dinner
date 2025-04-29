@@ -61,8 +61,19 @@ export default function SearchQuery() {
 
       console.log('RESPONSE:', data) 
       if (data.fallback) {
-        // Visa bara GPT-svar
+        // Only show fallback if no recipe is found
         setResults([{ id: 'fallback', text: data.fallback, score: 0 }])
+        return
+      }
+
+      if (Array.isArray(data.recipe)) {
+        // If recipe is an array (multiple recipes)
+        const formatted = data.recipe.map((r) => ({
+          id: 'recipe-' + Math.random(),
+          text: formatRecipeText(r),
+          score: 1,
+        }))
+        setResults(formatted)
         return
       }
 
@@ -76,25 +87,24 @@ export default function SearchQuery() {
         return
       }
 
-      if (Array.isArray(data.recipe)) {
-        const formatted = data.recipe.map((r) => ({
-          id: 'recipe-' + Math.random(),
-          text: formatRecipeText(r),
-          score: 1
-        }))
-        setResults(formatted)
-        return
-      } else if (typeof data.recipe === 'string') {
+
+      if (typeof data.recipe === 'string') {
+        // If recipe is a string (one recipe)
         const formattedRecipe = formatRecipeText(data.recipe)
-        setResults([{ id: 'recipe', text: formattedRecipe, score: 1 }])
+        setResults([{
+          id: 'recipe',
+          text: formattedRecipe,
+          score: 1,
+        }])
         return
       }
 
       if (data.products && Array.isArray(data.products)) {
         setResults(data.products)
-      } else {
-        alert('Unexpected response format')
+        return
       }
+  
+      alert('Unexpected response format')
     } catch (error) {
       console.error('Error while querying:', error)
       alert('Something went wrong while processing your question.')
