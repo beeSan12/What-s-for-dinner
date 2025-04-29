@@ -43,10 +43,10 @@ export async function createEmbedding (input) {
 /**
  * Ask GPT for a fallback answer if no embedding match was found.
  *
- * @param {string} query
+ * @param {string} query - The query string to ask GPT.
  * @returns {Promise<string>} The GPT-generated response.
  */
-export async function askGptFallback(query) {
+export async function askGptFallback (query) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
   const gptReply = await openai.chat.completions.create({
