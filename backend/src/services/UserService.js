@@ -59,7 +59,6 @@ export class UserService extends MongooseServiceBase {
   async login ({ email, password }) {
     // Check if the user exists
     const user = await this.getOne({ email })
-    // const user = result.data[0]
     console.log('Found user:', user)
     console.log('Plain password:', password)
     console.log('Hashed password:', user?.password)

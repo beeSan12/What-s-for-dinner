@@ -59,7 +59,6 @@ export default function SearchQuery() {
           body: JSON.stringify({ query }),
         },
       )
-      // const data = await res.json()
       const data: AskEmbeddingResponse = await res.json()
 
       console.log('RESPONSE:', data)
@@ -116,13 +115,6 @@ export default function SearchQuery() {
       alert('Something went wrong while processing your question.')
     }
   }
-  //   if (!Array.isArray(data)) {
-  //     alert('Unexpected response format from API')
-  //     return
-  //   }
-
-  //   setResults(data)
-  // }
 
   /**
    * Formats the raw recipe text to a more readable layout.
@@ -212,17 +204,6 @@ export default function SearchQuery() {
                 </div>
               ))}
             </div>
-            {/* <ul>
-                {results.map((match) => (
-                  <li key={match.id}>
-                    {match.id === 'recipe' || match.id === 'fallback' ? (
-                      <pre style={{ whiteSpace: 'pre-wrap' }}>{match.text}</pre>
-                    ) : (
-                      match.text
-                    )}
-                  </li>
-                ))}
-              </ul> */}
           </div>
         )}
       </div>

@@ -47,10 +47,8 @@ const LoginForm = () => {
       const data = await response.json()
       if (response.ok) {
         login(data.token)
-        // localStorage.setItem('token', data.token)
         setError('')
         navigate('/', { replace: true })
-        // navigate('/')
       } else {
         setError(data.error || 'Login failed')
       }
@@ -119,15 +117,6 @@ const styles = {
     maxHeight: '60%',
     zIndex: 1,
   },
-  // overlay: {
-  //   position: "absolute",
-  //   top: 0,
-  //   left: 0,
-  //   width: "100%",
-  //   height: "100%",
-  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
-  //   zIndex: 1,
-  // },
   loginBox: {
     width: '90%',
     maxWidth: '350px',

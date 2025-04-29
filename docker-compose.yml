@@ -5,6 +5,9 @@ services:
     restart: always
     ports:
       - "27018:27017" 
+    environment:
+      MONGO_USER: root
+      MONGO_PASSWORD: secret
     volumes:
       - mongo-data:/data/db
 

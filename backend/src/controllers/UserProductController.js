@@ -5,7 +5,6 @@
  */
 
 // Application modules.
-// import { NotModifiedError } from '../lib/errors/NotModifiedError.js'
 import { convertToHttpError } from '../lib/util.js'
 import { UserProductService } from '../services/UserProductService.js'
 import { logger } from '../config/winston.js'
@@ -74,7 +73,6 @@ export class UserProductController {
    */
   async createCustom (req, res, next) {
     try {
-      // const userId = req.user.id
       const productData = req.body
       const saved = await this.#service.insert(productData)
       res.status(201).json(saved)
