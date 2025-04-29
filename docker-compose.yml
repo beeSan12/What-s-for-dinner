@@ -10,7 +10,8 @@ services:
 
   backend:
     image: bsan89/whats-for-dinner-backend:latest
-    build: ./backend
+    build:
+      context: ./backend
     ports:
       - "8083:8083"
     env_file:
@@ -23,7 +24,8 @@ services:
 
   frontend:
     image: bsan89/whats-for-dinner-frontend:latest
-    build: ./frontend
+    build:
+      context: ./frontend
     ports:
       - "3000:3000"
     depends_on:
