@@ -158,7 +158,7 @@ const SearchProducts: React.FC<Props> = ({
           Search
         </button>
       )}
-      
+
       {loading && <p>Loading...</p>}
 
       {/* <ul style={minimalLayout ? undefined : styles.resultList}> */}

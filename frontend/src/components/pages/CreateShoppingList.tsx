@@ -7,7 +7,6 @@
  */
 
 import { useState } from 'react'
-// import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../../utils/apiFetch'
 import SearchProducts from '../types/SearchProducts'
 import coupleWritingList from '../../images/CoupleWritingList.png'
@@ -29,11 +28,9 @@ interface ShoppingItem extends Product {
  * This component allows users to create a shopping list.
  */
 export default function CreateShoppingList() {
-  // const listId = ""
   const [listName, setListName] = useState<string>('')
   const [editingName, setEditingName] = useState<boolean>(true)
   const [shoppingList, setShoppingList] = useState<ShoppingItem[]>([])
-  // const [products, setProducts] = useState<Product[]>([])
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [quantity, setQuantity] = useState<number>(1)
   const [unit, setUnit] = useState<string>('st')
@@ -57,14 +54,6 @@ export default function CreateShoppingList() {
     setQuantity(1)
     setUnit('st')
   }
-  //   const newItem: ShoppingItem = {
-  //     ...product,
-  //     quantity: 1,
-  //     unit: 'st',
-  //   }
-  //   setShoppingList(prev => [...prev, newItem])
-  //   // setSelectedProduct(product)
-  // }
 
   /**
    * Handles the addition of a product to the shopping list.
@@ -153,13 +142,6 @@ export default function CreateShoppingList() {
       </div>
       <div style={styles.createContainer}>
         <div style={styles.leftColumn}>
-          {/* <input
-            type="text"
-            placeholder="Name your list"
-            value={listName}
-            onChange={(e) => setListName(e.target.value)}
-            style={styles.input}
-          /> */}
           <div style={styles.headerDiv}>
             <p>Search Products</p>
           </div>
@@ -175,15 +157,6 @@ export default function CreateShoppingList() {
             customInputStyle={styles.searchInput}
             customButtonStyle={styles.searchButton}
           />
-
-          {/* {products.map((product) => (
-            <div key={product._id} style={{ marginTop: '10px' }}>
-              <p><strong>{product.product_name}</strong></p>
-              <button onClick={() => handleProductSelect(product)} style={styles.button}>
-                Select
-              </button>
-            </div>
-          ))} */}
 
           {selectedProduct && (
              <div style={styles.overlay} onClick={() => setSelectedProduct(null)}>
@@ -226,32 +199,6 @@ export default function CreateShoppingList() {
              </div>
            </div>
          )}
-          {/* //   <div style={styles.formContainer}>
-          //     <p>{selectedProduct.product_name}</p>
-          //     <input */}
-          {/* //       type="number"
-          //       min="1"
-          //       value={quantity}
-          //       onChange={(e) => setQuantity(Number(e.target.value))}
-          //       placeholder="Quantity"
-          //       style={styles.input}
-          //     />
-          //     <select
-          //       value={unit}
-          //       onChange={(e) => setUnit(e.target.value)}
-          //       style={styles.input}
-          //     >
-          //       <option value="st">st</option>
-          //       <option value="g">g</option>
-          //       <option value="kg">kg</option>
-          //       <option value="ml">ml</option>
-          //       <option value="l">l</option>
-          //     </select>
-          //     <button onClick={handleAddProduct} style={styles.button}>
-          //       Add to list
-          //     </button>
-          //   </div>
-          // )} */}
         </div>
 
         <div style={styles.rightColumn}>
@@ -303,31 +250,6 @@ export default function CreateShoppingList() {
               </button>
             </div>
             ))}
-
-            {/* <div style={{ marginTop: '10px' }}>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-                disabled={currentPage === 0}
-                style={styles.paginationBtn}
-              >
-                ⬅️ Prev
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) =>
-                    (prev + 1) * itemsPerPage < shoppingList.length
-                      ? prev + 1
-                      : prev,
-                  )
-                }
-                disabled={
-                  (currentPage + 1) * itemsPerPage >= shoppingList.length
-                }
-                style={styles.paginationBtn}
-              >
-                Next ➡️
-              </button>
-            </div> */}
           </div>
 
           <button
@@ -380,22 +302,6 @@ const styles = {
     maxHeight: '80px',
     borderRadius: '10px',
     color: '#696969',
-    // fontFamily: "'Poppins', sans-serif",
-    // width: "100%",
-    // height: "100%",
-    // maxHeight: "80px",
-    // top: "10px",
-    // left: "0px",
-    // right: "10px",
-    // position: "absolute",
-    // backgroundColor: "rgba(255, 255, 255, 0.7)",
-    // paddingTop: "0px",
-    // borderRadius: "10px",
-    // boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-    // padding: "15px 30px",
-    // fontSize: "24px",
-    // fontWeight: "bold",
-    // opacity: 0.8,
   },
   createContainer: {
     gap: '20px',
@@ -538,19 +444,6 @@ const styles = {
     fontSize: '20px',
     fontWeight: 'bold',
   },
-  // formContainer: {
-  //   backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  //   borderRadius: '10px',
-  //   padding: '10px',
-  //   margin: '20px',
-  //   boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-  //   maxWidth: '400px',
-  //   height: '100%',
-  //   width: '90%',
-  //   minHeight: '200px',
-  //   overflowY: 'auto',
-  //   color: '#2f4f4f',
-  // },
   shoppingList: {
     backgroundColor: '#dcdcdc',
     opacity: 0.9,
@@ -594,15 +487,5 @@ const styles = {
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
-  },
-  paginationBtn: {
-    margin: '5px',
-    padding: '6px 10px',
-    borderRadius: '5px',
-    border: 'none',
-    backgroundColor: '#2f4f4f',
-    color: 'white',
-    cursor: 'pointer',
-    fontWeight: 'bold',
   },
 } as const

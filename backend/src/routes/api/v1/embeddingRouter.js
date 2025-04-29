@@ -25,4 +25,10 @@ router.route('/search')
     container.get(EMBEDDINGTYPES.EmbeddingController).searchEmbedding(req, res, next)
   )
 
+// POST /embeddings/ask
+router.route('/ask')
+  .post(authenticate, (req, res, next) =>
+    container.get(EMBEDDINGTYPES.EmbeddingController).askEmbedding(req, res, next)
+  )
+
 export { router as embeddingRouter }

@@ -41,7 +41,8 @@ export default function FindRecipes() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [quantity, setQuantity] = useState<number>(1)
   const [unit, setUnit] = useState<string>('st')
-
+  const [generatedRecipes, setGeneratedRecipes] = useState<string[]>([])
+  
   /**
    * Handles the selection of products.
    *
@@ -70,62 +71,48 @@ export default function FindRecipes() {
     }
   }
 
-  // /**
-  //  * Searches for recipes based on the selected products.
-  //  * 
-  //  * @returns {Promise<void>}
-  //  */
-  // const searchBasedOnProducts = async () => {
-  //   if (recipeItems.length === 0) {
-  //     alert('You must select at least one product.')
-  //     return
-  //   }
+  /**
+   * Searches for recipes based on the selected products.
+   * 
+   * @returns {Promise<void>}
+   */
+  const searchBasedOnProducts = async () => {
+    if (recipeItems.length === 0) {
+      alert('You must select at least one product.')
+      return
+    }
     
-  //   const results: EmbeddingMatch[] = []
+    const results: EmbeddingMatch[] = []
     
-  //   for (const item of recipeItems) {
-  //     const res = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/embeddings/search`, {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ query: item.product_name })
-  //     })
-  //     const data = await res.json()
-  //     if (!Array.isArray(data)) {
-  //       console.error('Unexpected response from embedding search:', data)
-  //       alert('Could not search for recipes. Check console for details.')
-  //       return
-  //     }
-  //     results.push(...data)
-  //   }
+    for (const item of recipeItems) {
+      const res = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/embeddings/search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: item.product_name })
+      })
+      const data = await res.json()
+      if (!Array.isArray(data)) {
+        console.error('Unexpected response from embedding search:', data)
+        alert('Could not search for recipes. Check console for details.')
+        return
+      }
+      results.push(...data)
+    }
     
-  //   setResults(results)
-  // }
+    setResults(results)
+  }
 
+  /**
+   * Handles the generation of recipes based on selected products.
+   */
   const handleGenerateRecipe = async () => {
+    searchBasedOnProducts()
     if (recipeItems.length === 0) {
       alert('You must select at least one product.')
       return
     }
   
     try {
-      const searchResults: EmbeddingMatch[] = []
-  
-      for (const item of recipeItems) {
-        const res = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/embeddings/search`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: item.product_name })
-        })
-        const data = await res.json()
-        if (!Array.isArray(data)) {
-          console.error('Unexpected embedding result:', data)
-          alert('Embedding search failed.')
-          return
-        }
-        searchResults.push(...data)
-      }
-  
-      setResults(searchResults) // visa dem om du vill
       const res = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/recipes/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -137,7 +124,9 @@ export default function FindRecipes() {
   
       const data = await res.json()
       console.log('Generated recipe:', data)
-      alert(data.recipe)
+  
+      // Add recipe to the list of generated recipes
+      setGeneratedRecipes(prev => [...prev, data.recipe])
   
     } catch (error) {
       console.error('Error generating recipe:', error)
@@ -217,35 +206,22 @@ export default function FindRecipes() {
         <h3>Search for products to generate recipe</h3>
         <SearchProducts
           onProductSelect={handleProductSelect}
+          maxResults={5}
           minimalLayout={true}
           customInputStyle={styles.searchInput}
           showSelectButton={true}
           hideSearchButton={false}
           customButtonStyle={styles.searchButton}
         />
-
-        {/* Sökresultat */}
-        <ul style={styles.grid}>
-          {results.map((hit, index) => (
-            <li key={`${hit.id}-${hit.score ?? '0'}-${index}`} style={styles.card}>
-              {hit.metadata?.image_url && (
-                <img
-                  src={hit.metadata.image_url}
-                  alt={hit.metadata.product_name || 'Product'}
-                  style={styles.image}
-                />
-              )}
-              <h3 style={styles.title}>{hit.metadata.product_name}</h3>
-              {hit.metadata.brands && <p style={styles.subtitle}>{hit.metadata.brands}</p>}
-              {hit.metadata.categories && (
-                <p style={styles.categories}>⚬ {hit.metadata.categories.join(', ')}</p>
-              )}
-              <p style={styles.score}>
-                Score: {typeof hit.score === 'number' ? hit.score.toFixed(3) : 'N/A'}
-              </p>
-            </li>
-          ))}
-        </ul>
+        {results.length > 0 && (
+          <div style={styles.recipeCardsContainer}>
+            {generatedRecipes.map((recipe, index) => (
+              <div key={index} style={styles.recipeCard}>
+                <pre style={styles.recipeText}>{recipe}</pre>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -254,16 +230,18 @@ export default function FindRecipes() {
 const styles = {
   container: {
     backgroundColor: 'rgba(232, 222, 212)',
+    backgroundRepeat: 'repeat',
+    backgroundSize: 'cover',
     padding: '20px',
     margin: '20px',
     justifyContent: 'flex-start',
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '100%',
+    maxHeight: '100%',
     maxWidth: '100%',
-    width: '100vw',
-    height: '100vh',
+    width: '1600px',
+    height: '3000px',
     gap: '30px', 
     paddingTop: '150px',
     color: '#2f4f4f',
@@ -281,7 +259,7 @@ const styles = {
     height: '100%',
     width: '100%',
     maxWidth: '1000px',
-    minHeight: '200px',
+    maxHeight: '300px',
     opacity: 0.9,
     fontSize: '20px',
     justifyContent: 'center',
@@ -308,8 +286,9 @@ const styles = {
     flexDirection: 'column',
     gap: '20px',
     alignItems: 'center',
-    width: '80%',
+    width: '100%',
     maxWidth: '800px',
+    height: '100%',
     justifyContent: 'center',
   },
   searchInput: {
@@ -371,14 +350,6 @@ const styles = {
     margin: '10px',
     fontWeight: 'bold',
   },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-    gap: '16px',
-    listStyleType: 'none',
-    padding: 0,
-    margin: 0
-  },
   card: {
     backgroundColor: '#fff',
     padding: '10px',
@@ -430,8 +401,7 @@ const styles = {
     border: 'none',
     justifyContent: 'center',
     alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'row',
+    margin: '10px',
   },
   input: {
     maxWidth: '100%',
@@ -440,5 +410,41 @@ const styles = {
     fontSize: '16px',
     margin: '10px',
     flex: 1,
+  },
+  recipeCardsContainer: {
+    marginTop: '20px',
+    width: '100%',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '20px'
+  },
+  recipeCard: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    whiteSpace: 'pre-wrap',
+    textAlign: 'left',
+    width: '90%',
+    maxWidth: '800px',
+    margin: '20px',
+  },
+  recipeText: {
+    fontSize: '1rem',
+    lineHeight: 1.6,
+    color: '#2f4f4f',
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    overflowWrap: 'break-word',
+  },
+  paginationBtn: {
+    margin: '5px',
+    padding: '6px 10px',
+    borderRadius: '5px',
+    border: 'none',
+    backgroundColor: '#2f4f4f',
+    color: 'white',
+    cursor: 'pointer',
+    fontWeight: 'bold',
   },
 } as const

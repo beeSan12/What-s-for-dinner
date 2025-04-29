@@ -17,11 +17,15 @@ import { createEmbedding } from '../utils/embedding.js'
  */
 function cosineSimilarity (a, b) {
   if (!Array.isArray(a) || !Array.isArray(b)) {
-    console.error('cosineSimilarity: One or both vectors are not arrays', a, b)
+    console.error('cosineSimilarity: One or both inputs are not arrays', a, b)
     return null
   }
-  if (a.length !== b.length || a.length === 0) {
-    console.error('cosineSimilarity: Vectors have different lengths or are empty', a, b)
+  if (a.length === 0 || b.length === 0) {
+    console.error('cosineSimilarity: One or both arrays are empty', a, b)
+    return null
+  }
+  if (a.length !== b.length) {
+    console.error('cosineSimilarity: Arrays have different lengths', a.length, b.length)
     return null
   }
 
@@ -50,7 +54,7 @@ export class EmbeddingService extends MongooseServiceBase {
   async findTopMatches (query) {
     const queryEmbedding = await createEmbedding(query)
 
-    const result = await this.get({ perPage: 1000 }) // Hämta många embeddings
+    const result = await this.get({ perPage: 1000 })
     const allDocs = result.data
     const scored = allDocs.map(doc => {
       console.log('→ doc.embedding =', doc.embedding)
