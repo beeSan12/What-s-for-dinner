@@ -51,15 +51,18 @@ export default function SearchQuery() {
     }
 
     try {
-      const res = await apiFetch(`${import.meta.env.VITE_API_BASE_URL}/embeddings/ask`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
-      })
+      const res = await apiFetch(
+        `${import.meta.env.VITE_API_BASE_URL}/embeddings/ask`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+        },
+      )
       // const data = await res.json()
       const data: AskEmbeddingResponse = await res.json()
 
-      console.log('RESPONSE:', data) 
+      console.log('RESPONSE:', data)
       if (data.fallback) {
         // Only show fallback if no recipe is found
         setResults([{ id: 'fallback', text: data.fallback, score: 0 }])
@@ -79,23 +82,26 @@ export default function SearchQuery() {
 
       if (data.recipe) {
         const formattedRecipe = formatRecipeText(data.recipe)
-        setResults([{
-          id: 'recipe',
-          text: formattedRecipe,
-          score: 1
-        }])
+        setResults([
+          {
+            id: 'recipe',
+            text: formattedRecipe,
+            score: 1,
+          },
+        ])
         return
       }
-
 
       if (typeof data.recipe === 'string') {
         // If recipe is a string (one recipe)
         const formattedRecipe = formatRecipeText(data.recipe)
-        setResults([{
-          id: 'recipe',
-          text: formattedRecipe,
-          score: 1,
-        }])
+        setResults([
+          {
+            id: 'recipe',
+            text: formattedRecipe,
+            score: 1,
+          },
+        ])
         return
       }
 
@@ -103,7 +109,7 @@ export default function SearchQuery() {
         setResults(data.products)
         return
       }
-  
+
       alert('Unexpected response format')
     } catch (error) {
       console.error('Error while querying:', error)
@@ -118,85 +124,95 @@ export default function SearchQuery() {
   //   setResults(data)
   // }
 
-/**
- * Formats the raw recipe text to a more readable layout.
- *
- * @param {string} recipe - Raw recipe text from the API.
- * @returns {string} Formatted recipe text.
- */
-function formatRecipeText(recipe: string): { text: string; bold?: boolean }[] {
-  return recipe
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-    .flatMap(line => {
-      if (line.toLowerCase() === 'ingredients:' || line.toLowerCase() === 'instructions:') {
-        return [{ text: line, bold: true }, { text: '' }]
-      } else if (line.toLowerCase().startsWith("here's a simple recipe")) {
-        return [{ text: line }, { text: '' }]
-      } else if (line.startsWith('-')) {
-        return [{ text: '• ' + line.slice(1).trim() }]
-      } else if (/^\d+\./.test(line)) {
-        return [{ text: '' }, { text: line }]
-      } else {
-        return [{ text: line }]
-      }
-    })
-}
+  /**
+   * Formats the raw recipe text to a more readable layout.
+   *
+   * @param {string} recipe - Raw recipe text from the API.
+   * @returns {string} Formatted recipe text.
+   */
+  function formatRecipeText(
+    recipe: string,
+  ): { text: string; bold?: boolean }[] {
+    return recipe
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .flatMap((line) => {
+        if (
+          line.toLowerCase() === 'ingredients:' ||
+          line.toLowerCase() === 'instructions:'
+        ) {
+          return [{ text: line, bold: true }, { text: '' }]
+        } else if (line.toLowerCase().startsWith("here's a simple recipe")) {
+          return [{ text: line }, { text: '' }]
+        } else if (line.startsWith('-')) {
+          return [{ text: '• ' + line.slice(1).trim() }]
+        } else if (/^\d+\./.test(line)) {
+          return [{ text: '' }, { text: line }]
+        } else {
+          return [{ text: line }]
+        }
+      })
+  }
 
   return (
     <div style={styles.container}>
       <div style={styles.header}></div>
-        <div style={styles.questionBox}>
-          <h2>Ask the Chef Guru a Question</h2>
-          {results.length === 0 ? (
-            <>
-              <input
-                type="text"
-                placeholder="e.g. which chocolate is dairy free?"
-                style={styles.input}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              <button
-                style={styles.button} 
-                onClick={searchFreeQuery}>Ask
-              </button>
-            </>
-          ) : (
-            <div style={styles.answerBox}>
-              <button onClick={clearResults} style={styles.closeButton}
-              >
-                <MdClose />
-              </button>
-              <div style={styles.resultList}>
-                {results.map((match, idx) => (
-                  <div key={match.id} style={styles.resultCard}>
-                    {Array.isArray(match.text)
-                      ? match.text.map((line, i) =>
-                          line.bold ? (
-                            <div key={i} style={{ marginTop: '1.2rem' }}>
-                              <strong>{line.text}</strong></div>
-                          ) : (
-                            <div
-                              key={i}
-                              style={{
-                                marginTop: line.text === '' ? '1rem' : '0.2rem',
-                                marginLeft: line.text.startsWith('•') ? '10px' : '0'
-                            }}
-                            >
-                              {line.text}
-                            </div>
-                          )
-                        )
-                      : <pre style={styles.recipeText}>{match.text}</pre>}
-                      {idx < results.length - 1 && (
-                        <hr style={{ marginTop: '20px', borderTop: '1px solid #ccc' }} />
-                      )}
-                  </div>
-                ))}
-              </div>
-              {/* <ul>
+      <div style={styles.questionBox}>
+        <h2>Ask the Chef Guru a Question</h2>
+        {results.length === 0 ? (
+          <>
+            <input
+              type="text"
+              placeholder="e.g. which chocolate is dairy free?"
+              style={styles.input}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button style={styles.button} onClick={searchFreeQuery}>
+              Ask
+            </button>
+          </>
+        ) : (
+          <div style={styles.answerBox}>
+            <button onClick={clearResults} style={styles.closeButton}>
+              <MdClose />
+            </button>
+            <div style={styles.resultList}>
+              {results.map((match, idx) => (
+                <div key={match.id} style={styles.resultCard}>
+                  {Array.isArray(match.text) ? (
+                    match.text.map((line, i) =>
+                      line.bold ? (
+                        <div key={i} style={{ marginTop: '1.2rem' }}>
+                          <strong>{line.text}</strong>
+                        </div>
+                      ) : (
+                        <div
+                          key={i}
+                          style={{
+                            marginTop: line.text === '' ? '1rem' : '0.2rem',
+                            marginLeft: line.text.startsWith('•')
+                              ? '10px'
+                              : '0',
+                          }}
+                        >
+                          {line.text}
+                        </div>
+                      ),
+                    )
+                  ) : (
+                    <pre style={styles.recipeText}>{match.text}</pre>
+                  )}
+                  {idx < results.length - 1 && (
+                    <hr
+                      style={{ marginTop: '20px', borderTop: '1px solid #ccc' }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+            {/* <ul>
                 {results.map((match) => (
                   <li key={match.id}>
                     {match.id === 'recipe' || match.id === 'fallback' ? (
@@ -207,9 +223,9 @@ function formatRecipeText(recipe: string): { text: string; bold?: boolean }[] {
                   </li>
                 ))}
               </ul> */}
-            </div>
-            )}
-        </div>
+          </div>
+        )}
+      </div>
       <div style={styles.imageDiv}></div>
     </div>
   )

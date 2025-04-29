@@ -2,7 +2,7 @@
  * This component is responsible for the registration page of the application.
  * It allows users to create a new account by providing their personal information.
  * After successful registration, users are redirected to the login page.
- * 
+ *
  * @component Logout
  * @author Beatriz Sanssi
  */
