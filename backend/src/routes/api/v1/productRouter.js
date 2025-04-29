@@ -8,25 +8,9 @@ import express from 'express'
 import dotenv from 'dotenv'
 import { authenticate } from '../../../middlewares/authenticate.js'
 import { container, PRODUCTTYPES } from '../../../config/inversify.config.js'
-// import { container } from '../../../config/inversify.config.js'
-// import { TYPES } from '../../../config/types.js'
 
 export const router = express.Router()
 dotenv.config()
-
-// const productController = container.get(TYPES.ProductController)
-
-// // GET all products
-// router.get('/', (req, res, next) =>
-//   productController.getAll(req, res, next))
-
-// // GET a product by ID
-// router.get('/:id', (req, res, next) =>
-//   productController.getById(req, res, next))
-
-// // GET products by category
-// router.get('/search', (req, res, next) =>
-//   productController.search(req, res, next))
 
 // Provide req.doc to the route if :id is present in the route path.
 router.param('id', (req, res, next, id) =>

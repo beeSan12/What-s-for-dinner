@@ -35,12 +35,4 @@ export class RecipeService extends MongooseServiceBase {
 
     return { recipe: recipes }
   }
-  //   const fullPrompt = `
-  //     I have the following ingredients:
-  //     ${context}
-  //     Give me a recipe. ${prompt || ''}
-  //   `
-  //   const recipeText = await askGptFallback(fullPrompt)
-  //   return { recipe: recipeText }
-  // }
 }

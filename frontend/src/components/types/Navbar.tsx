@@ -13,20 +13,6 @@ import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth()
-  // const [isLoggedIn, setIsLoggedIn] = useState(false)
-  // const navigate = useNavigate()
-
-  // useEffect(() => {
-  //   // Check if token exists in local storage
-  //   const token = localStorage.getItem('token')
-  //   setIsLoggedIn(!!token)
-  // }, [])
-
-  // const handleLogout = () => {
-  //   localStorage.removeItem('token')
-  //   setIsLoggedIn(false)
-  //   navigate('/login')
-  // }
 
   return (
     <div style={styles.navbar}>

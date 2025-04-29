@@ -147,7 +147,6 @@ export default function CreateShoppingList() {
             <p>Search Products</p>
           </div>
           <SearchProducts
-            // onResults={setProducts}
             onProductSelect={handleProductSelect}
             maxResults={3}
             currentPage={currentPage}
@@ -196,7 +195,7 @@ export default function CreateShoppingList() {
                 <button
                   onClick={() => {
                     handleAddProduct()
-                    setSelectedProduct(null) // Stäng efter att ha lagt till
+                    setSelectedProduct(null)
                   }}
                   style={styles.button}
                 >

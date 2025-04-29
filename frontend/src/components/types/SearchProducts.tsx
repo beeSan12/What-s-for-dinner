@@ -22,8 +22,6 @@ interface Product {
 
 interface Props {
   onProductSelect: (product: Product) => void
-  // onResults: (products: Product[]) => void
-  // onProductSelect?: (product: Product | { custom: true; product_name: string; _id: string }) => void
   maxResults?: number // Optional prop to limit the number of results displayed
   currentPage?: number // Optional prop for pagination
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>> // Optional prop for pagination
@@ -39,7 +37,6 @@ interface Props {
  */
 const SearchProducts: React.FC<Props> = ({
   onProductSelect,
-  // onResults,
   maxResults,
   currentPage,
   setCurrentPage,
@@ -82,7 +79,6 @@ const SearchProducts: React.FC<Props> = ({
       const data = await response.json()
       console.log('Fetched products:', data)
       setResults(data.data || []) // Ensure data is an array
-      // onResults(data.data || []) // Pass the results to the parent component
     } catch (err) {
       console.error('Error fetching products:', err)
     } finally {
@@ -168,14 +164,12 @@ const SearchProducts: React.FC<Props> = ({
 
       {loading && <p>Loading...</p>}
 
-      {/* <ul style={minimalLayout ? undefined : styles.resultList}> */}
       <div style={minimalLayout ? undefined : styles.resultList}>
         {sliceResults.map((product) => (
           <div
             key={product._id}
             style={minimalLayout ? styles.compactTextStyle : styles.productItem}
           >
-            {/* //<li key={product._id} style={minimalLayout ? styles.compactTextStyle : styles.productItem}> */}
             <div style={styles.productInfo}>
               <div style={styles.productDetails}>
                 <div>
@@ -233,36 +227,8 @@ const SearchProducts: React.FC<Props> = ({
               )}
             </div>
           </div>
-          // </li>
         ))}
       </div>
-      {/* </ul> */}
-
-      {/* <ul style={minimalLayout ? undefined : styles.resultList}>
-        {(maxResults
-          ? results.slice(activePage * maxResults, (activePage + 1) * maxResults)
-          : results
-        ).map((product) => (
-          <li key={product._id} style={minimalLayout ? styles.compactTextStyle : styles.productItem}>
-            <strong style={minimalLayout ? styles.compactTextStyle : undefined}>
-              {product.product_name}
-            </strong><br />
-            <em style={minimalLayout ? styles.compactTextStyle : undefined}>Brand:</em>{' '}
-            <span style={minimalLayout ? styles.compactTextStyle : undefined}>{product.brands}</span><br />
-            {product.image_url && (
-              <img
-                src={product.image_url}
-                alt={product.product_name}
-                style={minimalLayout ? styles.compactImageStyle : styles.productImage}
-              />
-            )}
-            <br />
-            <em style={minimalLayout ? styles.compactTextStyle : undefined}>Source:</em>{' '}
-            {product.source === 'custom' ? 'Your product' : 'Global'}<br />
-            <button onClick={() => onProductSelect?.(product)}>Add to list</button>
-          </li>
-        ))}
-      </ul> */}
 
       {maxResults && results.length > maxResults && (
         <div style={minimalLayout ? undefined : styles.paginationContainer}>
@@ -337,12 +303,6 @@ const styles = {
     display: 'block',
     padding: '20px',
     alignItems: 'flex-start',
-    // padding: '20px',
-    // display: 'flex',
-    // flexDirection: 'row',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // gap: '20px',
   },
   productInfo: {
     display: 'flex',
