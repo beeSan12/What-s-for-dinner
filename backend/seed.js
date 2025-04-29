@@ -14,7 +14,7 @@ import { ProductModel } from './src/models/ProductModel.js'
 
 dotenv.config()
 
-const foodFactsData = process.env.PATH_TO_DATA
+const foodFactsData = process.env.PATH_TO_DATA_GZ
 const maxImport = 10000
 
 // Connect to MongoDB
@@ -29,6 +29,7 @@ console.log('Old products removed')
 let count = 0
 
 fs.createReadStream(foodFactsData)
+  .pipe(zlib.createGunzip())
   .pipe(csv({ separator: '\t' }))
   .on('data', async (row) => {
     if (count >= maxImport) {

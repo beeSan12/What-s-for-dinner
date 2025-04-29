@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "27018:27017" 
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    image: bsan89/whats-for-dinner-backend:latest
+    build: ./backend
+    ports:
+      - "8083:8083"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - /opt/wt2/data/en.openfoodfacts.org.products.csv.gz:/app/data/en.openfoodfacts.org.products.csv.gz:ro
+    depends_on:
+      - mongo
+    restart: always
+
+  frontend:
+    image: bsan89/whats-for-dinner-frontend:latest
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    env_file:
+      - ./frontend/.env
+    restart: always
+
+volumes:
+  mongo-data:
