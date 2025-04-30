@@ -12,19 +12,12 @@ import Navbar from './components/types/Navbar'
 import { AuthProvider } from './components/context/AuthContext'
 
 function App() {
-  const isLoggedIn = localStorage.getItem('authToken') !== null
 
   return (
     <Router>
       <AuthProvider>
         <Navbar />
         <Routes>
-         <Route
-            path="/"
-            element={
-              isLoggedIn ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
-            }
-          />
           <Route
             path="/login"
             element={
@@ -51,6 +44,8 @@ function App() {
             <Route path="/find-recipe" element={<FindRecipes />} />
             <Route path="/search-query" element={<SearchQuery />} />
           </Route>
+          {/* Fallback: if no route matches */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </Router>

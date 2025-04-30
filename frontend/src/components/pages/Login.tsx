@@ -4,7 +4,7 @@
  * @component LoginForm
  * @author Beatriz Sanssi
  */
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import imageWoman from '../../images/woman-shopping.png'
@@ -20,13 +20,6 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { login } = useAuth()
-
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      navigate('/') // Redirect to home if already logged in
-    }
-  }, [navigate])
 
   /**
    * Handles the login action when the user clicks the login button.
