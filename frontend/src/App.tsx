@@ -21,7 +21,7 @@ function RedirectBasedOnAuth() {
 function App() {
 
   return (
-    <Router>
+    <Router basename="/wt2">
       <AuthProvider>
         <Navbar />
         <Routes>
