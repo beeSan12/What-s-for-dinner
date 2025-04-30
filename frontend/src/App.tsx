@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Search from './components/pages/Search'
 import CreateShoppingList from './components/pages/CreateShoppingList'
 import FindRecipes from './components/pages/FindRecepies'
@@ -21,43 +21,43 @@ function RedirectBasedOnAuth() {
 function App() {
 
   return (
-    <Router basename="/wt2">
-      <AuthProvider>
-        <Navbar />
-        <Routes>
-          {/* Root path decides where to go */}
-          <Route path="/" element={<RedirectBasedOnAuth />} />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-          <Route element={<PrivateRoute />}>
-            <Route path="/Home" element={<Home />} />
-            <Route path="/search" element={<Search />} />
+    <BrowserRouter basename="/wt2">
+        <AuthProvider>
+          <Navbar />
+          <Routes>
+            {/* Root path decides where to go */}
+            <Route path="/" element={<RedirectBasedOnAuth />} />
             <Route
-              path="/create-shopping-list"
-              element={<CreateShoppingList />}
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
             />
-            <Route path="/find-recipe" element={<FindRecipes />} />
-            <Route path="/search-query" element={<SearchQuery />} />
-          </Route>
-          {/* Fallback: if no route matches */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthProvider>
-    </Router>
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
+            <Route element={<PrivateRoute />}>
+              <Route path="/Home" element={<Home />} />
+              <Route path="/search" element={<Search />} />
+              <Route
+                path="/create-shopping-list"
+                element={<CreateShoppingList />}
+              />
+              <Route path="/find-recipe" element={<FindRecipes />} />
+              <Route path="/search-query" element={<SearchQuery />} />
+            </Route>
+            {/* Fallback: if no route matches */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+    </BrowserRouter>
   )
 }
 
