@@ -35,7 +35,7 @@ function App() {
             }
           />
           <Route element={<PrivateRoute />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/Home" element={<Home />} />
             <Route path="/search" element={<Search />} />
             <Route
               path="/create-shopping-list"
