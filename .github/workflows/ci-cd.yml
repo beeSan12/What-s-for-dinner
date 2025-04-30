@@ -45,11 +45,9 @@ jobs:
 
       - name: Set env variables
         run: |
-          echo "MONGO_USER=${{ secrets.MONGO_USER }}" >> .env
-          echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
-          echo "NODEJS_EXPRESS_PORT=8081" >> .env
-          echo "DOCKER=true" >> .env
-          echo "DB_CONNECTION_STRING=mongodb://${{ secrets.MONGO_USER }}:${{ secrets.MONGO_PASSWORD }}@mongo:27017/wt2?authSource=admin" >> .env
+          echo "MONGO_USER=${{ secrets.MONGO_USER }}" >> backend/.env
+          echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> backend/.env
+          echo "DB_CONNECTION_STRING=mongodb://${{ secrets.MONGO_USER }}:${{ secrets.MONGO_PASSWORD }}@mongo:27017/wt2?authSource=admin" >> backend/.env
       
       - name: Tear down existing containers
         run: docker compose down  
