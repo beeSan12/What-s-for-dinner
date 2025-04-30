@@ -9,7 +9,14 @@ import PublicRoute from './components/context/PublicRoute'
 import PrivateRoute from './components/context/PrivateRoute'
 import Register from './components/pages/Register'
 import Navbar from './components/types/Navbar'
-import { AuthProvider } from './components/context/AuthContext'
+import { AuthProvider, useAuth } from './components/context/AuthContext'
+
+function RedirectBasedOnAuth() {
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) return <p>Loading...</p>
+  return isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
+}
 
 function App() {
 
@@ -18,6 +25,8 @@ function App() {
       <AuthProvider>
         <Navbar />
         <Routes>
+          {/* Root path decides where to go */}
+          <Route path="/" element={<RedirectBasedOnAuth />} />
           <Route
             path="/login"
             element={
