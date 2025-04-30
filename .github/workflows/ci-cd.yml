@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          
+
       - name: Install backend dependencies
         working-directory: ./backend
         run: npm install
@@ -61,7 +61,7 @@ jobs:
         run: docker logs graphql-api || true
       
       - name: Debug container status before waiting
-        run: docker ps -a && docker logs graphql-api || true 
+        run: docker ps -a && docker logs backend || true 
 
       - name: Wait for API to be ready
         run: |
