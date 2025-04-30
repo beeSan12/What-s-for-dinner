@@ -12,8 +12,6 @@ import { useNavigate, Link } from 'react-router-dom'
 import imageWoman from '../../images/woman-shopping.png'
 
 export default function Register() {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -43,7 +41,7 @@ export default function Register() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ firstName, lastName, email, password }),
+          body: JSON.stringify({ email, password }),
         },
       )
 
@@ -71,20 +69,6 @@ export default function Register() {
         <h1 style={styles.heading}>Register</h1>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <form onSubmit={handleRegister}>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
           <input
             type="email"
             placeholder="Email"
