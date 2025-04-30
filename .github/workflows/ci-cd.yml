@@ -43,12 +43,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      - name: Set env variables
+      - name: Set backend env variables
         run: |
           echo "MONGO_USER=${{ secrets.MONGO_USER }}" >> backend/.env
           echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> backend/.env
           echo "DB_CONNECTION_STRING=mongodb://${{ secrets.MONGO_USER }}:${{ secrets.MONGO_PASSWORD }}@mongo:27017/wt2?authSource=admin" >> backend/.env
-      
+      - name: Set frontend env variables
+        run: |
+          echo "VITE_API_BASE_URL=https://cscloud6-136.lnu.se/wt2/api/v1" >> frontend/.env
+          echo "VITE_PORT=3000" >> frontend/.env
+          echo "VITE_NODEJS_EXPRESS_PORT=3000" >> frontend/.env
+          
       - name: Tear down existing containers
         run: docker compose down  
         
