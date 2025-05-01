@@ -17,4 +17,5 @@ RUN npm install
 
 # 6. Build the application
 RUN chmod +x entrypoint.sh
-CMD ["./entrypoint.sh"]
+# CMD ["./entrypoint.sh"]
+ENTRYPOINT ["bash", "./entrypoint.sh"]
