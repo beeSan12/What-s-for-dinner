@@ -20,6 +20,7 @@ services:
     env_file:
       - ./backend/.env
     volumes:
+      - ./backend:/app
       - ./data:/app/data 
     depends_on:
       - mongo
@@ -35,6 +36,8 @@ services:
       - backend
     env_file:
       - ./frontend/.env
+    volumes:
+      - ./frontend:/app
     restart: always
 
 volumes:
