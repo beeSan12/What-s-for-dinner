@@ -12,7 +12,7 @@ const PublicRoute = ({ children }: { children: JSX.Element }) => {
   const token = localStorage.getItem('token')
 
   if (token) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/home" replace />
   }
 
   return children
