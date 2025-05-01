@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import {  Routes, Route, Navigate  } from 'react-router-dom'
+import { useEffect} from 'react'
 import Search from './components/pages/Search'
 import CreateShoppingList from './components/pages/CreateShoppingList'
 import FindRecipes from './components/pages/FindRecepies'
@@ -11,22 +12,34 @@ import Register from './components/pages/Register'
 import Navbar from './components/types/Navbar'
 import { AuthProvider, useAuth } from './components/context/AuthContext'
 
-function RedirectBasedOnAuth() {
-  const { isAuthenticated, loading } = useAuth()
+// function RedirectBasedOnAuth() {
+//   const { isAuthenticated, loading } = useAuth()
 
-  if (loading) return <p>Loading...</p>
-  return isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
-}
-
+//   if (loading) return <p>Loading...</p>
+//   return isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
+// }
 function App() {
+  const {isAuthenticated, loading} = useAuth()
+  // Navigate to the login screen if not authenticated, and wait for layout to be ready
+  
+  useEffect(() => {
+    if (
+      !isAuthenticated &&
+      !loading &&
+      window.location.pathname !== '/login' &&
+      window.location.pathname !== '/register'
+    ) {
+      <Navigate to="/login" replace /> // Safe navigation check to login
+    }
+  }, [ isAuthenticated, loading])
 
   return (
-    <BrowserRouter basename="/wt2">
+    // <BrowserRouter basename="/wt2">
         <AuthProvider>
           <Navbar />
           <Routes>
             {/* Root path decides where to go */}
-            <Route path="/" element={<RedirectBasedOnAuth />} />
+            {/* <Route path="/" element={<RedirectBasedOnAuth />} /> */}
             <Route
               path="/login"
               element={
@@ -44,7 +57,7 @@ function App() {
               }
             />
             <Route element={<PrivateRoute />}>
-              <Route path="/Home" element={<Home />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/search" element={<Search />} />
               <Route
                 path="/create-shopping-list"
@@ -57,7 +70,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>
-    </BrowserRouter>
+    // </BrowserRouter>
   )
 }
 

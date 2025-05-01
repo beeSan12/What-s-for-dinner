@@ -15,7 +15,6 @@ export const router = express.Router()
 
 router.use('/api/v1', v1Router)
 
-
 // Catch 404 (ALWAYS keep this as the last route).
 router.use('*', (req, res, next) => {
   next(new HttpError({
@@ -24,4 +23,3 @@ router.use('*', (req, res, next) => {
     data: { url: req.originalUrl }
   }))
 })
-
