@@ -20,5 +20,5 @@ COPY . .
 
 # 7. Build the application
 RUN chmod +x entrypoint.sh
-CMD ["./entrypoint.sh"]
-# ENTRYPOINT ["bash", "./entrypoint.sh"]
+# CMD ["./entrypoint.sh"]
+ENTRYPOINT ["bash", "./entrypoint.sh"]
