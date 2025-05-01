@@ -1,4 +1,4 @@
-import {  Routes, Route, Navigate  } from 'react-router-dom'
+import {  BrowserRouter , Routes, Route, Navigate  } from 'react-router-dom'
 import { useEffect} from 'react'
 import Search from './components/pages/Search'
 import CreateShoppingList from './components/pages/CreateShoppingList'
@@ -35,6 +35,7 @@ function App() {
 
   return (
     // <BrowserRouter basename="/wt2">
+      <BrowserRouter >
         <AuthProvider>
           <Navbar />
           <Routes>
@@ -70,6 +71,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>
+      </BrowserRouter >
     // </BrowserRouter>
   )
 }
