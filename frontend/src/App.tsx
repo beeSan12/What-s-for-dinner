@@ -1,4 +1,4 @@
-import {  BrowserRouter , Routes, Route, Navigate  } from 'react-router-dom'
+import {  Routes, Route, Navigate  } from 'react-router-dom'
 // import { useEffect} from 'react'
 import Search from './components/pages/Search'
 import CreateShoppingList from './components/pages/CreateShoppingList'
@@ -35,45 +35,50 @@ export default function App() {
   // }, [ isAuthenticated, loading])
 
   return (
-    // <BrowserRouter basename="/wt2">
-      <BrowserRouter >
-        {/* <AuthProvider> */}
-          <Navbar />
-          <Routes>
-            {/* Root path decides where to go */}
-            {/* <Route path="/" element={<RedirectBasedOnAuth />} /> */}
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/register"
-              element={
-                <PublicRoute>
-                  <Register />
-                </PublicRoute>
-              }
-            />
-            <Route element={<PrivateRoute />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/search" element={<Search />} />
-              <Route
-                path="/create-shopping-list"
-                element={<CreateShoppingList />}
-              />
-              <Route path="/find-recipe" element={<FindRecipes />} />
-              <Route path="/search-query" element={<SearchQuery />} />
-            </Route>
-            {/* Fallback: if no route matches */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        {/* </AuthProvider> */}
-      </BrowserRouter >
-    // </BrowserRouter>
+    <>
+    {/* <AuthProvider> */}
+      <Navbar />
+      <Routes>
+        {/* Root path decides where to go */}
+        {/* <Route path="/" element={<RedirectBasedOnAuth />} /> */}
+        {/* <Route
+          path="/"
+          element={
+            // <PublicRoute>
+              <Navigate to="/login" replace />
+            // </PublicRoute>
+          }
+        /> */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
+          <Route
+            path="/create-shopping-list"
+            element={<CreateShoppingList />}
+          />
+          <Route path="/find-recipe" element={<FindRecipes />} />
+          <Route path="/search-query" element={<SearchQuery />} />
+        </Route>
+        {/* Fallback: if no route matches */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   )
 }
 
