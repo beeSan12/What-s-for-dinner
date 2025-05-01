@@ -7,7 +7,7 @@ import { AuthProvider } from './components/context/AuthContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/wt2">
       <AuthProvider>
         <App />
       </AuthProvider>
