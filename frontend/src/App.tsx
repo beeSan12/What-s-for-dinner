@@ -1,5 +1,5 @@
 import {  BrowserRouter , Routes, Route, Navigate  } from 'react-router-dom'
-import { useEffect} from 'react'
+// import { useEffect} from 'react'
 import Search from './components/pages/Search'
 import CreateShoppingList from './components/pages/CreateShoppingList'
 import FindRecipes from './components/pages/FindRecepies'
@@ -10,7 +10,7 @@ import PublicRoute from './components/context/PublicRoute'
 import PrivateRoute from './components/context/PrivateRoute'
 import Register from './components/pages/Register'
 import Navbar from './components/types/Navbar'
-import { AuthProvider, useAuth } from './components/context/AuthContext'
+// import { AuthProvider, useAuth } from './components/context/AuthContext'
 
 // function RedirectBasedOnAuth() {
 //   const { isAuthenticated, loading } = useAuth()
@@ -18,25 +18,26 @@ import { AuthProvider, useAuth } from './components/context/AuthContext'
 //   if (loading) return <p>Loading...</p>
 //   return isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
 // }
-function App() {
-  const {isAuthenticated, loading} = useAuth()
+export default function App() {
+// function App() {
+  // const {isAuthenticated, loading} = useAuth()
   // Navigate to the login screen if not authenticated, and wait for layout to be ready
   
-  useEffect(() => {
-    if (
-      !isAuthenticated &&
-      !loading &&
-      window.location.pathname !== '/login' &&
-      window.location.pathname !== '/register'
-    ) {
-      <Navigate to="/login" replace /> // Safe navigation check to login
-    }
-  }, [ isAuthenticated, loading])
+  // useEffect(() => {
+  //   if (
+  //     !isAuthenticated &&
+  //     !loading &&
+  //     window.location.pathname !== '/login' &&
+  //     window.location.pathname !== '/register'
+  //   ) {
+  //     <Navigate to="/login" replace /> // Safe navigation check to login
+  //   }
+  // }, [ isAuthenticated, loading])
 
   return (
     // <BrowserRouter basename="/wt2">
       <BrowserRouter >
-        <AuthProvider>
+        {/* <AuthProvider> */}
           <Navbar />
           <Routes>
             {/* Root path decides where to go */}
@@ -70,10 +71,10 @@ function App() {
             {/* Fallback: if no route matches */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </AuthProvider>
+        {/* </AuthProvider> */}
       </BrowserRouter >
     // </BrowserRouter>
   )
 }
 
-export default App
+// export default App
