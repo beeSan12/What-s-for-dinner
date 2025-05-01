@@ -13,13 +13,20 @@ import { useAuth } from './AuthContext'
  *
  * @returns {JSX.Element} The PrivateRoute component or a redirect to the login page if the user is not authenticated.
  */
-const PrivateRoute = () => {
+export default function PrivateRoute() {
   const { isAuthenticated, loading } = useAuth()
-
   if (loading) return <p>Loading…</p>
-  if (!isAuthenticated) return <Navigate to="/login" replace />
-
-  return <Outlet />
+  return isAuthenticated
+    ? <Outlet />
+    : <Navigate to="/login" replace />
 }
+// const PrivateRoute = () => {
+//   const { isAuthenticated, loading } = useAuth()
 
-export default PrivateRoute
+//   if (loading) return <p>Loading…</p>
+//   if (!isAuthenticated) return <Navigate to="/login" replace />
+
+//   return <Outlet />
+// }
+
+// export default PrivateRoute

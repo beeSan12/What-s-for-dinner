@@ -39,6 +39,7 @@ export default function App() {
     {/* <AuthProvider> */}
       <Navbar />
       <Routes>
+      <Route index element={<Navigate to="/login" replace />} />
         {/* Root path decides where to go */}
         {/* <Route path="/" element={<RedirectBasedOnAuth />} /> */}
         {/* <Route
@@ -50,7 +51,7 @@ export default function App() {
           }
         /> */}
         <Route
-          path="/login"
+          path="login"
           element={
             <PublicRoute>
               <Login />
@@ -58,7 +59,7 @@ export default function App() {
           }
         />
         <Route
-          path="/register"
+          path="register"
           element={
             <PublicRoute>
               <Register />
@@ -66,14 +67,15 @@ export default function App() {
           }
         />
         <Route element={<PrivateRoute />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Search />} />
+          <Route path="home" element={<Home />} />
+          <Route path="search" element={<Search />} />
           <Route
-            path="/create-shopping-list"
+            path="create-shopping-list"
             element={<CreateShoppingList />}
           />
-          <Route path="/find-recipe" element={<FindRecipes />} />
-          <Route path="/search-query" element={<SearchQuery />} />
+          <Route path="find-recipe" element={<FindRecipes />} />
+          <Route path="search-query" element={<SearchQuery />} />
+          <Route path="" element={<Navigate to="home" replace />} />
         </Route>
         {/* Fallback: if no route matches */}
         <Route path="*" element={<Navigate to="/" replace />} />

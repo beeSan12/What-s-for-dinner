@@ -8,14 +8,15 @@
 import { JSX } from 'react'
 import { Navigate } from 'react-router-dom'
 
-const PublicRoute = ({ children }: { children: JSX.Element }) => {
+export default function PublicRoute({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem('token')
+  return token
+  ? <Navigate to="/home" replace />
+  : <>{children}</>
+  // if (token) {
+  //   return <Navigate to="/home" replace />
+  // }
 
-  if (token) {
-    return <Navigate to="/home" replace />
-  }
-
-  return children
+  // return children
 }
 
-export default PublicRoute
