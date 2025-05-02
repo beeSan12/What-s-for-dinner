@@ -38,7 +38,7 @@ for (let i = 0; i < products.length; i += BATCH_SIZE) {
     } catch (err) {
       if (err.message.includes('Rate limit') || err.message.includes('Connection error')) {
         console.warn('Rate limit hit – retrying in 1 second...')
-        await new Promise(res => setTimeout(res, 1000))
+        await new Promise(resolve => setTimeout(resolve, 1000))
       } else {
         throw err
       }
@@ -54,7 +54,7 @@ for (let i = 0; i < products.length; i += BATCH_SIZE) {
     })
   }
 
-  console.log(`✅ Batch ${i/BATCH_SIZE + 1} done.`)
+  console.log(`✅ Batch ${i / BATCH_SIZE + 1} done.`)
 }
 
 console.log('🎉 All embeddings created!')
