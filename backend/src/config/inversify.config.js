@@ -17,6 +17,10 @@ import { UserModel } from '../models/UserModel.js'
 import { UserRepository } from '../repositories/UserRepository.js'
 import { UserService } from '../services/UserService.js'
 import { UserController } from '../controllers/UserController.js'
+// Auth modules
+import { AuthService } from '../services/AuthService.js'
+import { AuthController } from '../controllers/AuthController.js'
+import { AuthRepository } from '../repositories/AuthRepository.js'
 // Shopping List modules
 import { ShoppingListModel } from '../models/ShoppingListModel.js'
 import { ShoppingListRepository } from '../repositories/ShoppingListRepository.js'
@@ -53,6 +57,12 @@ export const USERTYPES = {
   UserRepository: Symbol.for('UserRepository'),
   UserService: Symbol.for('UserService'),
   UserModel: Symbol.for('UserModel')
+}
+
+export const AUTHTYPES = {
+  AuthController: Symbol.for('AuthController'),
+  AuthRepository: Symbol.for('AuthRepository'),
+  AuthService: Symbol.for('AuthService')
 }
 
 export const SHOPPINGLISTTYPES = {
@@ -105,6 +115,15 @@ decorate(injectable(), UserController)
 decorate(inject(USERTYPES.UserModel), UserRepository, 0)
 decorate(inject(USERTYPES.UserRepository), UserService, 0)
 decorate(inject(USERTYPES.UserService), UserController, 0)
+
+// Decorate Auth classes
+decorate(injectable(), AuthRepository)
+decorate(injectable(), AuthService)
+decorate(injectable(), AuthController)
+
+decorate(inject(USERTYPES.UserModel), AuthRepository, 0)
+decorate(inject(AUTHTYPES.AuthRepository), AuthService, 0)
+decorate(inject(AUTHTYPES.AuthService), AuthController, 0)
 
 // Decorate Shopping List classes
 decorate(injectable(), ShoppingListRepository)
@@ -162,6 +181,12 @@ container.bind(USERTYPES.UserController).to(UserController).inSingletonScope()
 container.bind(USERTYPES.UserRepository).to(UserRepository).inSingletonScope()
 container.bind(USERTYPES.UserService).to(UserService).inSingletonScope()
 container.bind(USERTYPES.UserModel).toConstantValue(UserModel)
+
+// Auth bindings
+container.bind(AUTHTYPES.AuthController).to(AuthController).inSingletonScope()
+container.bind(AUTHTYPES.AuthRepository).to(AuthRepository).inSingletonScope()
+container.bind(AUTHTYPES.AuthService).to(AuthService).inSingletonScope()
+container.bind(AUTHTYPES.UserModel).toConstantValue(UserModel)
 
 // Shopping List bindings
 container.bind(SHOPPINGLISTTYPES.ShoppingListController).to(ShoppingListController).inSingletonScope()

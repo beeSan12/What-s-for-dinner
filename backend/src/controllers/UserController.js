@@ -40,17 +40,4 @@ export class UserController {
     const result = await this.#service.register(req.body)
     res.json(result)
   }
-
-  /**
-   * Handles the request to login a user.
-   *
-   * @param {object} req - Express request object.
-   * @param {object} res - Express response object.
-   * @param {Function} next - Express next middleware function.
-   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
-   */
-  async login (req, res, next) {
-    const result = await this.#service.login(req.body)
-    res.json(result)
-  }
 }

@@ -1,4 +1,4 @@
-import {  Routes, Route, Navigate  } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 // import { useEffect} from 'react'
 import Search from './components/pages/Search'
 import CreateShoppingList from './components/pages/CreateShoppingList'
@@ -19,10 +19,10 @@ import Navbar from './components/types/Navbar'
 //   return isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
 // }
 export default function App() {
-// function App() {
+  // function App() {
   // const {isAuthenticated, loading} = useAuth()
   // Navigate to the login screen if not authenticated, and wait for layout to be ready
-  
+
   // useEffect(() => {
   //   if (
   //     !isAuthenticated &&
@@ -36,10 +36,10 @@ export default function App() {
 
   return (
     <>
-    {/* <AuthProvider> */}
+      {/* <AuthProvider> */}
       <Navbar />
       <Routes>
-      {/* <Route index element={<Navigate to="/login" replace />} /> */}
+        {/* <Route index element={<Navigate to="/login" replace />} /> */}
         {/* Root path decides where to go */}
         {/* <Route path="/" element={<RedirectBasedOnAuth />} /> */}
         {/* <Route

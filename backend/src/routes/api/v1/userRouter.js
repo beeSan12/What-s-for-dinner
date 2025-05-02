@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import { container, USERTYPES } from '../../../config/inversify.config.js'
+import { container, USERTYPES, AUTHTYPES } from '../../../config/inversify.config.js'
 
 dotenv.config()
 
@@ -13,6 +13,12 @@ router.post('/register', (req, res, next) =>
 
 // Login
 router.post('/login', (req, res, next) =>
-  container.get(USERTYPES.UserController).login(req, res, next)
+  container.get(AUTHTYPES.AuthController).login(req, res, next)
 )
+
+// Refresh token
+router.post('/refresh', (req, res, next) =>
+  container.get(AUTHTYPES.AuthController).refresh(req, res, next)
+)
+
 export { router as userRouter }

@@ -14,10 +14,11 @@ import { askGptFallback } from '../utils/embedding.js'
 export class RecipeService extends MongooseServiceBase {
   /**
    * Generate a recipe from a given context and prompt.
+   *
    * @param {object} options - The options object.
    * @param {string} options.context - The context string containing the ingredients.
    * @param {string} options.prompt - The prompt string for the recipe.
-   * @returns {Promise<{recipe: string}>}
+   * @returns {Promise<{recipe: string}>} - The generated recipe.
    */
   async generateRecipeFromService ({ context, prompt }) {
     const fullPrompt = `

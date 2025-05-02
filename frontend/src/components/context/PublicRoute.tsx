@@ -10,13 +10,10 @@ import { Navigate } from 'react-router-dom'
 
 export default function PublicRoute({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem('token')
-  return token
-  ? <Navigate to="/home" replace />
-  : <>{children}</>
+  return token ? <Navigate to="/home" replace /> : <>{children}</>
   // if (token) {
   //   return <Navigate to="/home" replace />
   // }
 
   // return children
 }
-
