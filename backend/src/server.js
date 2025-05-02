@@ -18,6 +18,8 @@ import express from 'express'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 // Application modules.
 import { connectToDatabase } from './config/mongoose.js'
@@ -68,6 +70,11 @@ try {
   app.set('trust proxy', 1) // Trust the first proxy.
   // Use the session middleware for managing secure sessions.
   // app.use(sessionMiddleware)
+  const directoryFullName = dirname(fileURLToPath(import.meta.url))
+  console.log(`Directory: ${directoryFullName}`)
+
+  const distPath = join(directoryFullName, '..', 'frontend', 'dist')
+  app.use('/wt2', express.static(distPath))
 
   app.use(cookieParser())
 
@@ -89,6 +96,7 @@ try {
     req.requestUuid = randomUUID()
     httpContext.set('request', req)
 
+    res.locals.baseURL = process.env.BASE_URL || '/'
     next()
   })
 
