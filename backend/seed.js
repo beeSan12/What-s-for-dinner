@@ -6,7 +6,6 @@
 
 import fs from 'fs'
 import zlib from 'zlib'
-import path from 'path'
 import csv from 'csv-parser'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
@@ -37,7 +36,7 @@ fs.createReadStream(foodFactsData)
       mongoose.disconnect()
       process.exit()
     }
-  
+
     try {
       if (row.product_name && row.brands && row.image_url) {
         await ProductModel.create({
