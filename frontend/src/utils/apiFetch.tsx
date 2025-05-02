@@ -17,7 +17,6 @@ export const apiFetch = async (
   url: string,
   options: RequestInit = {},
 ): Promise<Response> => {
-
   const token = localStorage.getItem('token')
 
   const response = await fetch(url, {
@@ -41,4 +40,3 @@ export const apiFetch = async (
 
   return response
 }
-
