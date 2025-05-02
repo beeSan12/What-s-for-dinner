@@ -66,15 +66,17 @@ export default function App() {
             </PublicRoute>
           }
         />
-        <Route element={<PrivateRoute />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/search" element={<Search />} />
+        {/* <Route element={<PrivateRoute />}> */}
+        <Route path="/" element={<PrivateRoute/>}>
+          <Route index element={<Navigate to="home" replace />} />
+          <Route path="home" element={<Home />} />
+          <Route path="search" element={<Search />} />
           <Route
-            path="/create-shopping-list"
+            path="create-shopping-list"
             element={<CreateShoppingList />}
           />
-          <Route path="/find-recipe" element={<FindRecipes />} />
-          <Route path="/search-query" element={<SearchQuery />} />
+          <Route path="find-recipe" element={<FindRecipes />} />
+          <Route path="search-query" element={<SearchQuery />} />
           <Route path="/" element={<Navigate to="home" replace />} />
         </Route>
         {/* Fallback: if no route matches */}
