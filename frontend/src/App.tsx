@@ -10,46 +10,12 @@ import PublicRoute from './components/context/PublicRoute'
 import PrivateRoute from './components/context/PrivateRoute'
 import Register from './components/pages/Register'
 import Navbar from './components/types/Navbar'
-// import { AuthProvider, useAuth } from './components/context/AuthContext'
 
-// function RedirectBasedOnAuth() {
-//   const { isAuthenticated, loading } = useAuth()
-
-//   if (loading) return <p>Loading...</p>
-//   return isAuthenticated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
-// }
 export default function App() {
-  // function App() {
-  // const {isAuthenticated, loading} = useAuth()
-  // Navigate to the login screen if not authenticated, and wait for layout to be ready
-
-  // useEffect(() => {
-  //   if (
-  //     !isAuthenticated &&
-  //     !loading &&
-  //     window.location.pathname !== '/login' &&
-  //     window.location.pathname !== '/register'
-  //   ) {
-  //     <Navigate to="/login" replace /> // Safe navigation check to login
-  //   }
-  // }, [ isAuthenticated, loading])
-
   return (
     <>
-      {/* <AuthProvider> */}
       <Navbar />
       <Routes>
-        {/* <Route index element={<Navigate to="/login" replace />} /> */}
-        {/* Root path decides where to go */}
-        {/* <Route path="/" element={<RedirectBasedOnAuth />} /> */}
-        {/* <Route
-          path="/"
-          element={
-            // <PublicRoute>
-              <Navigate to="/login" replace />
-            // </PublicRoute>
-          }
-        /> */}
         <Route
           path="/login"
           element={
@@ -66,7 +32,6 @@ export default function App() {
             </PublicRoute>
           }
         />
-        {/* <Route element={<PrivateRoute />}> */}
         <Route path="/" element={<PrivateRoute/>}>
           <Route index element={<Navigate to="home" replace />} />
           <Route path="home" element={<Home />} />
@@ -85,5 +50,3 @@ export default function App() {
     </>
   )
 }
-
-// export default App

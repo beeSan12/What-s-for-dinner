@@ -26,7 +26,6 @@ import { connectToDatabase } from './config/mongoose.js'
 import { morganLogger } from './config/morgan.js'
 import { limiter } from './config/rateLimiter.js'
 import { logger } from './config/winston.js'
-// import { sessionMiddleware } from './config/session.js'
 import { router } from './routes/router.js'
 
 dotenv.config()
@@ -69,7 +68,6 @@ try {
 
   app.set('trust proxy', 1) // Trust the first proxy.
   // Use the session middleware for managing secure sessions.
-  // app.use(sessionMiddleware)
   const directoryFullName = dirname(fileURLToPath(import.meta.url))
   console.log(`Directory: ${directoryFullName}`)
 
