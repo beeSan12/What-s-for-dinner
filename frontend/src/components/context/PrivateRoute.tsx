@@ -18,13 +18,3 @@ export default function PrivateRoute() {
   if (loading) return <p>Loading…</p>
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />
 }
-// const PrivateRoute = () => {
-//   const { isAuthenticated, loading } = useAuth()
-
-//   if (loading) return <p>Loading…</p>
-//   if (!isAuthenticated) return <Navigate to="/login" replace />
-
-//   return <Outlet />
-// }
-
-// export default PrivateRoute
