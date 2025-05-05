@@ -133,7 +133,6 @@ export default function FindRecipes() {
    * Handles the generation of recipes based on selected products.
    */
   const handleGenerateRecipe = async () => {
-    // searchBasedOnProducts()
     if (recipeItems.length === 0) {
       alert('You must select at least one product.')
       return
@@ -150,7 +149,6 @@ export default function FindRecipes() {
           body: JSON.stringify({
             hitIds: recipeItems.map((item) => item._id),
             prompt: 'Please provide recipes (ingredients & instructions) in English based on these ingredients.'
-            // prompt: '',
           }),
         },
       )
@@ -202,7 +200,6 @@ export default function FindRecipes() {
           <h3>Selected product: {selectedProduct.product_name}</h3>
           <input
             type="number"
-            // min="1"
             value={quantity}
             onChange={(e) => setQuantity((e.target.value))}
             style={styles.input}
@@ -266,18 +263,6 @@ export default function FindRecipes() {
         </div>
       )}
 
-      {/* Sökfältet */}
-      {/* <div style={styles.searchContainer}>
-        <h3>Search for products to generate recipe</h3>
-        <SearchProducts
-          onProductSelect={handleProductSelect}
-          maxResults={5}
-          minimalLayout={true}
-          customInputStyle={styles.searchInput}
-          showSelectButton={true}
-          hideSearchButton={false}
-          customButtonStyle={styles.searchButton}
-        /> */}
       {results.length > 0 && (
         <div style={styles.recipeCardsContainer}>
           {generatedRecipes.map((recipe, index) => (
@@ -300,7 +285,6 @@ export default function FindRecipes() {
           ))}
         </div>
       )}
-      {/* </div> */}
     </div>
   )
 }
@@ -319,26 +303,12 @@ const styles = {
     minHeight: '100vh', 
     maxWidth: '100%',
     width: '1600px',
-    // width: '100%',
-    // height: '3000px',
     height: '100%',
     gap: '30px',
     paddingTop: '150px',
     color: '#2f4f4f',
     boxSizing: 'border-box',
   },
-  // container: {
-  //   display: 'flex',
-  //   flexDirection: 'column',
-  //   alignItems: 'center',
-  //   justifyContent: 'flex-start',  // börja högst upp
-  //   padding: '20px',
-  //   gap: '30px',
-  //   minHeight: '100vh',             // ta hela viewport-höjden om du vill
-  //   width: '100%',
-  //   boxSizing: 'border-box',
-  //   backgroundColor: 'rgba(232,222,212,0.3)',
-  // },
   header: {
     backgroundImage: `url(${recipe})`,
     backgroundPosition: 'center',
@@ -457,45 +427,12 @@ const styles = {
     margin: '10px',
     fontWeight: 'bold',
   },
-  // card: {
-  //   backgroundColor: '#fff',
-  //   padding: '10px',
-  //   borderRadius: '8px',
-  //   boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
-  // },
   image: {
     width: '100%',
     height: '150px',
     objectFit: 'cover',
     borderRadius: '4px',
   },
-  // title: {
-  //   margin: 0,
-  //   fontSize: '1.1rem',
-  // },
-  // subtitle: {
-  //   margin: 0,
-  //   fontSize: '14px',
-  //   fontStyle: 'italic',
-  //   color: '#555',
-  // },
-  // categories: {
-  //   margin: 0,
-  //   fontSize: '0.9rem',
-  //   color: '#666',
-  // },
-  // score: {
-  //   fontSize: '0.8rem',
-  //   color: '#666',
-  // },
-  // recipeButton: {
-  //   padding: '8px',
-  //   border: 'none',
-  //   borderRadius: '4px',
-  //   backgroundColor: '#2f4f4f',
-  //   color: '#fff',
-  //   cursor: 'pointer',
-  // },
   searchButton: {
     width: '100%',
     maxWidth: '100px',
@@ -521,8 +458,6 @@ const styles = {
   recipeCardsContainer: {
     marginTop: '20px',
     width: '100%',
-    // display: 'grid',
-    // gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     display: 'flex',
     flexDirection: 'column',
     gap: '20px',
@@ -561,14 +496,4 @@ const styles = {
     color: '#2f4f4f',
     zIndex: 2,
   },
-  // paginationBtn: {
-  //   margin: '5px',
-  //   padding: '6px 10px',
-  //   borderRadius: '5px',
-  //   border: 'none',
-  //   backgroundColor: '#2f4f4f',
-  //   color: 'white',
-  //   cursor: 'pointer',
-  //   fontWeight: 'bold',
-  // },
 } as const
