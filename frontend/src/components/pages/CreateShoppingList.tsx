@@ -35,6 +35,7 @@ export default function CreateShoppingList() {
   const [quantity, setQuantity] = useState<number>(1)
   const [unit, setUnit] = useState<string>('st')
   const [currentPage, setCurrentPage] = useState(0)
+  // const [searchResetKey, setSearchResetKey] = useState(0)
   const itemsPerPage = 3
 
   // Pagination logic
@@ -76,10 +77,16 @@ export default function CreateShoppingList() {
       unit,
     }
 
-    setShoppingList((prev) => [...prev, newItem])
+
+    setShoppingList(prev => {
+      const next = [...prev, newItem]
+      console.log('New List:', next)
+      return next
+    })
+    // setShoppingList((prev) => [...prev, newItem])
     setSelectedProduct(null)
     setQuantity(1)
-    setUnit('')
+    setUnit('st')
   }
 
   /**
@@ -125,8 +132,11 @@ export default function CreateShoppingList() {
       if (res.ok) {
         alert('List saved successfully!')
         setListName('')
+        setEditingName(true) 
         setShoppingList([])
         setSelectedProduct(null)
+        setCurrentPage(0)
+        // setSearchResetKey(k => k + 1)
       } else {
         alert('Failed to save the list.')
       }
@@ -147,6 +157,7 @@ export default function CreateShoppingList() {
             <p>Search Products</p>
           </div>
           <SearchProducts
+            // reset={searchResetKey}
             onProductSelect={handleProductSelect}
             maxResults={3}
             currentPage={currentPage}
@@ -457,7 +468,7 @@ const styles = {
     padding: '0px',
     margin: '10px',
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-    maxWidth: '500px',
+    // maxWidth: '500px',
     width: '100%',
     minHeight: '200px',
     justifyContent: 'space-between',
