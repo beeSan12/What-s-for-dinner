@@ -35,8 +35,13 @@ export const apiFetch = async (
     window.location.href = '/login'
     // Do not return the response
     // Instead, reject the promise with an error
-    return Promise.reject(new Error('Unauthorized'))
+    return new Response(null, {
+      status: 401,
+      statusText: 'Unauthorized'
+    })
   }
+  //   return Promise.reject(new Error('Unauthorized'))
+  // }
 
   return response
 }

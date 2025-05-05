@@ -17,6 +17,7 @@ interface Product {
   brands: string
   categories?: string
   image_url?: string
+  // reset?: number
   source: 'custom' | 'global'
 }
 
@@ -28,6 +29,7 @@ interface Props {
   minimalLayout?: boolean
   showSelectButton?: boolean // Optional prop to show select button
   hideSearchButton?: boolean
+  // reset?: number
   customInputStyle?: React.CSSProperties
   customButtonStyle?: React.CSSProperties
 }
@@ -43,6 +45,7 @@ const SearchProducts: React.FC<Props> = ({
   minimalLayout,
   showSelectButton,
   hideSearchButton,
+  // reset,
   customInputStyle,
   customButtonStyle,
 }) => {
@@ -62,6 +65,15 @@ const SearchProducts: React.FC<Props> = ({
   const [customBrand, setCustomBrand] = useState('')
   const [customCategory, setCustomCategory] = useState('')
   const [customImageUrl, setCustomImageUrl] = useState('')
+
+  // /**
+  //  * Resets the search input and results when the reset prop changes.
+  //  */
+  // useEffect(() => {
+  //   setQuery('')
+  //   setResults([])
+  //   setSearched(false)
+  // }, [reset])
 
   /**
    * Handles the search action when the user clicks the search button or presses Enter.
