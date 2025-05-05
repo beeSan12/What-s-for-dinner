@@ -151,8 +151,25 @@ export default function FindRecipes() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}></div>
-      <h1>Find Recipes by Your Products</h1>
+      <div style={styles.header} />
+      <h1 style={styles.h1}>Find Recipes by Your Products</h1>
+      { /* 1) Search for product */ }
+      {/* <div style={styles.searchContainer}> */}
+      {recipeItems.length === 0 && !selectedProduct && generatedRecipes.length === 0 && (
+        <div style={styles.searchContainer}>
+        <h3>Search for products to generate recipe</h3>
+        <SearchProducts
+          onProductSelect={handleProductSelect}
+          maxResults={5}
+          minimalLayout={true}
+          customInputStyle={styles.searchInput}
+          showSelectButton={true}
+          hideSearchButton={false}
+          customButtonStyle={styles.searchButton}
+        />
+      </div>
+      )}
+      { /* 2) If a product is chosen, choose quantity */ }
       {selectedProduct && (
         <div style={styles.selectedBox}>
           <h3>Selected product: {selectedProduct.product_name}</h3>
@@ -186,7 +203,7 @@ export default function FindRecipes() {
         </div>
       )}
 
-      {/* Lista med valda produkter */}
+      {/* List with chosen items */}
       {recipeItems.length > 0 && (
         <div style={styles.selectedProductsContainer}>
           <h3>Selected products:</h3>
@@ -212,7 +229,7 @@ export default function FindRecipes() {
       )}
 
       {/* Sökfältet */}
-      <div style={styles.searchContainer}>
+      {/* <div style={styles.searchContainer}>
         <h3>Search for products to generate recipe</h3>
         <SearchProducts
           onProductSelect={handleProductSelect}
@@ -222,17 +239,17 @@ export default function FindRecipes() {
           showSelectButton={true}
           hideSearchButton={false}
           customButtonStyle={styles.searchButton}
-        />
-        {results.length > 0 && (
-          <div style={styles.recipeCardsContainer}>
-            {generatedRecipes.map((recipe, index) => (
-              <div key={index} style={styles.recipeCard}>
-                <pre style={styles.recipeText}>{recipe}</pre>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+        /> */}
+      {results.length > 0 && (
+        <div style={styles.recipeCardsContainer}>
+          {generatedRecipes.map((recipe, index) => (
+            <div key={index} style={styles.recipeCard}>
+              <pre style={styles.recipeText}>{recipe}</pre>
+            </div>
+          ))}
+        </div>
+      )}
+      {/* </div> */}
     </div>
   )
 }
@@ -245,17 +262,32 @@ const styles = {
     padding: '20px',
     margin: '20px',
     justifyContent: 'flex-start',
-    alignItems: 'center',
+    alignItems: 'stretch',
     display: 'flex',
     flexDirection: 'column',
-    maxHeight: '100%',
+    minHeight: '100vh', 
     maxWidth: '100%',
     width: '1600px',
-    height: '3000px',
+    // width: '100%',
+    // height: '3000px',
+    height: '100%',
     gap: '30px',
     paddingTop: '150px',
     color: '#2f4f4f',
+    boxSizing: 'border-box',
   },
+  // container: {
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  //   alignItems: 'center',
+  //   justifyContent: 'flex-start',  // börja högst upp
+  //   padding: '20px',
+  //   gap: '30px',
+  //   minHeight: '100vh',             // ta hela viewport-höjden om du vill
+  //   width: '100%',
+  //   boxSizing: 'border-box',
+  //   backgroundColor: 'rgba(232,222,212,0.3)',
+  // },
   header: {
     backgroundImage: `url(${recipe})`,
     backgroundPosition: 'center',
@@ -274,6 +306,10 @@ const styles = {
     fontSize: '20px',
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
+  },
+  h1: {
+    alignSelf: 'center',
   },
   selectedBox: {
     backgroundColor: '#eee',
@@ -297,8 +333,10 @@ const styles = {
     gap: '20px',
     alignItems: 'center',
     width: '100%',
+    alignSelf: 'center',
     maxWidth: '800px',
     height: '100%',
+    marginTop: '20px',
     justifyContent: 'center',
   },
   searchInput: {
