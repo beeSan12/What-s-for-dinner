@@ -8,6 +8,7 @@ import { useState } from 'react'
 import SearchProducts from '../types/SearchProducts'
 import { apiFetch } from '../../utils/apiFetch'
 import recipe from '../../images/recipe.jpg'
+import { MdClose } from 'react-icons/md'
 
 interface Product {
   _id: string
@@ -39,9 +40,20 @@ export default function FindRecipes() {
   const [results, setResults] = useState<EmbeddingMatch[]>([])
   const [recipeItems, setRecipeItems] = useState<RecipeItem[]>([])
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [quantity, setQuantity] = useState<number>(1)
+  const [quantity, setQuantity] = useState<string>('1')
   const [unit, setUnit] = useState<string>('st')
   const [generatedRecipes, setGeneratedRecipes] = useState<string[]>([])
+  const [addingMore, setAddingMore] = useState(false)
+
+  /**
+   * Resets the search results and clears the selected products.
+   */
+  const resetSearch = () => {
+    setGeneratedRecipes([])
+    setRecipeItems([])
+    setAddingMore(false)
+    setSelectedProduct(null)
+  }
 
   /**
    * Handles the selection of products.
@@ -50,7 +62,7 @@ export default function FindRecipes() {
    */
   const handleProductSelect = (product: Product) => {
     setSelectedProduct(product)
-    setQuantity(1)
+    setQuantity('1')
     setUnit('st')
   }
 
@@ -59,12 +71,24 @@ export default function FindRecipes() {
    */
   const handleAddSelectedProduct = () => {
     if (selectedProduct) {
+      const qty = parseInt(quantity, 10)
+      if (isNaN(qty) || qty < 1) {
+        alert('Add a valid quantity!')
+        return
+      }
+    
+      if (recipeItems.some(p => p._id === selectedProduct._id)) {
+        alert('Product already added!')
+        return
+      }
       if (!recipeItems.some((p) => p._id === selectedProduct._id)) {
         setRecipeItems((prev) => [
           ...prev,
-          { ...selectedProduct, quantity, unit },
+          { ...selectedProduct, quantity: qty, unit },
         ])
         setSelectedProduct(null)
+        setAddingMore(false) 
+        setQuantity('1')
       } else {
         alert('Product already added!')
       }
@@ -109,11 +133,13 @@ export default function FindRecipes() {
    * Handles the generation of recipes based on selected products.
    */
   const handleGenerateRecipe = async () => {
-    searchBasedOnProducts()
+    // searchBasedOnProducts()
     if (recipeItems.length === 0) {
       alert('You must select at least one product.')
       return
     }
+
+    await searchBasedOnProducts()
 
     try {
       const res = await apiFetch(
@@ -123,7 +149,8 @@ export default function FindRecipes() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             hitIds: recipeItems.map((item) => item._id),
-            prompt: '',
+            prompt: 'Please provide recipes (ingredients & instructions) in English based on these ingredients.'
+            // prompt: '',
           }),
         },
       )
@@ -155,7 +182,7 @@ export default function FindRecipes() {
       <h1 style={styles.h1}>Find Recipes by Your Products</h1>
       { /* 1) Search for product */ }
       {/* <div style={styles.searchContainer}> */}
-      {recipeItems.length === 0 && !selectedProduct && generatedRecipes.length === 0 && (
+      {(recipeItems.length === 0 || addingMore) && !selectedProduct && generatedRecipes.length === 0 && (
         <div style={styles.searchContainer}>
         <h3>Search for products to generate recipe</h3>
         <SearchProducts
@@ -175,9 +202,9 @@ export default function FindRecipes() {
           <h3>Selected product: {selectedProduct.product_name}</h3>
           <input
             type="number"
-            min="1"
+            // min="1"
             value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
+            onChange={(e) => setQuantity((e.target.value))}
             style={styles.input}
           />
           <select
@@ -221,9 +248,20 @@ export default function FindRecipes() {
             ))}
           </ul>
           {recipeItems.length > 0 && (
-            <button style={styles.button} onClick={handleGenerateRecipe}>
-              Find Recipes
+            <div style={styles.selectedProductsButtons}>
+              <button style={styles.button} onClick={handleGenerateRecipe}>
+                Find Recipes
+              </button>
+              <button 
+              style={styles.button}
+              onClick={() => {
+                setAddingMore(true)
+                setSelectedProduct(null)
+              }}
+            >
+              Add more products
             </button>
+          </div>
           )}
         </div>
       )}
@@ -244,7 +282,20 @@ export default function FindRecipes() {
         <div style={styles.recipeCardsContainer}>
           {generatedRecipes.map((recipe, index) => (
             <div key={index} style={styles.recipeCard}>
+              <button
+                onClick={resetSearch}
+                style={styles.closeButton}
+                aria-label="Close recipe"
+              >
+                <MdClose />
+              </button>
               <pre style={styles.recipeText}>{recipe}</pre>
+              <button
+                onClick={resetSearch}
+                style={styles.button}
+              >
+                New Search
+              </button>
             </div>
           ))}
         </div>
@@ -323,6 +374,13 @@ const styles = {
     gap: '10px',
     maxWidth: '400px',
     width: '100%',
+    alignSelf: 'center',
+  },
+  selectedProductsButtons: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '10px',
+    marginTop: '10px',
   },
   searchContainer: {
     backgroundColor: 'rgba(245, 232, 215)',
@@ -357,6 +415,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     gap: '10px',
+    alignSelf: 'center',
   },
   button: {
     width: '100%',
@@ -398,45 +457,45 @@ const styles = {
     margin: '10px',
     fontWeight: 'bold',
   },
-  card: {
-    backgroundColor: '#fff',
-    padding: '10px',
-    borderRadius: '8px',
-    boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
-  },
+  // card: {
+  //   backgroundColor: '#fff',
+  //   padding: '10px',
+  //   borderRadius: '8px',
+  //   boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
+  // },
   image: {
     width: '100%',
     height: '150px',
     objectFit: 'cover',
     borderRadius: '4px',
   },
-  title: {
-    margin: 0,
-    fontSize: '1.1rem',
-  },
-  subtitle: {
-    margin: 0,
-    fontSize: '14px',
-    fontStyle: 'italic',
-    color: '#555',
-  },
-  categories: {
-    margin: 0,
-    fontSize: '0.9rem',
-    color: '#666',
-  },
-  score: {
-    fontSize: '0.8rem',
-    color: '#666',
-  },
-  recipeButton: {
-    padding: '8px',
-    border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#2f4f4f',
-    color: '#fff',
-    cursor: 'pointer',
-  },
+  // title: {
+  //   margin: 0,
+  //   fontSize: '1.1rem',
+  // },
+  // subtitle: {
+  //   margin: 0,
+  //   fontSize: '14px',
+  //   fontStyle: 'italic',
+  //   color: '#555',
+  // },
+  // categories: {
+  //   margin: 0,
+  //   fontSize: '0.9rem',
+  //   color: '#666',
+  // },
+  // score: {
+  //   fontSize: '0.8rem',
+  //   color: '#666',
+  // },
+  // recipeButton: {
+  //   padding: '8px',
+  //   border: 'none',
+  //   borderRadius: '4px',
+  //   backgroundColor: '#2f4f4f',
+  //   color: '#fff',
+  //   cursor: 'pointer',
+  // },
   searchButton: {
     width: '100%',
     maxWidth: '100px',
@@ -462,11 +521,15 @@ const styles = {
   recipeCardsContainer: {
     marginTop: '20px',
     width: '100%',
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    // display: 'grid',
+    // gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    display: 'flex',
+    flexDirection: 'column',
     gap: '20px',
+    alignItems: 'center', 
   },
   recipeCard: {
+    position: 'relative',
     backgroundColor: '#fff',
     padding: '20px',
     borderRadius: '8px',
@@ -476,6 +539,8 @@ const styles = {
     width: '90%',
     maxWidth: '800px',
     margin: '20px',
+    alignSelf: 'center',
+    zIndex: 1,
   },
   recipeText: {
     fontSize: '1rem',
@@ -485,14 +550,25 @@ const styles = {
     wordBreak: 'break-word',
     overflowWrap: 'break-word',
   },
-  paginationBtn: {
-    margin: '5px',
-    padding: '6px 10px',
-    borderRadius: '5px',
+  closeButton: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    background: 'none',
     border: 'none',
-    backgroundColor: '#2f4f4f',
-    color: 'white',
+    fontSize: '24px',
     cursor: 'pointer',
-    fontWeight: 'bold',
+    color: '#2f4f4f',
+    zIndex: 2,
   },
+  // paginationBtn: {
+  //   margin: '5px',
+  //   padding: '6px 10px',
+  //   borderRadius: '5px',
+  //   border: 'none',
+  //   backgroundColor: '#2f4f4f',
+  //   color: 'white',
+  //   cursor: 'pointer',
+  //   fontWeight: 'bold',
+  // },
 } as const
