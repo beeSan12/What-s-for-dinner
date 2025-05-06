@@ -12,15 +12,26 @@ import SearchProducts from '../types/SearchProducts'
 import coupleWritingList from '../../images/CoupleWritingList.png'
 import { FaRegEdit } from 'react-icons/fa'
 import { MdClose } from 'react-icons/md'
+import NutritionChart from '../types/NutritionChart'
+import { Product } from '../types/Product'
 
-interface Product {
-  _id: string
-  product_name: string
+// interface Product {
+//   _id: string
+//   product_name: string
+//   barcode: string
+// }
+
+interface Nutrition {
+  calories: number
+  protein: number
+  carbs: number
+  fat: number
 }
 
 interface ShoppingItem extends Product {
   quantity: number
   unit: string
+  nutrition: Nutrition
 }
 
 /**
@@ -62,7 +73,7 @@ export default function CreateShoppingList() {
    *
    * @returns {void}
    */
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (!selectedProduct || !quantity || !unit) return
 
     const alreadyAdded = shoppingList.find((p) => p._id === selectedProduct._id)
@@ -71,12 +82,21 @@ export default function CreateShoppingList() {
       return
     }
 
+    const res = await apiFetch(
+      `${import.meta.env.VITE_API_BASE_URL}/food/${selectedProduct.barcode}/nutrition`
+    )
+    if (!res.ok) {
+      alert('Could not fetch nutrition data')
+      return
+    }
+    const nutrition: Nutrition = await res.json()
+
     const newItem: ShoppingItem = {
       ...selectedProduct,
       quantity,
       unit,
+      nutrition
     }
-
 
     setShoppingList(prev => {
       const next = [...prev, newItem]
@@ -112,15 +132,9 @@ export default function CreateShoppingList() {
     }
 
     try {
-      const token = localStorage.getItem('token')
       const res = await apiFetch(
         `${import.meta.env.VITE_API_BASE_URL}/shoppinglist`,
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
           body: JSON.stringify({
             name: listName,
             items: shoppingList,
@@ -145,6 +159,20 @@ export default function CreateShoppingList() {
       alert('Error saving list.')
     }
   }
+
+  /**
+   * Calculates the total nutrition values for the shopping list.
+   * It sums up the nutrition values of each item based on its quantity.
+   */
+  const totals = shoppingList.reduce(
+    (acc, item) => ({
+      calories: acc.calories + item.nutrition.calories * item.quantity,
+      protein:  acc.protein  + item.nutrition.protein  * item.quantity,
+      carbs:    acc.carbs    + item.nutrition.carbs    * item.quantity,
+      fat:      acc.fat      + item.nutrition.fat      * item.quantity,
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  )
 
   return (
     <div style={styles.container}>
@@ -268,6 +296,12 @@ export default function CreateShoppingList() {
               </div>
             ))}
           </div>
+          {shoppingList.length > 0 && (
+            <div style={styles.nutritionChart}>
+              <h3>Nutrition</h3>
+              <NutritionChart totals={totals} />
+            </div>
+          )}
 
           <button
             onClick={handleSaveList}
@@ -505,4 +539,9 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
+  nutritionChart: {
+    width: '90%',
+    padding: '20px',
+    margin: '20px',
+  }
 } as const

@@ -25,10 +25,10 @@ export async function createEmbedding (input) {
   })
 
   if (Array.isArray(input)) {
-    // Returnera alla embeddings i rätt ordning
+    // Return embeddings in the same order as the input
     return res.data.map(obj => obj.embedding)
   } else {
-    // Returnera bara en embedding som tidigare
+    // Return the first embedding
     return res.data[0].embedding
   }
 }

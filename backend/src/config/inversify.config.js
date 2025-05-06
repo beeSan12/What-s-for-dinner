@@ -12,6 +12,11 @@ import { ProductModel } from '../models/ProductModel.js'
 import { ProductRepository } from '../repositories/ProductRepository.js'
 import { ProductService } from '../services/ProductService.js'
 import { ProductController } from '../controllers/ProductController.js'
+// Nutrition modules
+import { NutritionModel } from '../models/nutritionModel.js'
+import { NutritionRepository } from '../repositories/NutritionRepository.js'
+import { NutritionService } from '../services/NutritionService.js'
+import { NutritionController } from '../controllers/NutritionController.js'
 // User modules
 import { UserModel } from '../models/UserModel.js'
 import { UserRepository } from '../repositories/UserRepository.js'
@@ -50,6 +55,13 @@ export const PRODUCTTYPES = {
   ProductRepository: Symbol.for('ProductRepository'),
   ProductService: Symbol.for('ProductService'),
   ProductModel: Symbol.for('ProductModel')
+}
+
+export const NUTRITIONTYPES = {
+  NutritionController: Symbol.for('NutritionController'),
+  NutritionRepository: Symbol.for('NutritionRepository'),
+  NutritionService: Symbol.for('NutritionService'),
+  NutritionModel: Symbol.for('NutritionModel')
 }
 
 export const USERTYPES = {
@@ -106,6 +118,15 @@ decorate(inject(PRODUCTTYPES.ProductModel), ProductRepository, 0)
 decorate(inject(PRODUCTTYPES.ProductRepository), ProductService, 0)
 decorate(inject(PRODUCTTYPES.ProductService), ProductController, 0)
 decorate(inject(USERPRODUCTTYPES.UserProductService), ProductController, 1)
+
+// Decorate Nutrition classes
+decorate(injectable(), NutritionRepository)
+decorate(injectable(), NutritionService)
+decorate(injectable(), NutritionController)
+
+decorate(inject(NUTRITIONTYPES.NutritionModel), NutritionRepository, 0)
+decorate(inject(NUTRITIONTYPES.NutritionRepository), NutritionService, 0)
+decorate(inject(NUTRITIONTYPES.NutritionService), NutritionController, 0)
 
 // Decorate User classes
 decorate(injectable(), UserRepository)
@@ -175,6 +196,12 @@ container.bind(PRODUCTTYPES.ProductController).to(ProductController).inSingleton
 container.bind(PRODUCTTYPES.ProductRepository).to(ProductRepository).inSingletonScope()
 container.bind(PRODUCTTYPES.ProductService).to(ProductService).inSingletonScope()
 container.bind(PRODUCTTYPES.ProductModel).toConstantValue(ProductModel)
+
+// Nutrition bindings
+container.bind(NUTRITIONTYPES.NutritionController).to(NutritionController).inSingletonScope()
+container.bind(NUTRITIONTYPES.NutritionRepository).to(NutritionRepository).inSingletonScope()
+container.bind(NUTRITIONTYPES.NutritionService).to(NutritionService).inSingletonScope()
+container.bind(NUTRITIONTYPES.NutritionModel).toConstantValue(NutritionModel)
 
 // User bindings
 container.bind(USERTYPES.UserController).to(UserController).inSingletonScope()
