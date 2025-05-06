@@ -63,6 +63,7 @@ export default function CreateShoppingList() {
    * @returns {void}
    */
   const handleProductSelect = (product: Product) => {
+    console.log('Selected product:', product)
     setSelectedProduct(product)
     setQuantity(1)
     setUnit('st')

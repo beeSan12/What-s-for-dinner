@@ -53,6 +53,16 @@ fs.createReadStream(foodFactsData)
             protein: row.proteins_100g,
             carbs: row.carbohydrates_100g,
             fat: row.fat_100g
+          },
+          allergens: {
+            gluten: row['contains gluten'] === '1',
+            lactose: row['contains lactose'] === '1',
+            nuts: row['contains nuts'] === '1',
+            peanuts: row['contains peanuts'] === '1',
+            soy: row['contains soy'] === '1',
+            eggs: row['contains eggs'] === '1',
+            fish: row['contains fish'] === '1',
+            shellfish: row['contains shellfish'] === '1'
           }
         })
         count++

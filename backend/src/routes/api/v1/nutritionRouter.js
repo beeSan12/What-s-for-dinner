@@ -14,6 +14,6 @@ dotenv.config()
 
 // GET products/:barcode/nutrition
 router.route('/:barcode/nutrition')
-  .get(authenticate, (req, res, next) => container.get(NUTRITIONTYPES.ProductController).getNutrition(req, res, next))
+  .get(authenticate, (req, res, next) => container.get(NUTRITIONTYPES.NutritionController).getNutrition(req, res, next))
 
 export { router as nutritionRouter }
