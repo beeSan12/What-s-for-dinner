@@ -6,13 +6,58 @@
  */
 
 import SearchProducts from '../types/SearchProducts'
+import NutritionChart from '../types/NutritionChart'
+import { useState } from 'react'
+import { apiFetch } from '../../utils/apiFetch'
+import { Product } from '../interface/Product'
+import { Nutrition } from '../interface/Nutrition'
+import { MdClose } from 'react-icons/md'
 
 export default function Search() {
+  const [selected, setSelected] = useState<Product | null>(null)
+  const [nutrition, setNutrition] = useState<Nutrition | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  async function onProductSelect(product: Product) {
+    setSelected(product)
+    setError(null)
+    try {
+      const res = await apiFetch(
+        `${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`,
+      )
+      if (!res.ok) throw new Error('Could not fetch nutrition data')
+      const nut: Nutrition = await res.json()
+      setNutrition(nut)
+    } catch (error: unknown) {
+      console.error(error)
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('An unknown error occurred')
+      }
+      setNutrition(null)
+    }
+  }
+
   return (
     <div style={styles.page}>
       <div style={styles.card}>
         <h2 style={styles.heading}>Search for Products</h2>
-        <SearchProducts onProductSelect={() => {}} />
+         <SearchProducts
+          onProductSelect={onProductSelect}
+          showSelectButton
+        />
+
+        {selected && (
+          <div style={styles.detail}>
+            <h3>{selected.product_name}</h3>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {nutrition
+              ? <NutritionChart totals={nutrition} />
+              : !error && <p>Laddar näringsdata…</p>
+            }
+          </div>
+        )}
       </div>
     </div>
   )
@@ -52,5 +97,9 @@ const styles = {
     marginBottom: '1rem',
     fontSize: '1.5rem',
     color: '#2f4f4f',
+  },
+  detail: {
+    marginTop: '2rem',
+    textAlign: 'center',
   },
 } as const

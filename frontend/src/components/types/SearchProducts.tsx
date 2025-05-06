@@ -10,7 +10,7 @@ import React, { useState } from 'react'
 import { apiFetch } from '../../utils/apiFetch'
 import { LuArrowBigRight, LuArrowBigLeft } from 'react-icons/lu'
 import { MdClose } from 'react-icons/md'
-import { Product } from '../types/Product'
+import { Product } from '../interface/Product'
 
 // interface Product {
 //   _id: string

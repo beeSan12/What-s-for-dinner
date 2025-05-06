@@ -13,7 +13,8 @@ import coupleWritingList from '../../images/CoupleWritingList.png'
 import { FaRegEdit } from 'react-icons/fa'
 import { MdClose } from 'react-icons/md'
 import NutritionChart from '../types/NutritionChart'
-import { Product } from '../types/Product'
+import { Product } from '../interface/Product'
+import { Nutrition } from '../interface/Nutrition'
 
 // interface Product {
 //   _id: string
@@ -21,12 +22,12 @@ import { Product } from '../types/Product'
 //   barcode: string
 // }
 
-interface Nutrition {
-  calories: number
-  protein: number
-  carbs: number
-  fat: number
-}
+// interface Nutrition {
+//   calories: number
+//   protein: number
+//   carbs: number
+//   fat: number
+// }
 
 interface ShoppingItem extends Product {
   quantity: number
@@ -82,23 +83,28 @@ export default function CreateShoppingList() {
       return
     }
 
-    const res = await apiFetch(
-      `${import.meta.env.VITE_API_BASE_URL}/food/${selectedProduct.barcode}/nutrition`
-    )
-    if (!res.ok) {
-      alert('Could not fetch nutrition data')
-      return
+    let nutrition: Nutrition = { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    try {
+      const res = await apiFetch(
+        `${import.meta.env.VITE_API_BASE_URL}/food/${selectedProduct.barcode}/nutrition`
+      )
+      if (res.ok) {
+        nutrition = await res.json()
+      } else {
+        console.warn(`Nutrition fetch failed for ${selectedProduct.barcode}`)
+      }
+    } catch (err) {
+      console.warn(`Nutrition fetch error:`, err)
     }
-    const nutrition: Nutrition = await res.json()
 
     const newItem: ShoppingItem = {
       ...selectedProduct,
       quantity,
       unit,
-      nutrition
+      nutrition,
     }
 
-    setShoppingList(prev => {
+    setShoppingList((prev) => {
       const next = [...prev, newItem]
       console.log('New List:', next)
       return next
@@ -146,7 +152,7 @@ export default function CreateShoppingList() {
       if (res.ok) {
         alert('List saved successfully!')
         setListName('')
-        setEditingName(true) 
+        setEditingName(true)
         setShoppingList([])
         setSelectedProduct(null)
         setCurrentPage(0)
@@ -167,11 +173,11 @@ export default function CreateShoppingList() {
   const totals = shoppingList.reduce(
     (acc, item) => ({
       calories: acc.calories + item.nutrition.calories * item.quantity,
-      protein:  acc.protein  + item.nutrition.protein  * item.quantity,
-      carbs:    acc.carbs    + item.nutrition.carbs    * item.quantity,
-      fat:      acc.fat      + item.nutrition.fat      * item.quantity,
+      protein: acc.protein + item.nutrition.protein * item.quantity,
+      carbs: acc.carbs + item.nutrition.carbs * item.quantity,
+      fat: acc.fat + item.nutrition.fat * item.quantity,
     }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    { calories: 0, protein: 0, carbs: 0, fat: 0 },
   )
 
   return (
@@ -543,5 +549,5 @@ const styles = {
     width: '90%',
     padding: '20px',
     margin: '20px',
-  }
+  },
 } as const
