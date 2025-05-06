@@ -19,16 +19,21 @@ export class NutritionService extends MongooseServiceBase {
    * @returns {Promise<{calories: number, protein: number, carbs: number, fat: number}>} - The nutrition information of the product.
    */
   async getNutritionInformation (barcode) {
+    const product = await this.findOne({ barcode })
+
+    if (product?.nutrition?.calories) {
+      return {
+        calories: product.nutrition.calories,
+        protein: product.nutrition.protein,
+        carbs: product.nutrition.carbs,
+        fat: product.nutrition.fat
+      }
+    }
+
     const client = APIClientFactory.createOpenFoodAPIClient()
     const response = await client.get(`/api/v0/product/${barcode}.json`)
     if (response.data.status !== 1) {
       throw new Error('Product not found')
-    }
-    if (response.data.status !== 1) {
-      const msg = response.data.status_verbose || 'Product not found'
-      const error = new Error(msg)
-      error.status = 404
-      throw error
     }
 
     const nutri = response.data.product.nutriments || {}

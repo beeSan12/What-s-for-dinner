@@ -427,8 +427,8 @@ const styles = {
     backgroundColor: 'rgba(225, 225, 225, 0.6)',
   },
   enlargedImage: {
-    maxWidth: '90%',
-    maxHeight: '90%',
+    maxWidth: '80%',
+    maxHeight: '80%',
     borderRadius: '8px',
   },
   closeButton: {

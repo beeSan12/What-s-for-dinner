@@ -13,7 +13,14 @@ const productSchema = new mongoose.Schema({
   ingredients_text: { type: String, required: false },
   nutriscore_grade: { type: String, required: false },
   nova_group: { type: Number, required: false },
-  image_url: { type: String, required: false }
+  image_url: { type: String, required: false },
+  barcode: { type: String, required: false, unique: true },
+  nutrition: {
+    calories: { type: String },
+    protein: { type: String },
+    carbs: { type: String },
+    fat: { type: String }
+  }
 }, { timestamps: true })
 
 export const ProductModel = mongoose.model('Product', productSchema)
