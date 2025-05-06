@@ -14,7 +14,7 @@ import { ProductModel } from './src/models/ProductModel.js'
 dotenv.config()
 
 const foodFactsData = process.env.PATH_TO_DATA_GZ
-const maxImport = 10000
+const maxImport = 20000
 
 // Connect to MongoDB
 await mongoose.connect(process.env.DB_CONNECTION_STRING)
@@ -46,7 +46,14 @@ fs.createReadStream(foodFactsData)
           ingredients_text: row.ingredients_text,
           nutriscore_grade: row.nutriscore_grade,
           nova_group: row.nova_group ? parseInt(row.nova_group) : null,
-          image_url: row.image_url
+          image_url: row.image_url,
+          barcode: row.code,
+          nutrition: {
+            calories: row['energy-kcal_100g'],
+            protein: row.proteins_100g,
+            carbs: row.carbohydrates_100g,
+            fat: row.fat_100g
+          }
         })
         count++
         if (count % 100 === 0) console.log(`${count} products imported...`)

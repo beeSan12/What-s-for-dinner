@@ -13,7 +13,6 @@ import { ProductRepository } from '../repositories/ProductRepository.js'
 import { ProductService } from '../services/ProductService.js'
 import { ProductController } from '../controllers/ProductController.js'
 // Nutrition modules
-import { NutritionModel } from '../models/nutritionModel.js'
 import { NutritionRepository } from '../repositories/NutritionRepository.js'
 import { NutritionService } from '../services/NutritionService.js'
 import { NutritionController } from '../controllers/NutritionController.js'
@@ -60,8 +59,7 @@ export const PRODUCTTYPES = {
 export const NUTRITIONTYPES = {
   NutritionController: Symbol.for('NutritionController'),
   NutritionRepository: Symbol.for('NutritionRepository'),
-  NutritionService: Symbol.for('NutritionService'),
-  NutritionModel: Symbol.for('NutritionModel')
+  NutritionService: Symbol.for('NutritionService')
 }
 
 export const USERTYPES = {
@@ -124,7 +122,7 @@ decorate(injectable(), NutritionRepository)
 decorate(injectable(), NutritionService)
 decorate(injectable(), NutritionController)
 
-decorate(inject(NUTRITIONTYPES.NutritionModel), NutritionRepository, 0)
+decorate(inject(NUTRITIONTYPES.ProductModel), NutritionRepository, 0)
 decorate(inject(NUTRITIONTYPES.NutritionRepository), NutritionService, 0)
 decorate(inject(NUTRITIONTYPES.NutritionService), NutritionController, 0)
 
@@ -201,7 +199,7 @@ container.bind(PRODUCTTYPES.ProductModel).toConstantValue(ProductModel)
 container.bind(NUTRITIONTYPES.NutritionController).to(NutritionController).inSingletonScope()
 container.bind(NUTRITIONTYPES.NutritionRepository).to(NutritionRepository).inSingletonScope()
 container.bind(NUTRITIONTYPES.NutritionService).to(NutritionService).inSingletonScope()
-container.bind(NUTRITIONTYPES.NutritionModel).toConstantValue(NutritionModel)
+container.bind(NUTRITIONTYPES.ProductModel).toConstantValue(ProductModel)
 
 // User bindings
 container.bind(USERTYPES.UserController).to(UserController).inSingletonScope()

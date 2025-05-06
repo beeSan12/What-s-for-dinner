@@ -21,6 +21,13 @@ export default function Search() {
   async function onProductSelect(product: Product) {
     setSelected(product)
     setError(null)
+
+    if (!product.barcode) {
+      setError('Product has no barcode – cannot fetch nutrition data')
+      setNutrition(null)
+      return
+    }
+    
     try {
       const res = await apiFetch(
         `${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`,
@@ -39,6 +46,12 @@ export default function Search() {
     }
   }
 
+  function handleCloseDetail() {
+    setSelected(null)
+    setNutrition(null)
+    setError(null)
+  }
+
   return (
     <div style={styles.page}>
       <div style={styles.card}>
@@ -50,6 +63,13 @@ export default function Search() {
 
         {selected && (
           <div style={styles.detail}>
+            <button
+              onClick={handleCloseDetail}
+              style={styles.closeButton}
+              aria-label="Close detail"
+            >
+              <MdClose size={24} />
+            </button>
             <h3>{selected.product_name}</h3>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {nutrition
@@ -101,5 +121,15 @@ const styles = {
   detail: {
     marginTop: '2rem',
     textAlign: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '0.5rem',
+    color: '#666',
   },
 } as const
