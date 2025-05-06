@@ -10,16 +10,17 @@ import React, { useState } from 'react'
 import { apiFetch } from '../../utils/apiFetch'
 import { LuArrowBigRight, LuArrowBigLeft } from 'react-icons/lu'
 import { MdClose } from 'react-icons/md'
+import { Product } from '../types/Product'
 
-interface Product {
-  _id: string
-  product_name: string
-  brands: string
-  categories?: string
-  image_url?: string
-  // reset?: number
-  source: 'custom' | 'global'
-}
+// interface Product {
+//   _id: string
+//   product_name: string
+//   brands: string
+//   categories?: string
+//   image_url?: string
+//   // reset?: number
+//   source: 'custom' | 'global'
+// }
 
 interface Props {
   onProductSelect: (product: Product) => void
