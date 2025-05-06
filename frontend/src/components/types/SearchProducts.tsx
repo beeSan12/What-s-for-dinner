@@ -230,6 +230,11 @@ const SearchProducts: React.FC<Props> = ({
                   />
                 </div>
               )}
+              {product.barcode && (
+                <div style={styles.inlineText}>
+                  <em>Barcode:</em> <span>{product.barcode}</span>
+                </div>
+              )}
               {showSelectButton && (
                 <button
                   onClick={() => onProductSelect(product)}

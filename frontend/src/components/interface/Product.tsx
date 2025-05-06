@@ -11,6 +11,6 @@ export interface Product {
   brands?: string
   categories?: string
   image_url?: string
-  barcode?: string
+  barcode: string
   source?: 'custom' | 'global'
 }

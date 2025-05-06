@@ -19,15 +19,18 @@ export default function Search() {
   const [error, setError] = useState<string | null>(null)
 
   async function onProductSelect(product: Product) {
-    setSelected(product)
-    setError(null)
+    console.log('Selected product:', product)
 
     if (!product.barcode) {
+      setSelected(product)
       setError('Product has no barcode – cannot fetch nutrition data')
       setNutrition(null)
       return
     }
-    
+
+    setSelected(product)
+    setError(null)
+
     try {
       const res = await apiFetch(
         `${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`,

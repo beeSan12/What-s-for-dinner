@@ -6,7 +6,7 @@
 
 // Application modules.
 import { MongooseServiceBase } from './MongooseServiceBase.js'
-import { APIClientFactory } from '../api/APIClientFactory.js'
+import { APIClientFactory } from '../utils/APIClientFactory.js'
 
 /**
  * Encapsulates a task service.

@@ -20,6 +20,16 @@ const productSchema = new mongoose.Schema({
     protein: { type: String },
     carbs: { type: String },
     fat: { type: String }
+  },
+  allergens: {
+    gluten: { type: Boolean },
+    lactose: { type: Boolean },
+    nuts: { type: Boolean },
+    peanuts: { type: Boolean },
+    soy: { type: Boolean },
+    eggs: { type: Boolean },
+    fish: { type: Boolean },
+    shellfish: { type: Boolean }
   }
 }, { timestamps: true })
 
