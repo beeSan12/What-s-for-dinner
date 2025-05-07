@@ -37,7 +37,7 @@ export const apiFetch = async (
     // Instead, reject the promise with an error
     return new Response(null, {
       status: 401,
-      statusText: 'Unauthorized'
+      statusText: 'Unauthorized',
     })
   }
   //   return Promise.reject(new Error('Unauthorized'))

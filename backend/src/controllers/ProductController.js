@@ -139,6 +139,60 @@ export class ProductController {
   }
 
   /**
+   * Gets allergen data for a product by barcode.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
+  async getAllergens (req, res, next) {
+    try {
+      const barcode = req.params.barcode
+      if (!barcode) throw new Error('Missing barcode')
+
+      const product = { barcode }
+
+      const enriched = await this.#service.getAllergensByProduct(product)
+
+      if (!enriched.allergens) {
+        return res.status(404).json({ message: 'No allergen data found.' })
+      }
+
+      res.json({ allergens: enriched.allergens })
+    } catch (error) {
+      next(convertToHttpError(error))
+    }
+  }
+
+  /**
+   * Gets ingredient data for a product by barcode.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
+  async getIngredients (req, res, next) {
+    try {
+      const barcode = req.params.barcode
+      if (!barcode) throw new Error('Missing barcode')
+
+      const product = { barcode }
+
+      const enriched = await this.#service.getIngredientsByProduct(product)
+
+      if (!enriched.ingredients) {
+        return res.status(404).json({ message: 'No ingredient data found.' })
+      }
+
+      res.json({ ingredients: enriched.ingredients })
+    } catch (error) {
+      next(convertToHttpError(error))
+    }
+  }
+
+  /**
    * Creates a new product.
    *
    * @param {object} req - Express request object.
@@ -149,7 +203,7 @@ export class ProductController {
   async createCustom (req, res, next) {
     try {
       const productData = req.body
-      const saved = await this.#service.insert(productData)
+      const saved = await this.#service.insertProductWithAllergens(productData)
       res.status(201).json(saved)
     } catch (err) {
       next(err)

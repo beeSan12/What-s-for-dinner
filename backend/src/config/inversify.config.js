@@ -122,7 +122,7 @@ decorate(injectable(), NutritionRepository)
 decorate(injectable(), NutritionService)
 decorate(injectable(), NutritionController)
 
-decorate(inject(NUTRITIONTYPES.ProductModel), NutritionRepository, 0)
+decorate(inject(PRODUCTTYPES.ProductModel), NutritionRepository, 0)
 decorate(inject(NUTRITIONTYPES.NutritionRepository), NutritionService, 0)
 decorate(inject(NUTRITIONTYPES.NutritionService), NutritionController, 0)
 
@@ -199,7 +199,6 @@ container.bind(PRODUCTTYPES.ProductModel).toConstantValue(ProductModel)
 container.bind(NUTRITIONTYPES.NutritionController).to(NutritionController).inSingletonScope()
 container.bind(NUTRITIONTYPES.NutritionRepository).to(NutritionRepository).inSingletonScope()
 container.bind(NUTRITIONTYPES.NutritionService).to(NutritionService).inSingletonScope()
-container.bind(NUTRITIONTYPES.ProductModel).toConstantValue(ProductModel)
 
 // User bindings
 container.bind(USERTYPES.UserController).to(UserController).inSingletonScope()

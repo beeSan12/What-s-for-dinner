@@ -11,6 +11,7 @@ import { apiFetch } from '../../utils/apiFetch'
 import { LuArrowBigRight, LuArrowBigLeft } from 'react-icons/lu'
 import { MdClose } from 'react-icons/md'
 import { Product } from '../interface/Product'
+import { Nutrition } from '../interface/Nutrition'
 
 // interface Product {
 //   _id: string
@@ -21,9 +22,13 @@ import { Product } from '../interface/Product'
 //   // reset?: number
 //   source: 'custom' | 'global'
 // }
+interface ProductWithNutrition extends Product {
+  nutrition?: Nutrition
+  allergens?: Product['allergens']
+}
 
 interface Props {
-  onProductSelect: (product: Product) => void
+  onProductSelect: (product: ProductWithNutrition) => void
   maxResults?: number // Optional prop to limit the number of results displayed
   currentPage?: number // Optional prop for pagination
   setCurrentPage?: React.Dispatch<React.SetStateAction<number>> // Optional prop for pagination
@@ -97,6 +102,66 @@ const SearchProducts: React.FC<Props> = ({
     } finally {
       setLoading(false)
     }
+  }
+
+  /**
+   * This function handles the selection of a product.
+   * It fetches additional data (nutrition and allergens) based on the product's barcode.
+   *
+   * @param product - The selected product object.
+   * @returns {Promise<void>} - A promise that resolves when the product is selected.
+   */
+  const handleSelect = async (product: Product) => {
+    let nutrition: Nutrition | undefined = undefined
+    let allergens: Product['allergens'] | undefined = undefined
+
+    if (product.barcode) {
+      try {
+        // Fetch nutrition data
+        const nutritionRes = await apiFetch(
+          `${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`,
+        )
+        if (nutritionRes.ok) {
+          const nutriData = await nutritionRes.json()
+          nutrition = {
+            calories: Number(nutriData.calories),
+            protein: Number(nutriData.protein),
+            carbs: Number(nutriData.carbs),
+            fat: Number(nutriData.fat)
+          }
+        }
+
+        // Fetch allergens data
+        const allergenRes = await apiFetch(
+          `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/allergens`,
+        )
+        if (allergenRes.ok) {
+          const allergenData = await allergenRes.json()
+          allergens = allergenData.allergens
+        }
+
+        // Fetch ingredients data
+        const ingredientsRes = await apiFetch(
+          `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/ingredients`,
+        )
+        if (ingredientsRes.ok) {
+          const ingredientsData = await ingredientsRes.json()
+          product.ingredients_text = ingredientsData.ingredients_text
+        }
+      } catch (err) {
+        console.warn(
+          `Error fetching nutrition or allergens for ${product.product_name}`,
+          err,
+        )
+      }
+    }
+
+    onProductSelect({
+      ...product,
+      nutrition,
+      allergens,
+      ingredients_text: product.ingredients_text,
+    })
   }
 
   /**
@@ -237,7 +302,7 @@ const SearchProducts: React.FC<Props> = ({
               )}
               {showSelectButton && (
                 <button
-                  onClick={() => onProductSelect(product)}
+                  onClick={() => handleSelect(product)}
                   style={styles.selectButton}
                 >
                   Select
