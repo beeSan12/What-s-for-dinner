@@ -25,4 +25,12 @@ export interface Product {
   // }
   barcode: string
   source?: 'custom' | 'global'
+  eco_score?: {
+    score: number
+    grade: string
+  }
+  origins?: string
+  manufacturing_places?: string
+  packaging?: string
+  labels?: string
 }

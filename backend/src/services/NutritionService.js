@@ -26,7 +26,13 @@ export class NutritionService extends MongooseServiceBase {
         calories: product.nutrition.calories,
         protein: product.nutrition.protein,
         carbs: product.nutrition.carbs,
-        fat: product.nutrition.fat
+        fat: product.nutrition.fat,
+        fiber: product.nutrition.fiber,
+        sugars: product.nutrition.sugars,
+        salt: product.nutrition.salt,
+        sodium: product.nutrition.sodium,
+        saturatedFat: product.nutrition.saturatedFat,
+        cholesterol: product.nutrition.cholesterol
       }
     }
 
@@ -41,7 +47,13 @@ export class NutritionService extends MongooseServiceBase {
       calories: nutri['energy-kcal_100g'] || 0,
       protein: nutri.proteins_100g || 0,
       carbs: nutri.carbohydrates_100g || 0,
-      fat: nutri.fat_100g || 0
+      fat: nutri.fat_100g || 0,
+      fiber: nutri.fiber_100g || 0,
+      sugars: nutri.sugars_100g || 0,
+      salt: nutri.salt_100g || 0,
+      sodium: nutri.sodium_100g || 0,
+      saturatedFat: nutri.saturated_fat_100g || 0,
+      cholesterol: nutri.cholesterol_100g || 0
     }
   }
 }

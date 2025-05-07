@@ -19,7 +19,13 @@ const productSchema = new mongoose.Schema({
     calories: { type: String },
     protein: { type: String },
     carbs: { type: String },
-    fat: { type: String }
+    fat: { type: String },
+    fiber: { type: String },
+    sugars: { type: String },
+    salt: { type: String },
+    sodium: { type: String },
+    saturated_fat: { type: String },
+    cholesterol: { type: String }
   },
   allergens: {
     gluten: { type: Boolean },
@@ -30,7 +36,15 @@ const productSchema = new mongoose.Schema({
     eggs: { type: Boolean },
     fish: { type: Boolean },
     shellfish: { type: Boolean }
-  }
+  },
+  eco_score: {
+    score: { type: Number, default: -1 },
+    grade: { type: String, default: 'unknown' }
+  },
+  origins: { type: String },
+  manufacturing_places: { type: String },
+  packaging: { type: String },
+  labels: { type: String }
 }, { timestamps: true })
 
 export const ProductModel = mongoose.model('Product', productSchema)

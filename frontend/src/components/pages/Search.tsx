@@ -12,6 +12,8 @@ import { useState } from 'react'
 import { Product } from '../interface/Product'
 import { Nutrition } from '../interface/Nutrition'
 import { MdClose } from 'react-icons/md'
+import { EcoScoreChart } from  '../types/EcoScoreChart'
+
 
 export default function Search() {
   const [selected, setSelected] = useState<Product | null>(null)
@@ -102,80 +104,107 @@ export default function Search() {
         <h2 style={styles.heading}>Search for Products</h2>
 
         {selected && (
-          <div style={styles.detail}>
-            <button
-              onClick={handleCloseDetail}
-              style={styles.closeButton}
-              aria-label="Close detail"
-            >
-              <MdClose size={24} />
-            </button>
+          <div style={styles.overlay}>
+            <div style={styles.modal}>
+              <button
+                onClick={handleCloseDetail}
+                style={styles.closeButton}
+                aria-label="Close detail"
+              >
+                <MdClose size={24} />
+              </button>
 
-            {selected.image_url && (
-              <img
-                src={selected.image_url}
-                alt={selected.product_name}
-                style={styles.detailImage}
-              />
-            )}
+              {selected.image_url && (
+                <img
+                  src={selected.image_url}
+                  alt={selected.product_name}
+                  style={styles.detailImage}
+                />
+              )}
 
-            <h3 style={styles.detailHeading}>{selected.product_name}</h3>
+              <h3 style={styles.detailHeading}>{selected.product_name}</h3>
 
-            {loadingNutrition && (
-              <p style={styles.loadingText}>Loading nutrition data…</p>
-            )}
+              {loadingNutrition && (
+                <p style={styles.loadingText}>Loading nutrition data…</p>
+              )}
 
-            {error && <p style={styles.errorText}>{error}</p>}
+              {error && <p style={styles.errorText}>{error}</p>}
 
-            {nutrition && (
-              <>
-                <NutritionChart totals={nutrition} />
-              </>
-            )}
+              {nutrition && (
+                <>
+                <h4>Nutrition (per 100g):</h4>
+                <ul>
+                  <li>Calories: {nutrition.calories}</li>
+                  <li>Protein: {nutrition.protein}</li>
+                  <li>Fat: {nutrition.fat}</li>
+                  <li>Carbs: {nutrition.carbs}</li>
+                  <li>Sugars: {nutrition.sugar}</li>
+                  <li>Fiber: {nutrition.fiber}</li>
+                  <li>Saturated Fat: {nutrition.saturated_fat}</li>
+                  <li>Salt: {nutrition.salt}</li>
+                  <li>Cholesterol: {nutrition.cholesterol}</li>
+                  {/* Lägg till fler om du vill */}
+                </ul>
+                  <NutritionChart totals={nutrition} />
+                </>
+              )}
 
-            <div style={styles.productInfoBox}>
-              <h4>Product Details</h4>
-              <p>
-                <strong>Brand:</strong> {selected.brands}
-              </p>
-              <p>
-                <strong>Categories:</strong> {selected.categories || '–'}
-              </p>
-              <p>
-                <strong>Ingredients:</strong> {ingredients || 'Not available'}
-              </p>
+                <div style={styles.productInfoBox}>
+                  <h4>Product Details</h4>
+                  <p>
+                    <strong>Brand:</strong> {selected.brands}
+                  </p>
+                  <p>
+                    <strong>Categories:</strong> {selected.categories || '–'}
+                  </p>
+                  <p>
+                    <strong>Ingredients:</strong> {ingredients || 'Not available'}
+                  </p>
 
-              <p>
-                <strong>Allergens:</strong>
-              </p>
-              <ul style={styles.allergenList}>
-                {allergens ? (
-                  Object.entries(allergens).map(([key, value]) => (
-                    <li
-                      key={key}
-                      style={
-                        value === true
-                          ? styles.allergenItemYes
-                          : value === false
-                            ? styles.allergenItemNo
-                            : styles.allergenItemUnknown
-                      }
-                    >
-                      {key.charAt(0).toUpperCase() + key.slice(1)}:{' '}
-                      {value === true
-                        ? 'Yes'
-                        : value === false
-                          ? 'No'
-                          : 'Unknown'}
-                    </li>
-                  ))
-                ) : (
-                  <li>No allergen data</li>
-                )}
-              </ul>
+                  <p>
+                    <strong>Allergens:</strong>
+                  </p>
+                  <ul style={styles.allergenList}>
+                    {allergens ? (
+                      Object.entries(allergens).map(([key, value]) => (
+                        <li
+                          key={key}
+                          style={
+                            value === true
+                              ? styles.allergenItemYes
+                              : value === false
+                                ? styles.allergenItemNo
+                                : styles.allergenItemUnknown
+                          }
+                        >
+                          {key.charAt(0).toUpperCase() + key.slice(1)}:{' '}
+                          {value === true
+                            ? 'Yes'
+                            : value === false
+                              ? 'No'
+                              : 'Unknown'}
+                        </li>
+                      ))
+                    ) : (
+                      <li>No allergen data</li>
+                    )}
+                  </ul>
+
+                    {/* EcoScore */}
+                  <div style={{ marginTop: '30px' }}>
+                    <EcoScoreChart
+                      data={[
+                        {
+                          grade: selected?.eco_score?.grade || 'unknown',
+                          value: selected?.eco_score?.score ?? 0,
+                        },
+                      ]}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         <SearchProducts onProductSelect={onProductSelect} showSelectButton />
       </div>
@@ -274,5 +303,37 @@ const styles = {
   },
   allergenItemUnknown: {
     color: '#8a6d3b',
+  },
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  modal: {
+    backgroundColor: '#fff',
+    padding: '2rem',
+    borderRadius: '12px',
+    maxWidth: '600px',
+    width: '90%',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+    position: 'relative',
+  },
+  confirmButton: {
+    marginTop: '20px',
+    backgroundColor: '#2f4f4f',
+    color: 'white',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
   },
 } as const

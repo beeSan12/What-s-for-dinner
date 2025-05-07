@@ -7,5 +7,16 @@ export default defineConfig({
   base: '/wt2/',
   build: {
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('recharts')) return 'recharts'
+            if (id.includes('react-icons')) return 'react-icons'
+            return 'vendor'
+          }
+        },
+      },
+    },
   },
 })
