@@ -193,6 +193,83 @@ export class ProductController {
   }
 
   /**
+   * Gets eco score data for a product by barcode.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
+  async getEcoScore (req, res, next) {
+    try {
+      const barcode = req.params.barcode
+      if (!barcode) throw new Error('Missing barcode')
+
+      const product = { barcode }
+
+      const enriched = await this.#service.getEcoScoreByProduct(product)
+
+      if (!enriched.eco_score) {
+        return res.status(404).json({ message: 'No eco score data found.' })
+      }
+
+      res.json({ eco_score: enriched.eco_score })
+    } catch (error) {
+      next(convertToHttpError(error))
+    }
+  }
+
+  /**
+   * Gets the eco score distribution for a specific eco score.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
+  async getEcoScoreDistribution (req, res, next) {
+    try {
+      const products = await this.#service.getEcoScoreDistribution()
+      res.json(products)
+    } catch (error) {
+      next(convertToHttpError(error))
+    }
+  }
+
+  /**
+   * Filters products by eco score.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
+  async filterByEcoScore (req, res, next) {
+    try {
+      const products = req.body
+      if (!products || !Array.isArray(products)) {
+        return res.status(400).json({ message: 'Invalid request body' })
+      }
+
+      const filteredProducts = await this.#service.filterByEcoScore(products)
+      res.json(filteredProducts)
+    } catch (error) {
+      next(convertToHttpError(error))
+    }
+  }
+
+  /**
+   * Performs a smart search for products.
+   *
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
+   */
+  async smartSearch (req, res, next) {
+  }
+
+  /**
    * Creates a new product.
    *
    * @param {object} req - Express request object.

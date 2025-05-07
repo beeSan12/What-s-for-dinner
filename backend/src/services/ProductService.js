@@ -110,6 +110,84 @@ export class ProductService extends MongooseServiceBase {
   }
 
   /**
+   * Fetches the eco score for a product by barcode.
+   *
+   * @param {string} barcode - The barcode of the product.
+   * @returns {Promise<object>} The eco score data.
+   */
+  async getEcoScoreByProduct (barcode) {
+    const product = await this.getOne({ barcode })
+
+    if (product?.eco_score?.score !== undefined) return product.eco_score
+
+    const client = APIClientFactory.createOpenFoodAPIClient()
+    const response = await client.get(`/api/v0/product/${barcode}.json`)
+
+    const score = response.data?.product?.eco_score_score || -1
+    const grade = response.data?.product?.eco_score_grade || 'unknown'
+
+    return {
+      eco_score: {
+        score,
+        grade
+      }
+    }
+  }
+
+  /**
+   * Filters products by eco score.
+   *
+   * @param {object} products - The product data to filter.
+   * @returns {Promise<object>} - The filtered product data.
+   */
+  async filterByEcoScore (products) {
+    return products.map(p => {
+      if (p?.eco_score?.grade === 'unknown') {
+        p.eco_warning = 'No eco score available'
+        p.recommendation = 'Choose a product with an eco score'
+      }
+      return p
+    })
+  }
+
+  /**
+   * Fetches the eco score distribution for all products.
+   *
+   * @returns {Promise<object>} The eco score distribution.
+   */
+  async getEcoScoreDistribution () {
+    const ecoScores = await this.search({ eco_score: { $exists: true } }, { eco_score: 1 })
+    const distribution = {}
+
+    for (const product of ecoScores) {
+      const grade = product.eco_score.grade
+      if (!distribution[grade]) {
+        distribution[grade] = 0
+      }
+      distribution[grade]++
+    }
+
+    return Object.entries(distribution).map(([grade, value]) => ({ grade, value }))
+  }
+
+  /**
+   * Performs a smart search for products based on name, eco grades, and category.
+   *
+   * @param {object} params - The search parameters.
+   * @param {string} params.name - The name to search for.
+   * @param {string[]} params.ecoGrades - The eco grades to filter by.
+   * @param {string} params.category - The category to filter by.
+   * @returns {Promise<object[]>} A list of matching products.
+   */
+  async smartSearch ({ name, ecoGrades = [], category }) {
+    const filter = {}
+    if (name) filter.product_name = new RegExp(name, 'i')
+    if (ecoGrades.length) filter['eco_score.grade'] = { $in: ecoGrades }
+    if (category) filter.categories = new RegExp(category, 'i')
+    return this.search({ filter })
+  }
+
+  /**
    * Saves the product data with allergens information.
    *
    * @param {object} productData - The product data to save.

@@ -42,4 +42,16 @@ router.route('/:barcode/allergens')
 router.route('/:barcode/ingredients')
   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getIngredients(req, res, next))
 
+// POST /products/eco-score/filter
+router.route('/eco-score/filter')
+  .post(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).filterByEcoScore(req, res, next))
+
+// GET /products/eco-score
+router.route('/eco-score')
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getEcoScore(req, res, next))
+
+// GET /products/smart-search
+router.route('/smart-search')
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).smartSearch(req, res, next))
+
 export { router as productRouter }

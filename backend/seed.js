@@ -39,11 +39,13 @@ fs.createReadStream(foodFactsData)
 
     try {
       if (row.product_name && row.brands && row.image_url) {
+        const allergensTags = row.allergens_tags?.split(',') || []
+
         await ProductModel.create({
           product_name: row.product_name,
           brands: row.brands,
           categories: row.categories,
-          ingredients_text: row.ingredients_text,
+          ingredients_text: row.ingredients_text?.trim() || null,
           nutriscore_grade: row.nutriscore_grade,
           nova_group: row.nova_group ? parseInt(row.nova_group) : null,
           image_url: row.image_url,
@@ -52,18 +54,32 @@ fs.createReadStream(foodFactsData)
             calories: row['energy-kcal_100g'],
             protein: row.proteins_100g,
             carbs: row.carbohydrates_100g,
-            fat: row.fat_100g
+            fat: row.fat_100g,
+            fiber: row.fiber_100g,
+            sugars: row.sugars_100g,
+            salt: row.salt_100g,
+            sodium: row.sodium_100g,
+            saturated_fat: row['saturated-fat_100g'],
+            cholesterol: row.cholesterol_100g
           },
           allergens: {
-            gluten: row['contains gluten'] === '1',
-            lactose: row['contains lactose'] === '1',
-            nuts: row['contains nuts'] === '1',
-            peanuts: row['contains peanuts'] === '1',
-            soy: row['contains soy'] === '1',
-            eggs: row['contains eggs'] === '1',
-            fish: row['contains fish'] === '1',
-            shellfish: row['contains shellfish'] === '1'
-          }
+            gluten: allergensTags.includes('en:gluten'),
+            lactose: allergensTags.includes('en:milk'),
+            nuts: allergensTags.includes('en:nuts'),
+            peanuts: allergensTags.includes('en:peanuts'),
+            soy: allergensTags.includes('en:soybeans'),
+            eggs: allergensTags.includes('en:eggs'),
+            fish: allergensTags.includes('en:fish'),
+            shellfish: allergensTags.includes('en:crustaceans')
+          },
+          eco_score: {
+            score: row.eco_score_score ? parseFloat(row.eco_score_score) : -1,
+            grade: row.eco_score_grade || 'unknown'
+          },
+          origins: row.origins,
+          manufacturing_places: row.manufacturing_places,
+          packaging: row.packaging,
+          labels: row.labels
         })
         count++
         if (count % 100 === 0) console.log(`${count} products imported...`)

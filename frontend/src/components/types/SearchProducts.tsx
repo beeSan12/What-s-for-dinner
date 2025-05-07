@@ -61,6 +61,7 @@ const SearchProducts: React.FC<Props> = ({
   const [searched, setSearched] = useState(false)
   const [internalPage, setInternalPage] = useState(0)
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null)
+  // const [selectedProductInfo, setSelectedProductInfo] = useState<ProductWithNutrition | null>(null)
 
   const activePage = currentPage ?? internalPage
   const updatePage = setCurrentPage ?? setInternalPage
@@ -127,7 +128,13 @@ const SearchProducts: React.FC<Props> = ({
             calories: Number(nutriData.calories),
             protein: Number(nutriData.protein),
             carbs: Number(nutriData.carbs),
-            fat: Number(nutriData.fat)
+            fat: Number(nutriData.fat),
+            fiber: Number(nutriData.fiber),
+            sugar: Number(nutriData.sugar),
+            salt: Number(nutriData.salt),
+            saturated_fat: Number(nutriData.saturated_fat),
+            cholesterol: Number(nutriData.cholesterol),
+            sodium: Number(nutriData.sodium)
           }
         }
 
@@ -156,6 +163,12 @@ const SearchProducts: React.FC<Props> = ({
       }
     }
 
+    // setSelectedProductInfo({
+    //   ...product,
+    //   nutrition,
+    //   allergens,
+    //   ingredients_text: product.ingredients_text,
+    // })
     onProductSelect({
       ...product,
       nutrition,
