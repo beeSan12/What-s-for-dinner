@@ -29,7 +29,8 @@ export class AuthService extends MongooseServiceBase {
    * @returns {Promise<object>} The logged-in user object.
    */
   async login ({ email, password }) {
-    const user = await this.findOne({ email })
+    console.log('AuthService: login called with', email)
+    const user = await this.getOne({ email })
     console.log('Found user:', user)
     console.log('Plain password:', password)
     console.log('Hashed password:', user?.password)

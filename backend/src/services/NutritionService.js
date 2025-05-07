@@ -19,7 +19,7 @@ export class NutritionService extends MongooseServiceBase {
    * @returns {Promise<{calories: number, protein: number, carbs: number, fat: number}>} - The nutrition information of the product.
    */
   async getNutritionInformation (barcode) {
-    const product = await this.findOne({ barcode })
+    const product = await this.getOne({ barcode })
 
     if (product?.nutrition?.calories) {
       return {

@@ -9,6 +9,7 @@ import { JSX } from 'react'
 import { Navigate } from 'react-router-dom'
 
 export default function PublicRoute({ children }: { children: JSX.Element }) {
+  if (typeof window === 'undefined') return null
   const token = localStorage.getItem('token')
   return token ? <Navigate to="/home" replace /> : <>{children}</>
 }
