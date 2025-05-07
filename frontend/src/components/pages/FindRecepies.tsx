@@ -76,8 +76,8 @@ export default function FindRecipes() {
         alert('Add a valid quantity!')
         return
       }
-    
-      if (recipeItems.some(p => p._id === selectedProduct._id)) {
+
+      if (recipeItems.some((p) => p._id === selectedProduct._id)) {
         alert('Product already added!')
         return
       }
@@ -87,7 +87,7 @@ export default function FindRecipes() {
           { ...selectedProduct, quantity: qty, unit },
         ])
         setSelectedProduct(null)
-        setAddingMore(false) 
+        setAddingMore(false)
         setQuantity('1')
       } else {
         alert('Product already added!')
@@ -148,7 +148,8 @@ export default function FindRecipes() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             hitIds: recipeItems.map((item) => item._id),
-            prompt: 'Please provide recipes (ingredients & instructions) in English based on these ingredients.'
+            prompt:
+              'Please provide recipes (ingredients & instructions) in English based on these ingredients.',
           }),
         },
       )
@@ -178,30 +179,32 @@ export default function FindRecipes() {
     <div style={styles.container}>
       <div style={styles.header} />
       <h1 style={styles.h1}>Find Recipes by Your Products</h1>
-      { /* 1) Search for product */ }
+      {/* 1) Search for product */}
       {/* <div style={styles.searchContainer}> */}
-      {(recipeItems.length === 0 || addingMore) && !selectedProduct && generatedRecipes.length === 0 && (
-        <div style={styles.searchContainer}>
-        <h3>Search for products to generate recipe</h3>
-        <SearchProducts
-          onProductSelect={handleProductSelect}
-          maxResults={5}
-          minimalLayout={true}
-          customInputStyle={styles.searchInput}
-          showSelectButton={true}
-          hideSearchButton={false}
-          customButtonStyle={styles.searchButton}
-        />
-      </div>
-      )}
-      { /* 2) If a product is chosen, choose quantity */ }
+      {(recipeItems.length === 0 || addingMore) &&
+        !selectedProduct &&
+        generatedRecipes.length === 0 && (
+          <div style={styles.searchContainer}>
+            <h3>Search for products to generate recipe</h3>
+            <SearchProducts
+              onProductSelect={handleProductSelect}
+              maxResults={5}
+              minimalLayout={true}
+              customInputStyle={styles.searchInput}
+              showSelectButton={true}
+              hideSearchButton={false}
+              customButtonStyle={styles.searchButton}
+            />
+          </div>
+        )}
+      {/* 2) If a product is chosen, choose quantity */}
       {selectedProduct && (
         <div style={styles.selectedBox}>
           <h3>Selected product: {selectedProduct.product_name}</h3>
           <input
             type="number"
             value={quantity}
-            onChange={(e) => setQuantity((e.target.value))}
+            onChange={(e) => setQuantity(e.target.value)}
             style={styles.input}
           />
           <select
@@ -249,16 +252,16 @@ export default function FindRecipes() {
               <button style={styles.button} onClick={handleGenerateRecipe}>
                 Find Recipes
               </button>
-              <button 
-              style={styles.button}
-              onClick={() => {
-                setAddingMore(true)
-                setSelectedProduct(null)
-              }}
-            >
-              Add more products
-            </button>
-          </div>
+              <button
+                style={styles.button}
+                onClick={() => {
+                  setAddingMore(true)
+                  setSelectedProduct(null)
+                }}
+              >
+                Add more products
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -275,10 +278,7 @@ export default function FindRecipes() {
                 <MdClose />
               </button>
               <pre style={styles.recipeText}>{recipe}</pre>
-              <button
-                onClick={resetSearch}
-                style={styles.button}
-              >
+              <button onClick={resetSearch} style={styles.button}>
                 New Search
               </button>
             </div>
@@ -300,7 +300,7 @@ const styles = {
     alignItems: 'stretch',
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '100vh', 
+    minHeight: '100vh',
     maxWidth: '100%',
     width: '1600px',
     height: '100%',
@@ -461,7 +461,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '20px',
-    alignItems: 'center', 
+    alignItems: 'center',
   },
   recipeCard: {
     position: 'relative',

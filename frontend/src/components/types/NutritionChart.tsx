@@ -18,12 +18,7 @@ export default function NutritionChart({ totals }: Props) {
     datasets: [
       {
         label: 'Total',
-        data: [
-          totals.calories,
-          totals.protein,
-          totals.carbs,
-          totals.fat
-        ],
+        data: [totals.calories, totals.protein, totals.carbs, totals.fat],
         backgroundColor: 'rgba(47,79,79,0.6)',
       },
     ],

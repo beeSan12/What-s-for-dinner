@@ -34,4 +34,12 @@ router.route('/:id')
 router.route('/custom')
   .post(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).createCustom(req, res, next))
 
+// GET /products/
+router.route('/:barcode/allergens')
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getAllergens(req, res, next))
+
+// GET /products/:barcode/ingredients
+router.route('/:barcode/ingredients')
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getIngredients(req, res, next))
+
 export { router as productRouter }

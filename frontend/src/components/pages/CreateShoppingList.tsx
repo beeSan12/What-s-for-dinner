@@ -87,7 +87,7 @@ export default function CreateShoppingList() {
     let nutrition: Nutrition = { calories: 0, protein: 0, carbs: 0, fat: 0 }
     try {
       const res = await apiFetch(
-        `${import.meta.env.VITE_API_BASE_URL}/food/${selectedProduct.barcode}/nutrition`
+        `${import.meta.env.VITE_API_BASE_URL}/food/${selectedProduct.barcode}/nutrition`,
       )
       if (res.ok) {
         nutrition = await res.json()

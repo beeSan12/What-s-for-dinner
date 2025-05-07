@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   //     return false
   //   }
   // }
-  
+
   // Check if the user is authenticated when the component mounts
   useEffect(() => {
     const token = localStorage.getItem('token')

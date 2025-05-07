@@ -6,6 +6,7 @@
 
 // Application modules.
 import { MongooseServiceBase } from './MongooseServiceBase.js'
+import { APIClientFactory } from '../utils/APIClientFactory.js'
 
 /**
  * Encapsulates a task service.
@@ -44,5 +45,78 @@ export class ProductService extends MongooseServiceBase {
       new Map(combined.map(p => [p.product_name.toLowerCase(), p])).values()
     )
     return unique
+  }
+
+  /**
+   * Enriches product data with allergens information.
+   *
+   * @param {object} productData - The product data to enrich.
+   * @returns {Promise<object>} The enriched product data.
+   */
+  async getAllergensByProduct (productData) {
+    if (productData.allergens || !productData.barcode) return productData
+
+    const client = APIClientFactory.createOpenFoodAPIClient()
+    const response = await client.get(`/api/v0/product/${productData.barcode}.json`)
+
+    const allergensTags = response.data?.product?.allergens_tags || []
+
+    const allAllergens = [
+      { key: 'gluten', tag: 'en:gluten', negTag: 'en:no-gluten' },
+      { key: 'lactose', tag: 'en:milk', negTag: 'en:no-lactose' },
+      { key: 'nuts', tag: 'en:nuts', negTag: 'en:no-nuts' },
+      { key: 'peanuts', tag: 'en:peanuts', negTag: 'en:no-peanuts' },
+      { key: 'soy', tag: 'en:soybeans', negTag: 'en:no-soybeans' },
+      { key: 'eggs', tag: 'en:eggs', negTag: 'en:no-eggs' },
+      { key: 'fish', tag: 'en:fish', negTag: 'en:no-fish' },
+      { key: 'shellfish', tag: 'en:crustaceans', negTag: 'en:no-crustaceans' }
+    ]
+
+    const allergens = {}
+    for (const { key, tag, negTag } of allAllergens) {
+      if (allergensTags.includes(tag)) {
+        allergens[key] = true
+      } else if (allergensTags.includes(negTag)) {
+        allergens[key] = false
+      } else {
+        allergens[key] = undefined // if not found, set to undefined
+      }
+    }
+
+    console.log('Extracted allergens:', allergens)
+    return {
+      ...productData,
+      allergens
+    }
+  }
+
+  /**
+   * Enriches product data with ingredients information.
+   *
+   * @param {object} productData - The product data to enrich.
+   * @returns {Promise<object>} The enriched product data.
+   */
+  async getIngredientsByProduct (productData) {
+    if (productData.ingredients_text || !productData.barcode) return productData
+
+    const client = APIClientFactory.createOpenFoodAPIClient()
+    const response = await client.get(`/api/v0/product/${productData.barcode}.json`)
+
+    const ingredients = response.data?.product?.ingredients_text || ''
+    return {
+      ...productData,
+      ingredients_text: ingredients || null
+    }
+  }
+
+  /**
+   * Saves the product data with allergens information.
+   *
+   * @param {object} productData - The product data to save.
+   * @returns {Promise<object>} The saved product data.
+   */
+  async insertProductWithAllergens (productData) {
+    const enriched = await this.getAllergensByProduct(productData)
+    return this.insert(enriched)
   }
 }
