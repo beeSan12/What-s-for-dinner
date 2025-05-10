@@ -9,13 +9,13 @@ import { useEffect, useState } from 'react'
 import { apiFetch } from './apiFetch'
 
 export const EcoScorePage = () => {
-  const [data, setData] = useState<{ grade: string, value: number }[]>([])
+  const [data, setData] = useState<{ grade: string; value: number }[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await apiFetch(
-          `${import.meta.env.VITE_API_BASE_URL}/statistics/eco-score-distribution`
+          `${import.meta.env.VITE_API_BASE_URL}/statistics/eco-score-distribution`,
         )
         const json = await response.json()
         setData(json)

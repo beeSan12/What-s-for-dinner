@@ -84,7 +84,18 @@ export default function CreateShoppingList() {
       return
     }
 
-    let nutrition: Nutrition = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, salt: 0, saturated_fat: 0, cholesterol: 0, sodium: 0 }
+    let nutrition: Nutrition = {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      salt: 0,
+      saturated_fat: 0,
+      cholesterol: 0,
+      sodium: 0,
+    }
     try {
       const res = await apiFetch(
         `${import.meta.env.VITE_API_BASE_URL}/food/${selectedProduct.barcode}/nutrition`,
@@ -177,8 +188,26 @@ export default function CreateShoppingList() {
       protein: acc.protein + item.nutrition.protein * item.quantity,
       carbs: acc.carbs + item.nutrition.carbs * item.quantity,
       fat: acc.fat + item.nutrition.fat * item.quantity,
+      fiber: acc.fiber + item.nutrition.fiber * item.quantity,
+      sugar: acc.sugar + item.nutrition.sugar * item.quantity,
+      salt: acc.salt + item.nutrition.salt * item.quantity,
+      saturated_fat:
+        acc.saturated_fat + item.nutrition.saturated_fat * item.quantity,
+      cholesterol: acc.cholesterol + item.nutrition.cholesterol * item.quantity,
+      sodium: acc.sodium + item.nutrition.sodium * item.quantity,
     }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 },
+    {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      salt: 0,
+      saturated_fat: 0,
+      cholesterol: 0,
+      sodium: 0,
+    },
   )
 
   return (

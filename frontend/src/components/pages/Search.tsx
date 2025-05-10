@@ -12,8 +12,31 @@ import { useState } from 'react'
 import { Product } from '../interface/Product'
 import { Nutrition } from '../interface/Nutrition'
 import { MdClose } from 'react-icons/md'
-import { EcoScoreChart } from  '../types/EcoScoreChart'
+import { EcoScoreChart } from '../types/EcoScoreChart'
+import { Filters } from '../../utils/Filters'
 
+/**
+ * Function to get the EcoScore description based on the grade.
+ *
+ * @param grade The EcoScore grade (A, B, C, D, E).
+ * @returns The description of the EcoScore.
+ */
+function getEcoScoreDescription(grade: string | undefined): string {
+  switch (grade?.toLowerCase()) {
+    case 'a':
+      return 'Excellent – environmentally friendly product'
+    case 'b':
+      return 'Good – relatively low environmental impact'
+    case 'c':
+      return 'Moderate – average eco impact'
+    case 'd':
+      return 'Poor – high environmental impact'
+    case 'e':
+      return 'Very Poor – very high environmental impact'
+    default:
+      return 'Unknown or not available'
+  }
+}
 
 export default function Search() {
   const [selected, setSelected] = useState<Product | null>(null)
@@ -24,6 +47,9 @@ export default function Search() {
   const [ingredients, setIngredients] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loadingNutrition, setLoadingNutrition] = useState(false)
+  const [ecoScoreFilter, setEcoScoreFilter] = useState<string[]>([])
+  const [excludedAllergens, setExcludedAllergens] = useState<string[]>([])
+  const [showFilters, setShowFilters] = useState(false)
 
   function onProductSelect(
     product: Product & {
@@ -102,6 +128,20 @@ export default function Search() {
     <div style={styles.page}>
       <div style={styles.card}>
         <h2 style={styles.heading}>Search for Products</h2>
+        <button
+          onClick={() => setShowFilters(prev => !prev)}
+          style={styles.filterButton}
+        >
+          {showFilters ? 'Hide Filters' : 'Show Filters'}
+        </button>
+        {showFilters && (
+          <Filters
+            ecoScoreFilter={ecoScoreFilter}
+            setEcoScoreFilter={setEcoScoreFilter}
+            excludedAllergens={excludedAllergens}
+            setExcludedAllergens={setExcludedAllergens}
+          />
+        )}
 
         {selected && (
           <div style={styles.overlay}>
@@ -132,81 +172,159 @@ export default function Search() {
 
               {nutrition && (
                 <>
-                <h4>Nutrition (per 100g):</h4>
-                <ul>
-                  <li>Calories: {nutrition.calories}</li>
-                  <li>Protein: {nutrition.protein}</li>
-                  <li>Fat: {nutrition.fat}</li>
-                  <li>Carbs: {nutrition.carbs}</li>
-                  <li>Sugars: {nutrition.sugar}</li>
-                  <li>Fiber: {nutrition.fiber}</li>
-                  <li>Saturated Fat: {nutrition.saturated_fat}</li>
-                  <li>Salt: {nutrition.salt}</li>
-                  <li>Cholesterol: {nutrition.cholesterol}</li>
-                  {/* Lägg till fler om du vill */}
-                </ul>
+                  <h4>Nutrition (per 100g):</h4>
+                  <ul>
+                    <li>
+                      Calories:{' '}
+                      {isNaN(nutrition.calories) ? 'N/A' : nutrition.calories}
+                    </li>
+                    <li>
+                      Protein:{' '}
+                      {isNaN(nutrition.protein) ? 'N/A' : nutrition.protein}
+                    </li>
+                    <li>Fat: {isNaN(nutrition.fat) ? 'N/A' : nutrition.fat}</li>
+                    <li>
+                      Carbs: {isNaN(nutrition.carbs) ? 'N/A' : nutrition.carbs}
+                    </li>
+                    <li>
+                      Sugars: {isNaN(nutrition.sugar) ? 'N/A' : nutrition.sugar}
+                    </li>
+                    <li>
+                      Fiber: {isNaN(nutrition.fiber) ? 'N/A' : nutrition.fiber}
+                    </li>
+                    <li>
+                      Saturated Fat:{' '}
+                      {isNaN(nutrition.saturated_fat)
+                        ? 'N/A'
+                        : nutrition.saturated_fat}
+                    </li>
+                    <li>
+                      Salt: {isNaN(nutrition.salt) ? 'N/A' : nutrition.salt}
+                    </li>
+                    <li>
+                      Cholesterol:{' '}
+                      {isNaN(nutrition.cholesterol)
+                        ? 'N/A'
+                        : nutrition.cholesterol}
+                    </li>
+                  </ul>
                   <NutritionChart totals={nutrition} />
+                  {/* <p style={styles.nutritionSummary}>
+                    This product contains approximately 
+                    <strong>{nutrition.calories}</strong> kcal, 
+                    <strong> {nutrition.protein}</strong>g protein, 
+                    <strong> {nutrition.sugar}</strong>g sugars,
+                    <strong> {nutrition.fiber}</strong>g fiber,
+                    <strong> {nutrition.saturated_fat}</strong>g saturated fat,
+                    <strong> {nutrition.salt}</strong>g salt,
+                    <strong> {nutrition.cholesterol}</strong>mg cholesterol,
+                    <strong> {nutrition.sodium}</strong>mg sodium,
+                    <strong> {nutrition.carbs}</strong>g carbohydrates and 
+                    <strong> {nutrition.fat}</strong>g fat per 100g.
+                  </p> */}
                 </>
               )}
 
-                <div style={styles.productInfoBox}>
-                  <h4>Product Details</h4>
-                  <p>
-                    <strong>Brand:</strong> {selected.brands}
-                  </p>
-                  <p>
-                    <strong>Categories:</strong> {selected.categories || '–'}
-                  </p>
-                  <p>
-                    <strong>Ingredients:</strong> {ingredients || 'Not available'}
-                  </p>
+              <div style={styles.productInfoBox}>
+                <h3 style={styles.title}>Product Details</h3>
 
-                  <p>
-                    <strong>Allergens:</strong>
-                  </p>
-                  <ul style={styles.allergenList}>
-                    {allergens ? (
-                      Object.entries(allergens).map(([key, value]) => (
-                        <li
-                          key={key}
-                          style={
-                            value === true
-                              ? styles.allergenItemYes
-                              : value === false
-                                ? styles.allergenItemNo
-                                : styles.allergenItemUnknown
-                          }
-                        >
-                          {key.charAt(0).toUpperCase() + key.slice(1)}:{' '}
-                          {value === true
-                            ? 'Yes'
+                {nutrition && (
+                  <>
+                    <h4 style={styles.sectionTitle}>Nutriments</h4>
+                    <p style={styles.nutritionSummary}>
+                      This product contains approximately  
+                      <strong>{nutrition.calories}</strong> kcal, 
+                      <strong> {nutrition.protein}</strong>g protein, 
+                      <strong> {nutrition.sugar}</strong>g sugars,
+                      <strong> {nutrition.fiber}</strong>g fiber,
+                      <strong> {nutrition.saturated_fat}</strong>g saturated fat,
+                      <strong> {nutrition.salt}</strong>g salt,
+                      <strong> {nutrition.cholesterol}</strong>mg cholesterol,
+                      <strong> {nutrition.sodium}</strong>mg sodium,
+                      <strong> {nutrition.carbs}</strong>g carbohydrates and 
+                      <strong> {nutrition.fat}</strong>g fat per 100g.
+                    </p>
+                  </>
+                )}
+
+                <h4 style={styles.sectionTitle}>Brand</h4>
+                <p style={styles.sectionText}>{selected.brands}</p>
+
+                <h4 style={styles.sectionTitle}>Categories</h4>
+                <p style={styles.sectionText}>{selected.categories || '–'}</p>
+
+                <h4 style={styles.sectionTitle}>Ingredients</h4>
+                <p style={styles.sectionText}>{ingredients || 'Not available'}</p>
+
+                <h4 style={styles.sectionTitle}>Allergens</h4>
+                <ul style={styles.allergenList}>
+                  {allergens ? (
+                    Object.entries(allergens).map(([key, value]) => (
+                      <li
+                        key={key}
+                        style={
+                          value === true
+                            ? styles.allergenItemYes
                             : value === false
-                              ? 'No'
-                              : 'Unknown'}
-                        </li>
-                      ))
-                    ) : (
-                      <li>No allergen data</li>
-                    )}
-                  </ul>
+                              ? styles.allergenItemNo
+                              : styles.allergenItemUnknown
+                        }
+                      >
+                        {key.charAt(0).toUpperCase() + key.slice(1)}:{' '}
+                        {value === true
+                          ? 'Yes'
+                          : value === false
+                            ? 'No'
+                            : 'Unknown'}
+                      </li>
+                    ))
+                  ) : (
+                    <li>No allergen data</li>
+                  )}
+                </ul>
 
-                    {/* EcoScore */}
-                  <div style={{ marginTop: '30px' }}>
+                {/* EcoScore */}
+                {selected.eco_score &&
+                typeof selected.eco_score.score === 'number' &&
+                selected.eco_score.score >= 0 ? (
+                  <>
+                    <h4>Eco Score</h4>
                     <EcoScoreChart
                       data={[
                         {
-                          grade: selected?.eco_score?.grade || 'unknown',
-                          value: selected?.eco_score?.score ?? 0,
+                          grade: selected.eco_score.grade || 'unknown',
+                          value: selected.eco_score.score,
                         },
                       ]}
                     />
-                  </div>
-                </div>
+                  </>
+                ) : (
+                  <p style={{ color: 'red' }}>No eco score available</p>
+                )}
+                {selected.eco_score?.grade && (
+                  <p
+                    style={{
+                      marginTop: '10px',
+                      fontStyle: 'italic',
+                      color: '#2f4f4f',
+                    }}
+                  >
+                    Eco Score Grade{' '}
+                    <strong>{selected.eco_score.grade.toUpperCase()}</strong>{' '}
+                    means: {getEcoScoreDescription(selected.eco_score.grade)}
+                  </p>
+                )}
               </div>
             </div>
-          )}
-
-        <SearchProducts onProductSelect={onProductSelect} showSelectButton />
+          </div>
+        )}
+        <SearchProducts
+          onProductSelect={onProductSelect}
+          showSelectButton
+          ecoScoreFilter={ecoScoreFilter}
+          excludedAllergens={excludedAllergens}
+          showFilters={showFilters}
+        />
       </div>
     </div>
   )
@@ -259,8 +377,9 @@ const styles = {
     fontSize: '1.2rem',
     fontWeight: 'bold',
     marginTop: '1rem',
-    marginBottom: '0.5rem',
+    marginBottom: '10px',
     color: '#2f4f4f',
+    alignSelf: 'center',
   },
   detailImage: {
     maxWidth: '180px',
@@ -288,6 +407,9 @@ const styles = {
   productInfoBox: {
     textAlign: 'left',
     marginTop: '1rem',
+    color: '#2f4f4f',
+    fontSize: '20px',
+    fontWeight: 'bold',
   },
   allergenList: {
     listStyleType: 'none',
@@ -318,7 +440,7 @@ const styles = {
   },
   modal: {
     backgroundColor: '#fff',
-    padding: '2rem',
+    padding: '20px',
     borderRadius: '12px',
     maxWidth: '600px',
     width: '90%',
@@ -326,7 +448,7 @@ const styles = {
     overflowY: 'auto',
     position: 'relative',
   },
-  confirmButton: {
+  filterButton: {
     marginTop: '20px',
     backgroundColor: '#2f4f4f',
     color: 'white',
@@ -335,5 +457,30 @@ const styles = {
     borderRadius: '8px',
     cursor: 'pointer',
     fontWeight: 'bold',
+  },
+  nutritionSummary: {
+    marginTop: '1rem',
+    marginBottom: '1rem',
+    lineHeight: '1.5',
+    fontSize: '0.95rem',
+    color: '#2f4f4f',
+  },
+  sectionTitle: {
+    fontSize: '1.2rem',
+    fontWeight: 'bold',
+    marginTop: '1.5rem',
+    marginBottom: '0.5rem',
+    color: '#2f4f4f',
+  },
+  sectionText: {
+    fontSize: '1rem',
+    marginBottom: '0.5rem',
+    color: '#2f4f4f',
+  },
+  title: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    marginBottom: '1rem',
+    color: '#2f4f4f',
   },
 } as const

@@ -193,6 +193,7 @@ export default function FindRecipes() {
               customInputStyle={styles.searchInput}
               showSelectButton={true}
               hideSearchButton={false}
+              showFilters={false}
               customButtonStyle={styles.searchButton}
             />
           </div>
