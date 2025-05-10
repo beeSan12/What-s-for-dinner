@@ -44,16 +44,16 @@ export class NutritionService extends MongooseServiceBase {
 
     const nutri = response.data.product.nutriments || {}
     return {
-      calories: nutri['energy-kcal_100g'] || 0,
-      protein: nutri.proteins_100g || 0,
-      carbs: nutri.carbohydrates_100g || 0,
-      fat: nutri.fat_100g || 0,
-      fiber: nutri.fiber_100g || 0,
-      sugars: nutri.sugars_100g || 0,
-      salt: nutri.salt_100g || 0,
-      sodium: nutri.sodium_100g || 0,
-      saturatedFat: nutri.saturated_fat_100g || 0,
-      cholesterol: nutri.cholesterol_100g || 0
+      calories: Math.round(nutri['energy-kcal_100g'] || 0),
+      protein: Math.round(nutri.proteins_100g || 0),
+      carbs: Math.round(nutri.carbohydrates_100g || 0),
+      fat: Math.round(nutri.fat_100g || 0),
+      fiber: Math.round(nutri.fiber_100g || 0),
+      sugars: Math.round(nutri.sugars_100g || 0),
+      salt: Math.round(nutri.salt_100g || 0),
+      sodium: Math.round(nutri.sodium_100g || 0),
+      saturatedFat: Math.round(nutri.saturated_fat_100g || 0),
+      cholesterol: Math.round(nutri.cholesterol_100g || 0)
     }
   }
 }

@@ -8,7 +8,7 @@ export interface Nutrition {
   calories: number
   protein: number
   carbs: number
-  fat: number,
+  fat: number
   fiber: number
   sugar: number
   salt: number

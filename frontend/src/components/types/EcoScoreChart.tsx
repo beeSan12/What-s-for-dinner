@@ -10,7 +10,11 @@ import { PieChart, Pie, Tooltip, Cell } from 'recharts'
 
 const COLORS = ['#4caf50', '#ffeb3b', '#f44336', '#9e9e9e']
 
-export const EcoScoreChart = ({ data }: { data: { grade: string, value: number }[] }) => {
+export const EcoScoreChart = ({
+  data,
+}: {
+  data: { grade: string; value: number }[]
+}) => {
   return (
     <PieChart width={400} height={400}>
       <Pie
