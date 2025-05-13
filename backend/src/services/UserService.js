@@ -11,7 +11,6 @@ import dotenv from 'dotenv'
 
 // Application modules.
 import { MongooseServiceBase } from './MongooseServiceBase.js'
-// import { UnauthorizedError } from '../lib/errors/index.js'
 
 dotenv.config()
 

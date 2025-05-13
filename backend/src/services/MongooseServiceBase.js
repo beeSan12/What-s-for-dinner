@@ -235,6 +235,22 @@ export class MongooseServiceBase {
   }
 
   /**
+   * Aggregates documents through the repository so that every service can
+   * use the same aggregation pipeline.
+   *
+   * @param {Array} pipeline - The aggregation pipeline.
+   * @param {object} [options] - Options for the aggregation.
+   * @returns {Promise<object[]>} Promise resolved with the aggregated documents.
+   */
+  async aggregate (pipeline = [], options = {}) {
+    try {
+      return await this.#repository.aggregate(pipeline, options)
+    } catch (err) {
+      this.#handleError(err, 'Failed to aggregate documents.')
+    }
+  }
+
+  /**
    * Handles an error.
    *
    * @param {Error} error - The error to handle.

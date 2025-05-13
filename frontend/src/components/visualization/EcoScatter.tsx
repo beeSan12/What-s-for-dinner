@@ -17,19 +17,6 @@ interface ProductWithNutri extends Product {
 
 type Props = { products: ProductWithNutri[] } 
 
-// function hasNutriAndEco (
-//   p: ProductWithNutri
-// ): p is ProductWithNutri & {
-//   nutrition: Nutrition
-//   eco_score: { score: number; grade: string }
-// } {
-//   return (
-//     !!p.nutrition &&
-//     Number.isFinite(p.nutrition.calories) &&
-//     !!p.eco_score &&
-//     Number.isFinite(p.eco_score.score)
-//   )
-// }
 /**
  * This function renders a scatter plot using ECharts library.
  * It compares the eco-score and calories of different products.

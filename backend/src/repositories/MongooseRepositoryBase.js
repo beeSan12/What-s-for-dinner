@@ -193,4 +193,15 @@ export class MongooseRepositoryBase {
       throw new RepositoryError({ message: 'Failed to save document.', cause: error })
     }
   }
+
+  /**
+   * Aggregates documents using the provided pipeline.
+   *
+   * @param {Array} pipeline - The aggregation pipeline.
+   * @param {object} [options] - Options for the aggregation.
+   * @returns {Promise<Array>} The result of the aggregation.
+   */
+  async aggregate (pipeline, options) {
+    return this.model.aggregate(pipeline, options)
+  }
 }

@@ -20,6 +20,10 @@ router.param('id', (req, res, next, id) =>
 router.route('/search')
   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).search(req, res, next))
 
+// GET /products/origin-map
+router.route('/origin-map')
+.get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getOriginMap(req, res, next))
+
 // GET /products/eco-score-distribution
 router.route('/eco-score-distribution')
   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getEcoScoreDistribution(req, res, next))

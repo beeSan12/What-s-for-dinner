@@ -12,6 +12,7 @@ import { apiFetch }   from '../../utils/apiFetch'
 import { Product }    from '../interface/Product'
 import { Nutrition }  from '../interface/Nutrition'
 
+
 interface ProductExt extends Product {
   nutrition?:  Nutrition
   eco_score?: { score: number; grade: string }
@@ -19,6 +20,7 @@ interface ProductExt extends Product {
 
 const EcoScatter     = lazy(() => import('../visualization/EcoScatter'))
 const NutritionRadar = lazy(() => import('../visualization/NutritionRadar'))
+const OriginMap     = lazy(() => import('../visualization/WorldMap'))
 
 export default function Visualize() {
   const [ecoFilter, setEcoFilter] = useState<string[]>([])
@@ -115,7 +117,12 @@ export default function Visualize() {
             </div>
           </Suspense>
         )}
+
+        <div style={styles.chartBox}>
+          <OriginMap />
+        </div>
       </div>
+      
 
       <button style={styles.btn} onClick={() => setShowRadar(p => !p)}>
         {showRadar ? 'Hide' : 'Show'} radar
