@@ -50,6 +50,7 @@ export default function Search() {
   const [ecoScoreFilter, setEcoScoreFilter] = useState<string[]>([])
   const [excludedAllergens, setExcludedAllergens] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
 
   function onProductSelect(
     product: Product & {
@@ -322,8 +323,11 @@ export default function Search() {
           onProductSelect={onProductSelect}
           showSelectButton
           ecoScoreFilter={ecoScoreFilter}
-          excludedAllergens={excludedAllergens}
           showFilters={showFilters}
+          excludedAllergens={excludedAllergens}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          maxResults={20}
         />
       </div>
     </div>

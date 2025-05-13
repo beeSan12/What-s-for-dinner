@@ -47,7 +47,7 @@ router.route('/eco-score/filter')
   .post(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).filterByEcoScore(req, res, next))
 
 // GET /products/eco-score
-router.route('/eco-score')
+router.route('/:barcode/eco-score')
   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getEcoScore(req, res, next))
 
 // GET /products/smart-search

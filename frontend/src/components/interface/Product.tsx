@@ -33,4 +33,8 @@ export interface Product {
   manufacturing_places?: string
   packaging?: string
   labels?: string
+  nova_group?: number
+  product_quantity?: string
+  co2_footprint?: number
+  nutriscore_grade?: string
 }

@@ -36,6 +36,21 @@ export class ProductController {
   }
 
   /**
+   * Gör om Mongoose-Map till vanliga objekt innan vi skickar JSON.
+   *
+   * @param {import('../models/ProductModel.js').Product} doc - Mongoose-dokument.
+   * @returns {object} - Plain object med allergener och näringsvärden som vanliga objekt.
+   */
+  #toClient (doc) {
+    const obj = doc.toObject?.() || doc // for both Mongoose and non-Mongoose objects
+    return {
+      ...obj,
+      allergens: Object.fromEntries(obj.allergens || []), // Map -> Object
+      nutrition: Object.fromEntries(obj.nutrition || [])
+    }
+  }
+
+  /**
    * Provide req.doc to the route if :id is present.
    *
    * @param {object} req - Express request object.
@@ -61,10 +76,15 @@ export class ProductController {
    */
   async find (req, res, next) {
     try {
-      res.json(req.doc)
+      res.json(this.#toClient(req.doc))
     } catch (error) {
       next(convertToHttpError(error))
     }
+    // try {
+    //   res.json(req.doc)
+    // } catch (error) {
+    //   next(convertToHttpError(error))
+    // }
   }
 
   /**
@@ -73,6 +93,7 @@ export class ProductController {
    * @param {object} req - Express request object.
    * @param {object} res - Express response object.
    * @param {Function} next - Express next middleware function.
+   * @returns {Promise<void>} - A promise that resolves when the response is sent.
    */
   async findAll (req, res, next) {
     try {
@@ -81,23 +102,52 @@ export class ProductController {
       const page = Number(req.query?.page) || 1
       const perPage = Number(req.query?.per_page) || 20
 
-      // Get the documents and pagination data.
-      const result = await this.#service.get({ page, perPage })
+      const ecoGrades = req.query.ecoGrades
+        ? req.query.ecoGrades.split(',').map(g => g.trim().toUpperCase())
+        : []
+      const excludeAllergens = req.query.excludeAllergens
+        ? req.query.excludeAllergens.split(',').map(a => a.trim())
+        : []
 
-      // Set pagination headers.
-      this.#setPaginationHeaders(req, res, result.pagination)
+      const shouldFilter = ecoGrades.length > 0 || excludeAllergens.length > 0
 
-      // Send the response.
-      if (result.data.length > 0) {
-        res.json(result.data)
+      // const shouldFilter = ecoScoreMissing || excludeAllergens.length > 0
+
+      const result = shouldFilter
+        ? await this.#service.filterProducts({ ecoGrades, excludeAllergens })
+        : await this.#service.get({ page, perPage })
+
+      if (!shouldFilter) {
+        this.#setPaginationHeaders(req, res, result.pagination)
+        if (result.data.length > 0) {
+          return res.json(result.data)
+        } else {
+          return res.status(204).end()
+        }
       } else {
-        res
-          .status(204) // No Content
-          .end()
+        return res.json(result.data.map(p => this.#toClient(p)))
+        // return res.json(result)
       }
     } catch (error) {
       next(convertToHttpError(error))
     }
+    //   // Get the documents and pagination data.
+    //   const result = await this.#service.get({ page, perPage })
+
+    //   // Set pagination headers.
+    //   this.#setPaginationHeaders(req, res, result.pagination)
+
+    //   // Send the response.
+    //   if (result.data.length > 0) {
+    //     res.json(result.data)
+    //   } else {
+    //     res
+    //       .status(204) // No Content
+    //       .end()
+    //   }
+    // } catch (error) {
+    //   next(convertToHttpError(error))
+    // }
   }
 
   /**
@@ -109,22 +159,42 @@ export class ProductController {
    */
   async search (req, res, next) {
     try {
+      const ecoGrades = req.query.ecoGrades
+        ? req.query.ecoGrades.split(',').map(g => g.trim().toUpperCase())
+        : []
+      // const ecoScoreMissing = req.query.ecoScoreMissing === 'true'
+      const excludeAllergens = req.query.excludeAllergens
+        ? req.query.excludeAllergens.split(',').map(a => a.trim())
+        : []
       const name = req.query.name?.toString() || ''
       const userId = req.user?.id
       logger.info(`🔍 Searching for: ${name}, userId: ${userId}`)
 
+      const regex = new RegExp(name, 'i')
+      const orBlock = [
+        { product_name: regex },
+        { categories: regex },
+        { ingredients: regex },
+        { [`allergens.${name.toLowerCase()}`]: { $exists: true } }
+      ]
+      const filter = { $or: orBlock }
+
       // Search for products by name.
       // If userId is provided, search for products by name and userId.
       console.log('🔎 Calling global search...')
-      const globalProducts = (await this.#service.search({
-        filter: { product_name: new RegExp(name, 'i') }
-      })).data
+      const globalProducts = (await this.#service.search({ filter })).data
+      // const globalProducts = (await this.#service.search({
+      //   filter: { product_name: new RegExp(name, 'i') }
+      // })).data
       console.log('🔎 Calling user search...')
       const userProducts = userId
-        ? (await this.#userProductService.search({
-            filter: { product_name: new RegExp(name, 'i'), userId }
-          })).data
+        ? (await this.#userProductService.search({ filter: { ...filter, userId } })).data
         : []
+      // const userProducts = userId
+      //   ? (await this.#userProductService.search({
+      //       filter: { product_name: new RegExp(name, 'i'), userId }
+      //     })).data
+      //   : []
 
       // Combine the results.
       const results = [
@@ -132,7 +202,35 @@ export class ProductController {
         ...userProducts.map(p => ({ ...p.toObject?.() || p, source: 'custom' }))
       ]
 
-      res.json({ data: results })
+      const enrichedResults = await Promise.all(results.map(async product => {
+        try {
+          const ecoResult = await this.#service.getEcoScoreByProduct(product.barcode)
+          return { ...product, eco_score: ecoResult.eco_score }
+        } catch {
+          return { ...product, eco_score: { score: -1, grade: 'unknown' } }
+        }
+      }))
+
+      const filtered = this.#service.filterInMemory(enrichedResults, { ecoGrades, excludeAllergens })
+
+      const page = Number(req.query.page) || 1
+      const perPage = Number(req.query.per_page) || 20
+      const start = (page - 1) * perPage
+      const end = page * perPage
+
+      // const paginated = results.slice(start, end)
+      const paginated = filtered.slice(start, end).map(p => this.#toClient(p))
+
+      // res.json({ data: results })
+      res.json({
+        data: paginated,
+        pagination: {
+          totalCount: filtered.length,
+          page,
+          perPage,
+          totalPages: Math.ceil(filtered.length / perPage)
+        }
+      })
     } catch (error) {
       next(convertToHttpError(error))
     }
@@ -148,10 +246,15 @@ export class ProductController {
    */
   async getAllergens (req, res, next) {
     try {
-      const barcode = req.params.barcode
+      // const barcode = req.params.barcode
+      const { barcode } = req.params
       if (!barcode) throw new Error('Missing barcode')
 
-      const product = { barcode }
+      // const product = { barcode }
+      const product = await this.#service.getOne({ barcode })
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' })
+      }
 
       const enriched = await this.#service.getAllergensByProduct(product)
 
@@ -159,7 +262,9 @@ export class ProductController {
         return res.status(404).json({ message: 'No allergen data found.' })
       }
 
-      res.json({ allergens: enriched.allergens })
+      // res.json({ allergens: enriched.allergens })
+      res.json({ allergens: Object.fromEntries(enriched.allergens || []) })
+      // res.json({ allergens: Object.fromEntries(product.allergens || []) })
     } catch (error) {
       next(convertToHttpError(error))
     }
@@ -235,6 +340,33 @@ export class ProductController {
       next(convertToHttpError(error))
     }
   }
+
+  // /**
+  //  * Filters products based on eco score and allergens.
+  //  *
+  //  * @param {object} req - Express request object.
+  //  * @param {object} res - Express response object.
+  //  * @param {Function} next - Express next middleware function.
+  //  * @returns {Promise<void>} - A promise that resolves when the response is sent.
+  //  */
+  // async filter (req, res, next) {
+  //   try {
+  //     const ecoScoreMissing = req.query.ecoScoreMissing === 'true'
+  //     const excludeAllergens = req.query.excludeAllergens
+  //       ? req.query.excludeAllergens.split(',').map(a => a.trim())
+  //       : []
+
+  //     const filters = {
+  //       ecoScoreMissing,
+  //       excludeAllergens
+  //     }
+
+  //     const products = await this.#service.filterProducts(filters)
+  //     res.json(products)
+  //   } catch (error) {
+  //     next(convertToHttpError(error))
+  //   }
+  // }
 
   /**
    * Filters products by eco score.

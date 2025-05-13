@@ -6,6 +6,7 @@
 
 export interface Nutrition {
   calories: number
+  energy?: number
   protein: number
   carbs: number
   fat: number
@@ -15,4 +16,5 @@ export interface Nutrition {
   saturated_fat: number
   cholesterol: number
   sodium: number
+  alcohol?: number
 }
