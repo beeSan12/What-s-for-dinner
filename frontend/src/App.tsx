@@ -10,6 +10,7 @@ import PublicRoute from './components/context/PublicRoute'
 import PrivateRoute from './components/context/PrivateRoute'
 import Register from './components/pages/Register'
 import Navbar from './components/types/Navbar'
+import Visualize from './components/pages/Visualize'
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="create-shopping-list" element={<CreateShoppingList />} />
           <Route path="find-recipe" element={<FindRecipes />} />
           <Route path="search-query" element={<SearchQuery />} />
+          <Route path="/visualize" element={<Visualize />} />
           <Route path="/" element={<Navigate to="home" replace />} />
         </Route>
         {/* Fallback: if no route matches */}

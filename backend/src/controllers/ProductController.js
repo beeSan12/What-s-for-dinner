@@ -35,20 +35,42 @@ export class ProductController {
     this.#userProductService = userProductService
   }
 
-  /**
-   * Gör om Mongoose-Map till vanliga objekt innan vi skickar JSON.
-   *
-   * @param {import('../models/ProductModel.js').Product} doc - Mongoose-dokument.
-   * @returns {object} - Plain object med allergener och näringsvärden som vanliga objekt.
-   */
-  #toClient (doc) {
-    const obj = doc.toObject?.() || doc // for both Mongoose and non-Mongoose objects
-    return {
-      ...obj,
-      allergens: Object.fromEntries(obj.allergens || []), // Map -> Object
-      nutrition: Object.fromEntries(obj.nutrition || [])
-    }
-  }
+  // /**
+  //  * Gör om Mongoose-Map till vanliga objekt innan vi skickar JSON.
+  //  *
+  //  * @param {import('../models/ProductModel.js').Product} doc - Mongoose-dokument.
+  //  * @returns {object} - Plain object med allergener och näringsvärden som vanliga objekt.
+  //  */
+  // #toClient (doc) {
+  //   const obj = doc.toObject?.() || doc // for both Mongoose and non-Mongoose objects
+  //   const nutr = obj.nutrition || {}
+  //   return {
+  //     ...obj,
+  //     nutrition: {
+  //       calories: nutr['energy-kcal_100g'] ?? nutr.calories ?? null,
+  //       protein: nutr.proteins_100g ?? nutr.protein ?? null,
+  //       fat: nutr.fat_100g ?? nutr.fat ?? null,
+  //       carbs: nutr.carbohydrates_100g ?? nutr.carbs ?? null,
+  //       sugar: nutr.sugars_100g ?? nutr.sugar ?? null,
+  //       fiber: nutr.fiber_100g ?? nutr.fiber ?? null,
+  //       salt: nutr.salt_100g ?? nutr.salt ?? null,
+  //       saturated_fat: nutr['saturated-fat_100g'] ?? nutr.saturated_fat ?? null,
+  //       cholesterol: nutr.cholesterol_100g ?? nutr.cholesterol ?? null,
+  //       sodium: nutr.sodium_100g ?? nutr.sodium ?? null
+  //     },
+  //     eco_score: {
+  //       grade: obj.eco_score_grade ?? 'unknown',
+  //       score: obj.eco_score_score ?? -1
+  //     },
+  //     allergens: Object.fromEntries(obj.allergens || [])
+  //   }
+  //   // return {
+  //   //   ...obj,
+  //   //   allergens: Object.fromEntries(obj.allergens || []), // Map -> Object
+  //   //   nutrition: Object.fromEntries(obj.nutrition || []),
+  //   //   eco_score: { grade: 'unknown', score: -1 }
+  //   // }
+  // }
 
   /**
    * Provide req.doc to the route if :id is present.
@@ -75,16 +97,16 @@ export class ProductController {
    * @param {Function} next - Express next middleware function.
    */
   async find (req, res, next) {
-    try {
-      res.json(this.#toClient(req.doc))
-    } catch (error) {
-      next(convertToHttpError(error))
-    }
     // try {
-    //   res.json(req.doc)
+    //   res.json(this.#toClient(req.doc))
     // } catch (error) {
     //   next(convertToHttpError(error))
     // }
+    try {
+      res.json(req.doc)
+    } catch (error) {
+      next(convertToHttpError(error))
+    }
   }
 
   /**
@@ -118,15 +140,20 @@ export class ProductController {
         : await this.#service.get({ page, perPage })
 
       if (!shouldFilter) {
+        // this.#setPaginationHeaders(req, res, result.pagination)
+        // if (result.data.length > 0) {
+        //   return res.json(result.data)
         this.#setPaginationHeaders(req, res, result.pagination)
         if (result.data.length > 0) {
           return res.json(result.data)
+          // return res.json(result.data.map(p => this.#toClient(p))) // Always convert to plain object
         } else {
           return res.status(204).end()
         }
       } else {
-        return res.json(result.data.map(p => this.#toClient(p)))
+        // return res.json(result.data.map(p => this.#toClient(p)))
         // return res.json(result)
+        return res.json(result.data)
       }
     } catch (error) {
       next(convertToHttpError(error))
@@ -218,8 +245,8 @@ export class ProductController {
       const start = (page - 1) * perPage
       const end = page * perPage
 
-      // const paginated = results.slice(start, end)
-      const paginated = filtered.slice(start, end).map(p => this.#toClient(p))
+      const paginated = filtered.slice(start, end)
+      // const paginated = filtered.slice(start, end).map(p => this.#toClient(p))
 
       // res.json({ data: results })
       res.json({

@@ -139,11 +139,11 @@ function parseAllergens (row, importedCount) {
   // 1) get string of allergen tags
   // const raw = row.allergens || row.allergens_tags
   const raw = [
-    row.allergens, // ex: "en:milk,en:nuts"
-    row.allergens_tags, // identisk info – olika exporter använder olika namn
-    row.allergens_en, // ex: "milk,nuts"
-    row.traces, // ex: "soy,celery"
-    row.traces_tags // ex: "en:soybeans,en:celery"
+    row.allergens,
+    row.allergens_tags,
+    row.allergens_en,
+    row.traces,
+    row.traces_tags
   ].filter(Boolean).join(',')
 
   if (!raw) return result
@@ -196,6 +196,9 @@ function rowToProduct (row, importedCount) {
   // Check if the row contains the required fields
   if (!(row.product_name && row.brands && row.image_url)) return null
 
+  // Check if the grade is valid
+  const gradeToScore = { a: 90, 'a-plus': 95, b: 70, c: 50, d: 30, e: 10 }
+
   return {
     product_name: row.product_name,
     brands: row.brands,
@@ -209,6 +212,9 @@ function rowToProduct (row, importedCount) {
     nutrition: parseNutrition(row),
     allergens: parseAllergens(row, importedCount),
     eco_score_grade: row.environmental_score_grade,
+    eco_score_score: row.environmental_score_score
+      ? Number(row.environmental_score_score)
+      : gradeToScore[(row.environmental_score_grade || '').toLowerCase()] ?? -1,
     origins: row.origins,
     manufacturing_places: row.manufacturing_places,
     packaging: row.packaging,
@@ -260,6 +266,7 @@ export async function seed () {
           categories: row.categories,
           name: row.product_name,
           ecoScore: row.environmental_score_grade,
+          ecoScoreScore: row.environmental_score_score,
           allergens: parseAllergens(row, importedCount),
           ingredients: row.ingredients_text?.slice(0, 120),
           nutriments: parseNutrition(row, importedCount)

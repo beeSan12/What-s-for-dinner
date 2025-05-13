@@ -7,6 +7,7 @@
 
 import { FaHome, FaSearch, FaUnlock } from 'react-icons/fa'
 import { IoCreate, IoLogOutOutline } from 'react-icons/io5'
+import { MdOutlineAutoGraph } from "react-icons/md";
 import { RiUserAddLine } from 'react-icons/ri'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -29,6 +30,10 @@ export default function Navbar() {
           <Link to="/create-shopping-list" style={styles.link}>
             <IoCreate size={20} />
             <span style={styles.label}>Create List</span>
+          </Link>
+          <Link to="/visualize" style={styles.link}>
+            <MdOutlineAutoGraph size={20} />
+            <span style={styles.label}>Visualization</span>
           </Link>
           <button onClick={logout} style={{ ...styles.link, ...styles.button }}>
             <IoLogOutOutline size={20} />
