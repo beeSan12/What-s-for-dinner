@@ -14,6 +14,7 @@ import { Nutrition } from '../interface/Nutrition'
 import { MdClose } from 'react-icons/md'
 import { EcoScoreChart } from '../types/EcoScoreChart'
 import { Filters } from '../../utils/Filters'
+import NutritionRadar from '../visualization/NutritionRadar'
 
 /**
  * Function to get the EcoScore description based on the grade.
@@ -210,6 +211,7 @@ export default function Search() {
                     </li>
                   </ul>
                   <NutritionChart totals={nutrition} />
+                  <NutritionRadar nutr={nutrition} title={selected.product_name} />
                   {/* <p style={styles.nutritionSummary}>
                     This product contains approximately 
                     <strong>{nutrition.calories}</strong> kcal, 

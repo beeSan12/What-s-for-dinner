@@ -40,12 +40,13 @@ export class ProductService extends MongooseServiceBase {
       : {}
     // const regex = nameFilter ? new (RegExpnameFilter, 'i') : undefined
 
-    const standardProducts = await this.search(filter)
+    // const standardProducts = await this.search(filter)
+    const { data: standardProducts } = await this.search({ filter })
     // const standardProducts = await this.search(regex ? { product_name: regex } : {})
     const userProducts = await this.userProductService.getAllByUser(userId, nameFilter)
 
     // Combine and remove duplicates by product_name
-    const combined = [...userProducts, ...standardProducts.data || standardProducts]
+    const combined = [...userProducts, ...standardProducts]
 
     const unique = Array.from(
       new Map(combined.map(p => [p.product_name.toLowerCase(), p])).values()
@@ -234,17 +235,23 @@ export class ProductService extends MongooseServiceBase {
    * @returns {Promise<object>} The eco score distribution.
    */
   async getEcoScoreDistribution () {
-    const ecoScores = await this.search({ eco_score: { $exists: true } }, { eco_score: 1 })
+    // const ecoScores = await this.search({ eco_score: { $exists: true } }, { eco_score: 1 })
+    // const { data: ecoScores } = await this.search(
+    //   { 'eco_score.grade': { $exists: true } },
+    //   { eco_score: 1 }
+    // )
+
+    const { data: ecoScores } = await this.search(
+      { eco_score_grade: { $exists: true } },
+      { eco_score_grade: 1 }
+    )
     const distribution = {}
 
     for (const product of ecoScores) {
-      const grade = product.eco_score.grade
-      if (!distribution[grade]) {
-        distribution[grade] = 0
-      }
-      distribution[grade]++
+      const grade = (product.eco_score_grade || 'unknown').toUpperCase()
+      // const grade = product.eco_score?.grade?.toUpperCase() ?? 'UNKNOWN'
+      distribution[grade] = (distribution[grade] ?? 0) + 1
     }
-
     return Object.entries(distribution).map(([grade, value]) => ({ grade, value }))
   }
 

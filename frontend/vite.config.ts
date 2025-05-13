@@ -13,6 +13,9 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             if (id.includes('recharts')) return 'recharts'
             if (id.includes('react-icons')) return 'react-icons'
+            if (id.includes('recharts')) return 'recharts'
+            if (id.match(/(react|react-dom|scheduler)/)) return 'react'
+
             return 'vendor'
           }
         },
