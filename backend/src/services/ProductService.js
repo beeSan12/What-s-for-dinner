@@ -35,7 +35,13 @@ export class ProductService extends MongooseServiceBase {
   async getAllProducts (userId, nameFilter) {
     const regex = nameFilter ? new RegExp(nameFilter, 'i') : undefined
 
-    const standardProducts = await this.search(regex ? { product_name: regex } : {})
+    const filter = regex
+      ? { $or: [{ product_name: regex }, { ingredients: regex }] }
+      : {}
+    // const regex = nameFilter ? new (RegExpnameFilter, 'i') : undefined
+
+    const standardProducts = await this.search(filter)
+    // const standardProducts = await this.search(regex ? { product_name: regex } : {})
     const userProducts = await this.userProductService.getAllByUser(userId, nameFilter)
 
     // Combine and remove duplicates by product_name
@@ -69,7 +75,11 @@ export class ProductService extends MongooseServiceBase {
       { key: 'soy', tag: 'en:soybeans', negTag: 'en:no-soybeans' },
       { key: 'eggs', tag: 'en:eggs', negTag: 'en:no-eggs' },
       { key: 'fish', tag: 'en:fish', negTag: 'en:no-fish' },
-      { key: 'shellfish', tag: 'en:crustaceans', negTag: 'en:no-crustaceans' }
+      { key: 'shellfish', tag: 'en:crustaceans', negTag: 'en:no-crustaceans' },
+      { key: 'celery', tag: 'en:celery', negTag: 'en:no-celery' },
+      { key: 'mustard', tag: 'en:mustard', negTag: 'en:no-mustard' },
+      { key: 'sesame', tag: 'en:sesame-seeds', negTag: 'en:no-sesame-seeds' },
+      { key: 'sulphites', tag: 'en:sulphur-dioxide-and-sulphites', negTag: 'en:no-sulphur-dioxide-and-sulphites' }
     ]
 
     const allergens = {}
@@ -116,15 +126,16 @@ export class ProductService extends MongooseServiceBase {
    * @returns {Promise<object>} The eco score data.
    */
   async getEcoScoreByProduct (barcode) {
-    const product = await this.getOne({ barcode })
-
-    if (product?.eco_score?.score !== undefined) return product.eco_score
-
     const client = APIClientFactory.createOpenFoodAPIClient()
     const response = await client.get(`/api/v0/product/${barcode}.json`)
 
-    const score = response.data?.product?.eco_score_score || -1
-    const grade = response.data?.product?.eco_score_grade || 'unknown'
+    const score = response.data?.product?.eco_score_score
+    const grade = response.data?.product?.eco_score_grade
+
+    if (score === undefined || grade === undefined) {
+      console.warn(`No eco score found for barcode ${barcode}`)
+      return { eco_score: { score: -1, grade: 'unknown' } }
+    }
 
     return {
       eco_score: {
@@ -132,6 +143,73 @@ export class ProductService extends MongooseServiceBase {
         grade
       }
     }
+  }
+  //   const product = await this.getOne({ barcode })
+
+  //   if (product?.eco_score?.score !== undefined) return product.eco_score
+
+  //   const client = APIClientFactory.createOpenFoodAPIClient()
+  //   const response = await client.get(`/api/v0/product/${barcode}.json`)
+
+  //   const score = response.data?.product?.eco_score_score || -1
+  //   const grade = response.data?.product?.eco_score_grade || 'unknown'
+
+  //   return {
+  //     eco_score: {
+  //       score,
+  //       grade
+  //     }
+  //   }
+  // }
+
+  /**
+   * Filters products based on eco score and allergens.
+   *
+   * @param {object[]} products - The product data to filter.
+   * @returns {Promise<object[]>} - The filtered products.
+   */
+  async filterProducts ({ ecoScoreMissing, ecoGrades = [], excludeAllergens = [] }) {
+    const query = {}
+
+    if (ecoScoreMissing) {
+      query['eco_score.score'] = { $lt: 0 }
+    }
+    if (ecoGrades.length > 0) {
+      query['eco_score.grade'] = { $in: ecoGrades.map(g => g.toLowerCase()) }
+    }
+    for (const allergen of excludeAllergens) {
+      query[`allergens.${allergen}`] = { $ne: true }
+    }
+    return this.model.find(query).limit(100)
+  }
+
+  /**
+   * Filters products in memory based on eco score and allergens.
+   *
+   * @param {object[]} products - The product data to filter.
+   * @param {object} filters - Filter parameters.
+   * @param {boolean} [filters.ecoGrades] - If true, only products missing eco score will be included.
+   * @param {string[]} [filters.excludeAllergens] - A list of allergens to exclude (e.g. ['gluten', 'lactose']).
+   * @returns {object[]} - The filtered products.
+   */
+  filterInMemory (products, { ecoGrades = [], excludeAllergens = [] }) {
+    let filtered = products
+
+    if (ecoGrades.length > 0) {
+      filtered = filtered.filter(p =>
+        p.eco_score &&
+        p.eco_score.grade &&
+        ecoGrades.includes(p.eco_score.grade.toUpperCase())
+      )
+    }
+
+    if (excludeAllergens.length > 0) {
+      filtered = filtered.filter(p =>
+        !p.allergens || !excludeAllergens.some(a => p.allergens?.[a] === true)
+      )
+    }
+
+    return filtered
   }
 
   /**

@@ -15,13 +15,13 @@ interface FiltersProps {
 }
 
 const ALL_ECO_SCORES = ['A', 'B', 'C', 'D', 'E']
-const COMMON_ALLERGENS = ['gluten', 'soy', 'nuts', 'peanuts', 'eggs', 'lactose', 'shellfish', 'fish']
+// const COMMON_ALLERGENS = ['gluten', 'soy', 'nuts', 'peanuts', 'eggs', 'lactose', 'shellfish', 'fish']
 
 export const Filters: React.FC<FiltersProps> = ({
   ecoScoreFilter,
   setEcoScoreFilter,
-  excludedAllergens,
-  setExcludedAllergens,
+  // excludedAllergens,
+  // setExcludedAllergens,
 }) => {
   const handleEcoScoreChange = (score: string, checked: boolean) => {
     setEcoScoreFilter(prev =>
@@ -29,11 +29,11 @@ export const Filters: React.FC<FiltersProps> = ({
     )
   }
 
-  const handleAllergenChange = (allergen: string, checked: boolean) => {
-    setExcludedAllergens(prev =>
-      checked ? [...prev, allergen] : prev.filter(a => a !== allergen)
-    )
-  }
+  // const handleAllergenChange = (allergen: string, checked: boolean) => {
+  //   setExcludedAllergens(prev =>
+  //     checked ? [...prev, allergen] : prev.filter(a => a !== allergen)
+  //   )
+  // }
 
   return (
     <div style={styles.filterBox}>
@@ -53,7 +53,7 @@ export const Filters: React.FC<FiltersProps> = ({
         ))}
       </div>
 
-      <div style={styles.filterGroup}>
+      {/* <div style={styles.filterGroup}>
         <span style={styles.filterLabel}>Exclude Allergens:</span>
         {COMMON_ALLERGENS.map(allergen => (
           <label key={allergen} style={styles.checkboxLabel}>
@@ -65,7 +65,7 @@ export const Filters: React.FC<FiltersProps> = ({
             {allergen.charAt(0).toUpperCase() + allergen.slice(1)}
           </label>
         ))}
-      </div>
+      </div> */}
     </div>
   )
 }
