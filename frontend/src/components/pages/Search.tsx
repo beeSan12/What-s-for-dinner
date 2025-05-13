@@ -102,23 +102,6 @@ export default function Search() {
 
     setLoadingNutrition(false)
   }
-  //   try {
-  //     const res = await apiFetch(
-  //       `${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`,
-  //     )
-  //     if (!res.ok) throw new Error('Could not fetch nutrition data')
-  //     const nut: Nutrition = await res.json()
-  //     setNutrition(nut)
-  //   } catch (error: unknown) {
-  //     console.error(error)
-  //     if (error instanceof Error) {
-  //       setError(error.message)
-  //     } else {
-  //       setError('An unknown error occurred')
-  //     }
-  //     setNutrition(null)
-  //   }
-  // }
 
   function handleCloseDetail() {
     setSelected(null)
@@ -212,19 +195,6 @@ export default function Search() {
                   </ul>
                   <NutritionChart totals={nutrition} />
                   <NutritionRadar nutr={nutrition} title={selected.product_name} />
-                  {/* <p style={styles.nutritionSummary}>
-                    This product contains approximately 
-                    <strong>{nutrition.calories}</strong> kcal, 
-                    <strong> {nutrition.protein}</strong>g protein, 
-                    <strong> {nutrition.sugar}</strong>g sugars,
-                    <strong> {nutrition.fiber}</strong>g fiber,
-                    <strong> {nutrition.saturated_fat}</strong>g saturated fat,
-                    <strong> {nutrition.salt}</strong>g salt,
-                    <strong> {nutrition.cholesterol}</strong>mg cholesterol,
-                    <strong> {nutrition.sodium}</strong>mg sodium,
-                    <strong> {nutrition.carbs}</strong>g carbohydrates and 
-                    <strong> {nutrition.fat}</strong>g fat per 100g.
-                  </p> */}
                 </>
               )}
 

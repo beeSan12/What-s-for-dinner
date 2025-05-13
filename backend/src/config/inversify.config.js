@@ -25,12 +25,7 @@ import { UserController } from '../controllers/UserController.js'
 import { AuthService } from '../services/AuthService.js'
 import { AuthController } from '../controllers/AuthController.js'
 import { AuthRepository } from '../repositories/AuthRepository.js'
-// Shopping List modules
-import { ShoppingListModel } from '../models/ShoppingListModel.js'
-import { ShoppingListRepository } from '../repositories/ShoppingListRepository.js'
-import { ShoppingListService } from '../services/ShoppingListService.js'
-import { ShoppingListController } from '../controllers/ShoppingListController.js'
-// User Product modules
+// User product modules
 import { UserProductModel } from '../models/UserProductModel.js'
 import { UserProductRepository } from '../repositories/UserProductRepository.js'
 import { UserProductService } from '../services/UserProductService.js'
@@ -73,13 +68,6 @@ export const AUTHTYPES = {
   AuthController: Symbol.for('AuthController'),
   AuthRepository: Symbol.for('AuthRepository'),
   AuthService: Symbol.for('AuthService')
-}
-
-export const SHOPPINGLISTTYPES = {
-  ShoppingListController: Symbol.for('ShoppingListController'),
-  ShoppingListRepository: Symbol.for('ShoppingListRepository'),
-  ShoppingListService: Symbol.for('ShoppingListService'),
-  ShoppingListModel: Symbol.for('ShoppingListModel')
 }
 
 export const USERPRODUCTTYPES = {
@@ -144,15 +132,6 @@ decorate(inject(USERTYPES.UserModel), AuthRepository, 0)
 decorate(inject(AUTHTYPES.AuthRepository), AuthService, 0)
 decorate(inject(AUTHTYPES.AuthService), AuthController, 0)
 
-// Decorate Shopping List classes
-decorate(injectable(), ShoppingListRepository)
-decorate(injectable(), ShoppingListService)
-decorate(injectable(), ShoppingListController)
-
-decorate(inject(SHOPPINGLISTTYPES.ShoppingListModel), ShoppingListRepository, 0)
-decorate(inject(SHOPPINGLISTTYPES.ShoppingListRepository), ShoppingListService, 0)
-decorate(inject(SHOPPINGLISTTYPES.ShoppingListService), ShoppingListController, 0)
-
 // Decorate User Product classes
 decorate(injectable(), UserProductRepository)
 decorate(injectable(), UserProductService)
@@ -211,12 +190,6 @@ container.bind(AUTHTYPES.AuthController).to(AuthController).inSingletonScope()
 container.bind(AUTHTYPES.AuthRepository).to(AuthRepository).inSingletonScope()
 container.bind(AUTHTYPES.AuthService).to(AuthService).inSingletonScope()
 container.bind(AUTHTYPES.UserModel).toConstantValue(UserModel)
-
-// Shopping List bindings
-container.bind(SHOPPINGLISTTYPES.ShoppingListController).to(ShoppingListController).inSingletonScope()
-container.bind(SHOPPINGLISTTYPES.ShoppingListRepository).to(ShoppingListRepository).inSingletonScope()
-container.bind(SHOPPINGLISTTYPES.ShoppingListService).to(ShoppingListService).inSingletonScope()
-container.bind(SHOPPINGLISTTYPES.ShoppingListModel).toConstantValue(ShoppingListModel)
 
 // User Product bindings
 container.bind(USERPRODUCTTYPES.UserProductController).to(UserProductController).inSingletonScope()

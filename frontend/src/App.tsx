@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 // import { useEffect} from 'react'
 import Search from './components/pages/Search'
-import CreateShoppingList from './components/pages/CreateShoppingList'
+// import CreateShoppingList from './components/pages/CreateShoppingList'
 import FindRecipes from './components/pages/FindRecepies'
 import SearchQuery from './components/types/SearchQuery'
 import Home from './components/pages/Home'
@@ -37,7 +37,7 @@ export default function App() {
           <Route index element={<Navigate to="home" replace />} />
           <Route path="home" element={<Home />} />
           <Route path="search" element={<Search />} />
-          <Route path="create-shopping-list" element={<CreateShoppingList />} />
+          {/* <Route path="create-shopping-list" element={<CreateShoppingList />} /> */}
           <Route path="find-recipe" element={<FindRecipes />} />
           <Route path="search-query" element={<SearchQuery />} />
           <Route path="/visualize" element={<Visualize />} />

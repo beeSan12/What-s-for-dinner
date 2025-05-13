@@ -7,11 +7,124 @@
 // Application modules.
 import { MongooseServiceBase } from './MongooseServiceBase.js'
 import { APIClientFactory } from '../utils/APIClientFactory.js'
+import countries from 'i18n-iso-countries'
+import enLocale from 'i18n-iso-countries/langs/en.json' assert { type: 'json' }
+
+// Register English locale
+countries.registerLocale(enLocale)
 
 /**
  * Encapsulates a task service.
  */
 export class ProductService extends MongooseServiceBase {
+  /**
+   * Gets the origin map for products through an aggregation pipeline.
+   *
+   * @param {object} options - The options for the aggregation.
+   * @param {string[]} [options.gradesFilter] - An array of eco grades to filter by.
+   * @returns {Promise<object[]>} The origin map.
+   */
+  async getOriginMap ({ gradesFilter = [] } = {}) {
+    // Build the aggregation pipeline
+    const pipeline = [
+      // 1) Exlude products without origins
+      { $match: { origins: { $exists: true, $nin: [null, ''] } } },
+
+      // 2) Only include grades that are in the filter
+      ...(gradesFilter.length
+        ? [{ $match: { 'eco_score.grade': { $in: gradesFilter.map(g => g.toLowerCase()) } } }]
+        : []),
+
+      // 3) Convert to country names
+      {
+        $project: {
+          ecoGrade: '$eco_score.grade',
+          originsArr: {
+            $filter: {
+              input: { $split: ['$origins', ','] },
+              as: 'o',
+              cond: { $ne: ['$$o', ''] }
+            }
+          }
+        }
+      },
+      { $unwind: '$originsArr' },
+      {
+        $addFields: {
+          // Convert origins to ISO-2 codes for the maps coordinates
+          cc: {
+            $let: {
+              vars: {
+                clean: { $trim: { input: '$originsArr' } }
+              },
+              in: {
+                $cond: [
+                  { $eq: [{ $strLenCP: '$$clean' }, 2] }, // redan ISO?
+                  { $toUpper: '$$clean' },
+                  {
+                    $toUpper: {
+                      $function: {
+                        /**
+                         * Converts a country name to its ISO-2 code.
+                         *
+                         * @param {string} name - The country name.
+                         * @returns {string} The ISO-2 code or the original name if not found.
+                         */
+                        body: (name) => {
+                          const iso = countries.getAlpha2Code(name, 'en')
+                          return iso || name // fallback: sends back the original name
+                        },
+                        args: ['$$clean'],
+                        lang: 'js'
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+
+      // 4) Group by country code and eco grade
+      {
+        $group: {
+          _id: '$cc',
+          total: { $sum: 1 },
+          grades: {
+            $push: '$ecoGrade'
+          }
+        }
+      },
+
+      // 5) Format the output
+      {
+        $project: {
+          _id: 0,
+          cc: '$_id',
+          total: 1,
+          grades: {
+            $arrayToObject: {
+              $map: {
+                input: { $setUnion: ['$grades', []] }, // unique grades
+                as: 'g',
+                in: [
+                  { $toUpper: '$$g' },
+                  {
+                    $size: {
+                      $filter: { input: '$grades', as: 'x', cond: { $eq: ['$$x', '$$g'] } }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]
+    return this.aggregate(pipeline)
+  }
+
   /**
    * Searches for products by name.
    *
@@ -33,16 +146,14 @@ export class ProductService extends MongooseServiceBase {
    * @returns {Promise<object[]>} A list of all products.
    */
   async getAllProducts (userId, nameFilter) {
+    // Check if nameFilter is a string
     const regex = nameFilter ? new RegExp(nameFilter, 'i') : undefined
-
     const filter = regex
       ? { $or: [{ product_name: regex }, { ingredients: regex }] }
       : {}
-    // const regex = nameFilter ? new (RegExpnameFilter, 'i') : undefined
 
-    // const standardProducts = await this.search(filter)
+    // Fetch standard products and user products
     const { data: standardProducts } = await this.search({ filter })
-    // const standardProducts = await this.search(regex ? { product_name: regex } : {})
     const userProducts = await this.userProductService.getAllByUser(userId, nameFilter)
 
     // Combine and remove duplicates by product_name
@@ -145,23 +256,6 @@ export class ProductService extends MongooseServiceBase {
       }
     }
   }
-  //   const product = await this.getOne({ barcode })
-
-  //   if (product?.eco_score?.score !== undefined) return product.eco_score
-
-  //   const client = APIClientFactory.createOpenFoodAPIClient()
-  //   const response = await client.get(`/api/v0/product/${barcode}.json`)
-
-  //   const score = response.data?.product?.eco_score_score || -1
-  //   const grade = response.data?.product?.eco_score_grade || 'unknown'
-
-  //   return {
-  //     eco_score: {
-  //       score,
-  //       grade
-  //     }
-  //   }
-  // }
 
   /**
    * Filters products based on eco score and allergens.
@@ -230,29 +324,70 @@ export class ProductService extends MongooseServiceBase {
   }
 
   /**
-   * Fetches the eco score distribution for all products.
+   * Fetches the eco score distribution for all products through an aggregation pipeline.
    *
-   * @returns {Promise<object>} The eco score distribution.
+   * @param {object} options - The options for the aggregation.
+   * @param {string[]} [options.gradesFilter] - An array of eco grades to filter by.
+   * @returns {Promise<object[]>} The eco score distribution.
    */
-  async getEcoScoreDistribution () {
-    // const ecoScores = await this.search({ eco_score: { $exists: true } }, { eco_score: 1 })
-    // const { data: ecoScores } = await this.search(
-    //   { 'eco_score.grade': { $exists: true } },
-    //   { eco_score: 1 }
-    // )
+  async getEcoScoreDistribution ({ gradesFilter = [] } = {}) {
+    const pipeline = [
 
-    const { data: ecoScores } = await this.search(
-      { eco_score_grade: { $exists: true } },
-      { eco_score_grade: 1 }
-    )
-    const distribution = {}
+      // 1) Filter out products without eco_score
+      {
+        $match: {
+          eco_score_grade: { $exists: true, $nin: [null, ''] },
+          eco_score_score: { $type: 'number' }
+        }
+      },
 
-    for (const product of ecoScores) {
-      const grade = (product.eco_score_grade || 'unknown').toUpperCase()
-      // const grade = product.eco_score?.grade?.toUpperCase() ?? 'UNKNOWN'
-      distribution[grade] = (distribution[grade] ?? 0) + 1
-    }
-    return Object.entries(distribution).map(([grade, value]) => ({ grade, value }))
+      // 2) If the user has selected grades, filter by them
+      ...(gradesFilter.length
+        ? [{ $match: { eco_score_grade: { $in: gradesFilter.map(g => g.toLowerCase()) } } }]
+        : []),
+
+      // 3) Group by eco_score_grade and calculate the average score
+      {
+        $group: {
+          _id: { $toUpper: '$eco_score_grade' }, // ⇢ 'A', 'B' …
+          count: { $sum: 1 },
+          avgScore: { $avg: '$eco_score_score' }
+        }
+      },
+
+      // 4) Format the output and round the average score
+      {
+        $project: {
+          _id: 0,
+          grade: '$_id',
+          count: 1,
+          avgScore: { $round: ['$avgScore', 1] }
+        }
+      },
+
+      // 5) Sort by grade
+      {
+        $addFields: {
+          sortKey: {
+            $switch: {
+              branches: [
+                { case: { $eq: ['$grade', 'A-PLUS'] }, then: 0 },
+                { case: { $eq: ['$grade', 'A'] }, then: 1 },
+                { case: { $eq: ['$grade', 'B'] }, then: 2 },
+                { case: { $eq: ['$grade', 'C'] }, then: 3 },
+                { case: { $eq: ['$grade', 'D'] }, then: 4 },
+                { case: { $eq: ['$grade', 'E'] }, then: 5 }
+              ],
+              default: 6 // t.ex. 'UNKNOWN'
+            }
+          }
+        }
+      },
+      { $sort: { sortKey: 1 } },
+      { $project: { sortKey: 0 } } // ⇢ remove sortKey from the output
+    ]
+
+    return this.aggregate(pipeline)
   }
 
   /**

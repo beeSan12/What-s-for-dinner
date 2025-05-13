@@ -1,3 +1,8 @@
 {
-  "extends": "@lnu"
+  "extends": "@lnu",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "importAssertions": true
+  }
 }

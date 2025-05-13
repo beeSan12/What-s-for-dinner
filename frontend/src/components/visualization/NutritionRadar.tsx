@@ -13,7 +13,7 @@ type Props = { nutr: Nutrition; title: string }
 
 export default function NutritionRadar({ nutr, title }: Props) {
   const option = {
-    title: { text: title, left: 'center' },
+    title: { text: title, left: 'center', bottom: '10px' },
     radar: {
       indicator: [
         { name: 'Protein', max: 50 },
@@ -26,6 +26,7 @@ export default function NutritionRadar({ nutr, title }: Props) {
         { name: 'Cholesterol',   max: 300 },
         { name: 'Sodium',       max: 2000 },
       ],
+      axisNameGap: '10px'
     },
     series: [
       {
