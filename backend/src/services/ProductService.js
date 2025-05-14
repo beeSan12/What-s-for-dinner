@@ -27,15 +27,26 @@ export class ProductService extends MongooseServiceBase {
   async getOriginMap ({ gradesFilter = [] } = {}) {
     // Build the aggregation pipeline
     const pipeline = [
-      // 1) Exlude products without origins
-      { $match: { origins: { $exists: true, $nin: [null, ''] } } },
-
-      // 2) Only include grades that are in the filter
+      // 1. Filter out products with missing origins or eco score
+      {
+        $match: {
+          origins: { $exists: true, $nin: [null, '', []] },
+          'eco_score.grade': { $exists: true, $nin: [null, '', []] }
+        }
+      },
+  
+      // 2. Optional filtering by grade
       ...(gradesFilter.length
-        ? [{ $match: { 'eco_score.grade': { $in: gradesFilter.map(g => g.toLowerCase()) } } }]
+        ? [{
+            $match: {
+              'eco_score.grade': {
+                $in: gradesFilter.map(g => g.toLowerCase())
+              }
+            }
+          }]
         : []),
-
-      // 3) Convert to country names
+  
+      // 3. Prepare origins and grades
       {
         $project: {
           ecoGrade: '$eco_score.grade',
@@ -49,80 +60,103 @@ export class ProductService extends MongooseServiceBase {
         }
       },
       { $unwind: '$originsArr' },
-      {
-        $addFields: {
-          // Convert origins to ISO-2 codes for the maps coordinates
-          cc: {
-            $let: {
-              vars: {
-                clean: { $trim: { input: '$originsArr' } }
-              },
-              in: {
-                $cond: [
-                  { $eq: [{ $strLenCP: '$$clean' }, 2] }, // redan ISO?
-                  { $toUpper: '$$clean' },
-                  {
-                    $toUpper: {
-                      $function: {
-                        /**
-                         * Converts a country name to its ISO-2 code.
-                         *
-                         * @param {string} name - The country name.
-                         * @returns {string} The ISO-2 code or the original name if not found.
-                         */
-                        body: (name) => {
-                          const iso = countries.getAlpha2Code(name, 'en')
-                          return iso || name // fallback: sends back the original name
-                        },
-                        args: ['$$clean'],
-                        lang: 'js'
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      },
-
-      // 4) Group by country code and eco grade
-      {
-        $group: {
-          _id: '$cc',
-          total: { $sum: 1 },
-          grades: {
-            $push: '$ecoGrade'
-          }
-        }
-      },
-
-      // 5) Format the output
-      {
-        $project: {
-          _id: 0,
-          cc: '$_id',
-          total: 1,
-          grades: {
-            $arrayToObject: {
-              $map: {
-                input: { $setUnion: ['$grades', []] }, // unique grades
-                as: 'g',
-                in: [
-                  { $toUpper: '$$g' },
-                  {
-                    $size: {
-                      $filter: { input: '$grades', as: 'x', cond: { $eq: ['$$x', '$$g'] } }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
     ]
-    return this.aggregate(pipeline)
+
+    const rawResults = await this.aggregate(pipeline)
+
+    const grouped = {}
+
+    for (const item of rawResults) {
+      const rawOrigin = item.originsArr?.trim()
+      if (!rawOrigin) continue
+
+      const iso = rawOrigin.length === 2
+        ? rawOrigin.toUpperCase()
+        : countries.getAlpha2Code(rawOrigin, 'en')?.toUpperCase() || '??'
+
+      if (!grouped[iso]) {
+        grouped[iso] = { cc: iso, total: 0, grades: {} }
+      }
+
+      grouped[iso].total++
+      const grade = item.ecoGrade?.toUpperCase() || 'UNKNOWN'
+      grouped[iso].grades[grade] = (grouped[iso].grades[grade] || 0) + 1
+    }
+    console.log('Mapped countries:', Object.values(grouped))
+
+    return Object.values(grouped)
+  //     // 4. Normalize country to ISO2
+  //     {
+  //       $addFields: {
+  //         cc: {
+  //           $let: {
+  //             vars: {
+  //               clean: { $trim: { input: '$originsArr' } }
+  //             },
+  //             in: {
+  //               $cond: [
+  //                 { $eq: [{ $strLenCP: '$$clean' }, 2] },
+  //                 { $toUpper: '$$clean' },
+  //                 {
+  //                   $toUpper: {
+  //                     // $function: {
+  //                     //   body: (name) => {
+  //                     //     const iso = countries.getAlpha2Code(name, 'en')
+  //                     //     return iso || name
+  //                     //   },
+  //                     //   args: ['$$clean'],
+  //                     //   lang: 'js'
+  //                     // }
+  //                   }
+  //                 }
+  //               ]
+  //             }
+  //           }
+  //         }
+  //       }
+  //     },
+  
+  //     // 5. Group by country code
+  //     {
+  //       $group: {
+  //         _id: '$cc',
+  //         total: { $sum: 1 },
+  //         grades: { $push: '$ecoGrade' }
+  //       }
+  //     },
+  
+  //     // 6. Format output
+  //     {
+  //       $project: {
+  //         _id: 0,
+  //         cc: '$_id',
+  //         total: 1,
+  //         grades: {
+  //           $arrayToObject: {
+  //             $map: {
+  //               input: { $setUnion: ['$grades', []] },
+  //               as: 'g',
+  //               in: [
+  //                 { $toUpper: '$$g' },
+  //                 {
+  //                   $size: {
+  //                     $filter: {
+  //                       input: '$grades',
+  //                       as: 'x',
+  //                       cond: { $eq: ['$$x', '$$g'] }
+  //                     }
+  //                   }
+  //                 }
+  //               ]
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   ]
+  
+  //   return this.aggregate(pipeline)
+  // }
   }
 
   /**

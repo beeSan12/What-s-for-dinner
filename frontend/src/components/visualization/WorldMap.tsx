@@ -18,6 +18,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 import ReactECharts from 'echarts-for-react'
 import iso2LatLon from '../../assets/iso2LatLon.json'  //  { "SE": [18, 62], ... }
 import { apiFetch } from '../../utils/apiFetch'
+import worldGeoJSON from '../../assets/world.geo.json' // rätt sökväg
 
 const iso2LatLonRaw = iso2LatLon as Record<string, number[]>
 
@@ -57,6 +58,8 @@ function coord(cc: string): [number, number] | undefined {
  * @returns - Array of series data for ECharts
  */
 function seriesFromData(data: CountryData[]) {
+  if (!Array.isArray(data)) return []
+
   return data.flatMap(c => {
     const center = coord(c.cc)
     if (!center) return []
@@ -83,17 +86,21 @@ export default function OriginMap() {
 
   // 1) Load GeoJSON-data for world map
   useEffect(() => {
-    fetch(
-      'https://cdn.jsdelivr.net/npm/echarts@5/examples/data/asset/world.geo.json'
-    )
-      .then(r => r.json())
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((geo: any) => {
-        echarts.registerMap('world', geo)
-        setReady(true)
-      })
-      .catch(console.error)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    echarts.registerMap('world', worldGeoJSON as any)
+    setReady(true)
   }, [])
+  // useEffect(() => {
+  //   fetch('https://raw.githubusercontent.com/apache/echarts/5.4.0/examples/data/asset/world.geo.json'
+  //   )
+  //     .then(r => r.json())
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //     .then((geo: any) => {
+  //       echarts.registerMap('world', geo)
+  //       setReady(true)
+  //     })
+  //     .catch(console.error)
+  // }, [])
 
   // 2) Get the aggregated data from the server
   useEffect(() => {
@@ -103,7 +110,17 @@ export default function OriginMap() {
           `${import.meta.env.VITE_API_BASE_URL}/products/origin-map`
         )
         const json = await response.json()
-        setData(json as CountryData[])
+        json.forEach((d: CountryData) => {
+          const c = coord(d.cc)
+          if (!c) console.warn('❗ Missing coordinates for:', d.cc)
+        })
+      
+        console.log('Data from /origin-map:', json)
+
+        if (Array.isArray(json)) setData(json)
+        else console.error('Expected array from origin-map, got:', json)
+        // const json = await response.json()
+        // setData(json as CountryData[])
       } catch (err) {
         console.error(err)
       }
@@ -124,9 +141,10 @@ export default function OriginMap() {
       },
       emphasis: { itemStyle: { areaColor: '#ccc' } }
     },
-    series: ready ? seriesFromData(data) : []
-  }), [ready, data])
-
+    // series: ready ? seriesFromData(data) : []
+    series: ready && data.length > 0 ? seriesFromData(data) : []
+    }), [ready, data])
+    console.log(seriesFromData(data))
   // 4) Conditionally render loading
   if (!ready) {
     return <p>Loading map…</p>
