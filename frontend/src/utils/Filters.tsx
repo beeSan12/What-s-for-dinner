@@ -21,8 +21,8 @@ export const Filters: React.FC<FiltersProps> = ({
   setEcoScoreFilter,
 }) => {
   const handleEcoScoreChange = (score: string, checked: boolean) => {
-    setEcoScoreFilter(prev =>
-      checked ? [...prev, score] : prev.filter(s => s !== score)
+    setEcoScoreFilter((prev) =>
+      checked ? [...prev, score] : prev.filter((s) => s !== score),
     )
   }
 
@@ -32,12 +32,12 @@ export const Filters: React.FC<FiltersProps> = ({
 
       <div style={styles.filterGroup}>
         <span style={styles.filterLabel}>Eco Score:</span>
-        {ALL_ECO_SCORES.map(score => (
+        {ALL_ECO_SCORES.map((score) => (
           <label key={score} style={styles.checkboxLabel}>
             <input
               type="checkbox"
               checked={ecoScoreFilter.includes(score)}
-              onChange={e => handleEcoScoreChange(score, e.target.checked)}
+              onChange={(e) => handleEcoScoreChange(score, e.target.checked)}
             />
             {score}
           </label>

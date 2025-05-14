@@ -114,7 +114,7 @@ export default function Search() {
       <div style={styles.card}>
         <h2 style={styles.heading}>Search for Products</h2>
         <button
-          onClick={() => setShowFilters(prev => !prev)}
+          onClick={() => setShowFilters((prev) => !prev)}
           style={styles.filterButton}
         >
           {showFilters ? 'Hide Filters' : 'Show Filters'}
@@ -194,7 +194,10 @@ export default function Search() {
                     </li>
                   </ul>
                   <NutritionChart totals={nutrition} />
-                  <NutritionRadar nutr={nutrition} title={selected.product_name} />
+                  <NutritionRadar
+                    nutr={nutrition}
+                    title={selected.product_name}
+                  />
                 </>
               )}
 
@@ -205,16 +208,17 @@ export default function Search() {
                   <>
                     <h4 style={styles.sectionTitle}>Nutriments</h4>
                     <p style={styles.nutritionSummary}>
-                      This product contains approximately  
-                      <strong>{nutrition.calories}</strong> kcal, 
-                      <strong> {nutrition.protein}</strong>g protein, 
+                      This product contains approximately
+                      <strong>{nutrition.calories}</strong> kcal,
+                      <strong> {nutrition.protein}</strong>g protein,
                       <strong> {nutrition.sugar}</strong>g sugars,
                       <strong> {nutrition.fiber}</strong>g fiber,
-                      <strong> {nutrition.saturated_fat}</strong>g saturated fat,
+                      <strong> {nutrition.saturated_fat}</strong>g saturated
+                      fat,
                       <strong> {nutrition.salt}</strong>g salt,
                       <strong> {nutrition.cholesterol}</strong>mg cholesterol,
                       <strong> {nutrition.sodium}</strong>mg sodium,
-                      <strong> {nutrition.carbs}</strong>g carbohydrates and 
+                      <strong> {nutrition.carbs}</strong>g carbohydrates and
                       <strong> {nutrition.fat}</strong>g fat per 100g.
                     </p>
                   </>
@@ -227,7 +231,9 @@ export default function Search() {
                 <p style={styles.sectionText}>{selected.categories || '–'}</p>
 
                 <h4 style={styles.sectionTitle}>Ingredients</h4>
-                <p style={styles.sectionText}>{ingredients || 'Not available'}</p>
+                <p style={styles.sectionText}>
+                  {ingredients || 'Not available'}
+                </p>
 
                 <h4 style={styles.sectionTitle}>Allergens</h4>
                 <ul style={styles.allergenList}>

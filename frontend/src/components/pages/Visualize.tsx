@@ -8,23 +8,22 @@
 import { useState, useEffect, Suspense, lazy, useMemo } from 'react'
 import Dashboard from '../visualization/Dashboard'
 // import EcoScatter from '../visualization/EcoScatter'
-import { apiFetch }   from '../../utils/apiFetch'
-import { Product }    from '../interface/Product'
-import { Nutrition }  from '../interface/Nutrition'
-
+import { apiFetch } from '../../utils/apiFetch'
+import { Product } from '../interface/Product'
+import { Nutrition } from '../interface/Nutrition'
 
 interface ProductExt extends Product {
-  nutrition?:  Nutrition
+  nutrition?: Nutrition
   eco_score?: { score: number; grade: string }
 }
 
-const EcoScatter     = lazy(() => import('../visualization/EcoScatter'))
+const EcoScatter = lazy(() => import('../visualization/EcoScatter'))
 const NutritionRadar = lazy(() => import('../visualization/NutritionRadar'))
-const OriginMap     = lazy(() => import('../visualization/WorldMap'))
+const OriginMap = lazy(() => import('../visualization/WorldMap'))
 
 export default function Visualize() {
   const [ecoFilter, setEcoFilter] = useState<string[]>([])
-  const [showRadar, setShowRadar]   = useState(false)
+  const [showRadar, setShowRadar] = useState(false)
   const [products, setProducts] = useState<ProductExt[]>([])
 
   useEffect(() => {
@@ -34,7 +33,11 @@ export default function Visualize() {
           `${import.meta.env.VITE_API_BASE_URL}/products?per_page=5000`,
         )
         const json = await result.json()
-        const list = Array.isArray(json.data) ? json.data : Array.isArray(json) ? json : []
+        const list = Array.isArray(json.data)
+          ? json.data
+          : Array.isArray(json)
+            ? json
+            : []
         setProducts(list as ProductExt[])
       } catch (err) {
         console.error(err)
@@ -44,33 +47,44 @@ export default function Visualize() {
 
   const avgNutrition = useMemo(() => {
     if (products.length === 0) return null
-    const sums = products.reduce((acc, p) => {
-      if (!p.nutrition) return acc
-      Object.entries(p.nutrition).forEach(([k, v]) => {
-        acc[k as keyof Nutrition] += Number(v) || 0
-      })
-      return acc
-    }, {
-      calories: 0, protein: 0, fat: 0, carbs: 0,
-      fiber: 0, sugar: 0, salt: 0,
-      saturated_fat: 0, cholesterol: 0, sodium: 0
-    } as Nutrition)
-  
-    const n = products.filter(p => p.nutrition).length || 1
-    Object.keys(sums).forEach(k => { sums[k as keyof Nutrition] /= n })
+    const sums = products.reduce(
+      (acc, p) => {
+        if (!p.nutrition) return acc
+        Object.entries(p.nutrition).forEach(([k, v]) => {
+          acc[k as keyof Nutrition] += Number(v) || 0
+        })
+        return acc
+      },
+      {
+        calories: 0,
+        protein: 0,
+        fat: 0,
+        carbs: 0,
+        fiber: 0,
+        sugar: 0,
+        salt: 0,
+        saturated_fat: 0,
+        cholesterol: 0,
+        sodium: 0,
+      } as Nutrition,
+    )
+
+    const n = products.filter((p) => p.nutrition).length || 1
+    Object.keys(sums).forEach((k) => {
+      sums[k as keyof Nutrition] /= n
+    })
     return sums
   }, [products])
 
   // Checkbox toggle
   function toggleGrade(g: string) {
-    setEcoFilter(f =>
-      f.includes(g) ? f.filter(x => x !== g) : [...f, g],
-    )
+    setEcoFilter((f) => (f.includes(g) ? f.filter((x) => x !== g) : [...f, g]))
   }
 
   const filtered = products.filter(
-    p => ecoFilter.length === 0 ||
-         ecoFilter.includes(p.eco_score?.grade?.toUpperCase() ?? '')
+    (p) =>
+      ecoFilter.length === 0 ||
+      ecoFilter.includes(p.eco_score?.grade?.toUpperCase() ?? ''),
   )
 
   // const total = products.length
@@ -82,7 +96,7 @@ export default function Visualize() {
 
       {/* ---------------- filter-controller ---------------- */}
       <div style={styles.filter}>
-        {['A','B','C','D','E'].map(g => (
+        {['A', 'B', 'C', 'D', 'E'].map((g) => (
           <label key={g} style={{ marginRight: 12 }}>
             <input
               type="checkbox"
@@ -113,6 +127,7 @@ export default function Visualize() {
           <Suspense fallback={<p>Loading radar …</p>}>
             <div style={styles.chartBox}>
               <NutritionRadar nutr={avgNutrition} title="Average values" />
+              {/* <NutritionRadar nutr={avgNutrition} title="Average nutrition values" count={products.filter(p => p.nutrition).length} />             */}
             </div>
           </Suspense>
         )}
@@ -121,9 +136,8 @@ export default function Visualize() {
           <OriginMap />
         </div>
       </div>
-      
 
-      <button style={styles.btn} onClick={() => setShowRadar(p => !p)}>
+      <button style={styles.btn} onClick={() => setShowRadar((p) => !p)}>
         {showRadar ? 'Hide' : 'Show'} radar
       </button>
     </div>
@@ -142,20 +156,20 @@ const styles = {
     gap: '20px',
     justifyContent: 'center',
   },
-  totalProducts: { 
+  totalProducts: {
     alignSelf: 'flex-start',
     margin: '10px',
     color: '#f5f5dc',
     fontSize: '20px',
   },
-  title: { 
+  title: {
     margin: '10px',
-    padding: '10px', 
+    padding: '10px',
   },
-  filter: { 
-    marginBottom: '16px', 
-    display: 'flex', 
-    gap: '12px', 
+  filter: {
+    marginBottom: '16px',
+    display: 'flex',
+    gap: '12px',
   },
   grid: {
     display: 'grid',
@@ -164,22 +178,25 @@ const styles = {
     // gridTemplateRows: showRadar ? 'repeat(2, 600px)' : 'repeat(2, 1fr)',
     gap: '32px',
     width: '100%',
-    alignItems: 'center' 
+    alignItems: 'center',
+    justifyItems: 'center',
   },
-  chartBox: { 
+  chartBox: {
+    color: '#f5f5dc',
     width: '100%',
-    height: '600px',
+    maxHeight: '1000px',
+    height: '100%',
     padding: '10px',
     backgroundColor: '#f5f5dc',
     borderRadius: '12px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
   },
-  btn: { 
+  btn: {
     marginTop: '24px',
-    padding: '8px 16px', 
-    alignSelf: 'flex-start'
+    padding: '8px 16px',
+    alignSelf: 'flex-start',
   },
 } as const

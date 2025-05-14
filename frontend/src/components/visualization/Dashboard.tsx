@@ -26,7 +26,7 @@ export default function Dashboard({ ecoFilter = [] }: Props) {
   useEffect(() => {
     ;(async () => {
       const res = await apiFetch(
-        `${import.meta.env.VITE_API_BASE_URL}/products/eco-score-distribution`
+        `${import.meta.env.VITE_API_BASE_URL}/products/eco-score-distribution`,
       )
       const json = await res.json()
       setData(Array.isArray(json) ? json : [])
@@ -37,31 +37,42 @@ export default function Dashboard({ ecoFilter = [] }: Props) {
   const filtered = useMemo(
     () =>
       ecoFilter.length
-        ? data.filter(d => ecoFilter.includes(d.grade.toUpperCase()))
+        ? data.filter((d) => ecoFilter.includes(d.grade.toUpperCase()))
         : data,
-    [data, ecoFilter]
+    [data, ecoFilter],
   )
 
   const option = {
     title: { text: 'Total of products', left: 'center' },
-    xAxis: { type: 'category', data: filtered.map(d => d.grade) },
+    xAxis: { type: 'category', data: filtered.map((d) => d.grade) },
     yAxis: { type: 'value' },
-    series: [{
-      type: 'bar',
-      data: filtered.map(d => ({
-        value: d.count,
-        grade    : d.grade,
-        count    : d.count,
-        avgScore : d.avgScore
-      })),
-      encode : { x: 'grade', y: 'value', tooltip: ['grade', 'count', 'avgScore'] }
-    }],
+    series: [
+      {
+        type: 'bar',
+        data: filtered.map((d) => ({
+          value: d.count,
+          grade: d.grade,
+          count: d.count,
+          avgScore: d.avgScore,
+        })),
+        encode: {
+          x: 'grade',
+          y: 'value',
+          tooltip: ['grade', 'count', 'avgScore'],
+        },
+      },
+    ],
     tooltip: {
       formatter: (p: { data: EcoData & { value: number } }) =>
         `${p.data.grade}: <b>${p.data.count}</b> st<br/>` +
-        `Snitt-score: ${p.data.avgScore}`
-    }
+        `Snitt-score: ${p.data.avgScore}`,
+    },
   }
 
-  return <ReactECharts option={option} style={{ maxWidth: '1000px', width: '100%', height: '600px' }} />
+  return (
+    <ReactECharts
+      option={option}
+      style={{ maxWidth: '1000px', width: '100%', height: '600px' }}
+    />
+  )
 }
