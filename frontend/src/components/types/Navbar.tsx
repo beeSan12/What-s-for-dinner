@@ -7,7 +7,7 @@
 
 import { FaHome, FaSearch, FaUnlock } from 'react-icons/fa'
 import { IoLogOutOutline } from 'react-icons/io5'
-import { MdOutlineAutoGraph } from "react-icons/md";
+import { MdOutlineAutoGraph } from 'react-icons/md'
 import { RiUserAddLine } from 'react-icons/ri'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'

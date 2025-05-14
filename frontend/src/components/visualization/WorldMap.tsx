@@ -12,7 +12,7 @@ import { MapChart, PieChart } from 'echarts/charts'
 import {
   GeoComponent,
   TooltipComponent,
-  LegendComponent
+  LegendComponent,
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import ReactECharts from 'echarts-for-react'
@@ -34,7 +34,7 @@ echarts.use([
   GeoComponent,
   TooltipComponent,
   LegendComponent,
-  CanvasRenderer
+  CanvasRenderer,
 ])
 
 type CountryData = {
@@ -48,7 +48,7 @@ type CountryData = {
  * Help function to convert ISO2 country code to latitude and longitude.
  * @param cc - ISO2 country code
  * @returns - Tuple of latitude and longitude or undefined if not found.
-*/
+ */
 function coord(cc: string): [number, number] | undefined {
   const arr = iso2LatLonRaw[cc.toUpperCase()]
   if (Array.isArray(arr) && arr.length >= 2) {
@@ -67,7 +67,7 @@ function coord(cc: string): [number, number] | undefined {
 function seriesFromData(data: CountryData[]) {
   if (!Array.isArray(data)) return []
 
-  return data.flatMap(c => {
+  return data.flatMap((c) => {
     const center = coord(c.cc)
     if (!center) return []
 
@@ -79,17 +79,16 @@ function seriesFromData(data: CountryData[]) {
       center,
       // label: { show: false },
       label: {
-        show: true,
+        show: false,
         formatter: '{b}',
         overflow: 'truncate',
-         position: 'inside'
+        position: 'inside',
       },
       labelLine: {
-        show: false
+        show: false,
       },
       labelLayout: {
         hideOverlap: true,
-        // moveOverlap: 'shiftX'
       },
       tooltip: {
         trigger: 'item',
@@ -99,29 +98,18 @@ function seriesFromData(data: CountryData[]) {
           percent: number
         }) {
           return `${params.data.origin ?? c.cc}<br/>${params.data.value} st · ${params.percent.toFixed(1)}%`
-        }
+        },
       },
-      // tooltip: { formatter: '{b}<br/>{c} st · {d}%' },
-      // data: [{ name: c.cc, value: c.total }]
-      data: [{ name: c.cc, value: c.total, origin: c.origin }]
-      // data: Object.entries(c.grades).map(([grade, value]) => ({
-      //   name: grade,
-      //   value
-      // }))
+      data: [{ name: c.cc, value: c.total, origin: c.origin }],
     }
   })
 }
 
 export default function OriginMap() {
-  const [data,  setData]  = useState<CountryData[]>([])
+  const [data, setData] = useState<CountryData[]>([])
   const [ready, setReady] = useState(false)
 
   // 1) Load GeoJSON-data for world map
-  // useEffect(() => {
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   echarts.registerMap('world', worldGeoJSON as any)
-  //   setReady(true)
-  // }, [])
   useEffect(() => {
     const transformedGeoJson: FeatureCollection = {
       ...worldGeoJSONTyped,
@@ -129,57 +117,34 @@ export default function OriginMap() {
         ...feature,
         properties: {
           ...feature.properties,
-          name: feature.properties?.iso_a2 // ISO2 blir name
-        }
-      }))
+          name: feature.properties?.iso_a2, // ISO2 becomes name
+        },
+      })),
     }
-  
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     echarts.registerMap('world', transformedGeoJson as any)
     setReady(true)
   }, [])
-  // useEffect(() => {
-  //   fetch('https://raw.githubusercontent.com/apache/echarts/5.4.0/examples/data/asset/world.geo.json'
-  //   )
-  //     .then(r => r.json())
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     .then((geo: any) => {
-  //       echarts.registerMap('world', geo)
-  //       setReady(true)
-  //     })
-  //     .catch(console.error)
-  // }, [])
 
   // 2) Get the aggregated data from the server
   useEffect(() => {
     ;(async () => {
       try {
         const response = await apiFetch(
-          `${import.meta.env.VITE_API_BASE_URL}/products/origin-map`
+          `${import.meta.env.VITE_API_BASE_URL}/products/origin-map`,
         )
-        // const json = await response.json()
         const json: CountryData[] = await response.json()
-        // json.forEach((d: CountryData) => {
-        //   const c = coord(d.cc)
-        //   if (!c) console.warn('❗ Missing coordinates for:', d.cc)
-        // })
         const transformed = json.map((d: CountryData) => {
           const originName = countries.getName(d.cc, 'en') || d.cc
           return {
             ...d,
-            origin: originName
+            origin: originName,
           }
         })
-        // const transformed = json.map((d: CountryData) => {
-        //   const normalizedOrigin = originSynonyms[d.cc.toLowerCase()] || d.cc
-        //   return {
-        //     ...d,
-        //     origin: normalizedOrigin  // Behåll cc som ISO2!
-        //   }
-        // })
 
         // Check if all country codes have coordinates
-        transformed.forEach(d => {
+        transformed.forEach((d) => {
           const c = coord(d.cc)
           if (!c) console.warn('❗ Missing coordinates for:', d.cc)
         })
@@ -187,37 +152,32 @@ export default function OriginMap() {
         console.log('Transformed data:', transformed)
         console.log('Data from /origin-map:', json)
 
-        // if (Array.isArray(json)) setData(json)
-        // if (Array.isArray(json)) setData(transformed)
-        // else console.error('Expected array from origin-map, got:', json)
-        console.log('Transformed data:', transformed)
         setData(transformed)
-        // const json = await response.json()
-        // setData(json as CountryData[])
       } catch (err) {
         console.error(err)
       }
     })()
   }, [])
 
-
   // 3) Memoize the option object to avoid unnecessary re-renders
-  const option = useMemo(() => ({
-    tooltip: { trigger: 'item' },
-    legend: { orient: 'vertical', left: 'left' },
-    geo: {
-      map: 'world',
-      roam: true,
-      itemStyle: {
-        areaColor: '#eee',
-        borderColor: '#999'
+  const option = useMemo(
+    () => ({
+      tooltip: { trigger: 'item' },
+      legend: { orient: 'vertical', left: 'left' },
+      geo: {
+        map: 'world',
+        roam: true,
+        itemStyle: {
+          areaColor: '#eee',
+          borderColor: '#999',
+        },
+        emphasis: { itemStyle: { areaColor: '#ccc' } },
       },
-      emphasis: { itemStyle: { areaColor: '#ccc' } }
-    },
-    // series: ready ? seriesFromData(data) : []
-    series: ready && data.length > 0 ? seriesFromData(data) : []
-    }), [ready, data])
-    console.log(seriesFromData(data))
+      series: ready && data.length > 0 ? seriesFromData(data) : [],
+    }),
+    [ready, data],
+  )
+  console.log(seriesFromData(data))
   // 4) Conditionally render loading
   if (!ready) {
     return <p>Loading map…</p>
@@ -226,7 +186,13 @@ export default function OriginMap() {
   return (
     <ReactECharts
       option={option}
-      style={{ maxWidth: '1000px', width: '100%', height: '600px'}}
+      style={{
+        width: '100%',
+        height: '700px',
+        maxWidth: '1200px',
+        margin: '0 auto',
+      }}
+      opts={{ renderer: 'canvas' }}
     />
   )
 }

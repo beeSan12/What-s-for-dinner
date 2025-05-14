@@ -74,17 +74,23 @@ const SearchProducts: React.FC<Props> = ({
   const useFilters = showFilters ?? false
 
   // State for caching nutrition, allergens, and ingredients
-  const [nutritionCache, setNutritionCache] = useState<Record<string, Nutrition>>(() => {
+  const [nutritionCache, setNutritionCache] = useState<
+    Record<string, Nutrition>
+  >(() => {
     const saved = localStorage.getItem('nutritionCache')
     return saved ? JSON.parse(saved) : {}
   })
-  
-  const [allergenCache, setAllergenCache] = useState<Record<string, Product['allergens']>>(() => {
+
+  const [allergenCache, setAllergenCache] = useState<
+    Record<string, Product['allergens']>
+  >(() => {
     const saved = localStorage.getItem('allergenCache')
     return saved ? JSON.parse(saved) : {}
   })
-  
-  const [ingredientCache, setIngredientCache] = useState<Record<string, string>>(() => {
+
+  const [ingredientCache, setIngredientCache] = useState<
+    Record<string, string>
+  >(() => {
     const saved = localStorage.getItem('ingredientCache')
     return saved ? JSON.parse(saved) : {}
   })
@@ -99,8 +105,7 @@ const SearchProducts: React.FC<Props> = ({
    * It fetches product data from the backend API based on the user's query.
    */
   // const handleSearch = async () => {
-    const handleSearch = async (page = 0) => {
-
+  const handleSearch = async (page = 0) => {
     if (!query.trim()) return
     setLoading(true)
     setSearched(true)
@@ -110,40 +115,39 @@ const SearchProducts: React.FC<Props> = ({
       const params = new URLSearchParams()
       params.append('page', String((currentPage ?? 0) + 1))
       params.append('per_page', String(maxResults ?? 20))
-  
+
       params.append('name', query)
       params.append('page', String(page + 1))
-  
+
       if (useFilters) {
         if (ecoScoreFilter && ecoScoreFilter.length > 0) {
           params.append('ecoGrades', ecoScoreFilter.join(','))
         }
-  
+
         if (excludedAllergens && excludedAllergens.length > 0) {
           params.append('excludeAllergens', excludedAllergens.join(','))
         }
       }
-  
+
       const url = `${baseUrl}?${params.toString()}`
       const response = await apiFetch(url)
       const data = await response.json()
       setTotalPages(
-        (
-          data.pagination?.totalPages ??
+        (data.pagination?.totalPages ??
           Math.ceil(
             (data.pagination?.totalCount ?? data.data?.length ?? 0) /
-            (maxResults ?? 20)
-          )
-        ) || 1
+              (maxResults ?? 20),
+          )) ||
+          1,
       )
       const rawProducts: ProductWithNutrition[] = data.data || []
-  
+
       // Enrich with eco_score
       const enrichedProducts = await Promise.all(
         rawProducts.map(async (product) => {
           try {
             const ecoRes = await apiFetch(
-              `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/eco-score`
+              `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/eco-score`,
             )
             if (ecoRes.ok) {
               const ecoData = await ecoRes.json()
@@ -155,9 +159,9 @@ const SearchProducts: React.FC<Props> = ({
             product.eco_score = { score: -1, grade: 'unknown' }
           }
           return product
-        })
+        }),
       )
-  
+
       console.log('Filtered & enriched products:', enrichedProducts)
       setResults(enrichedProducts)
     } catch (err) {
@@ -173,25 +177,33 @@ const SearchProducts: React.FC<Props> = ({
    * @param product - The product object to enrich.
    * @returns {Promise<ProductWithNutrition>} - The enriched product object.
    */
-  const enrichProduct = async (product: Product): Promise<ProductWithNutrition> => {
+  const enrichProduct = async (
+    product: Product,
+  ): Promise<ProductWithNutrition> => {
     let nutrition = nutritionCache[product.barcode]
     let allergens = allergenCache[product.barcode]
     let ingredients_text = ingredientCache[product.barcode]
-  
+
     if (!nutrition || !ingredients_text || !allergens) {
       try {
         const [nutritionRes, ingredientsRes, allergensRes] = await Promise.all([
           !nutrition
-            ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`)
+            ? apiFetch(
+                `${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`,
+              )
             : null,
           !ingredients_text
-            ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/ingredients`)
+            ? apiFetch(
+                `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/ingredients`,
+              )
             : null,
           !allergens
-            ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/allergens`)
+            ? apiFetch(
+                `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/allergens`,
+              )
             : null,
         ])
-  
+
         if (nutritionRes?.ok) {
           const data = await nutritionRes.json()
           nutrition = {
@@ -206,17 +218,17 @@ const SearchProducts: React.FC<Props> = ({
             cholesterol: Number(data.cholesterol),
             sodium: Number(data.sodium),
           }
-          setNutritionCache(prev => {
+          setNutritionCache((prev) => {
             const updated = { ...prev, [product.barcode]: nutrition! }
             localStorage.setItem('nutritionCache', JSON.stringify(updated))
             return updated
           })
         }
-  
+
         if (ingredientsRes?.ok) {
           const data = await ingredientsRes.json()
           ingredients_text = data.ingredients_text
-          setIngredientCache(prev => {
+          setIngredientCache((prev) => {
             const updated = { ...prev, [product.barcode]: ingredients_text! }
             localStorage.setItem('ingredientCache', JSON.stringify(updated))
             return updated
@@ -226,7 +238,7 @@ const SearchProducts: React.FC<Props> = ({
         if (allergensRes?.ok) {
           const data = await allergensRes.json()
           allergens = data.allergens
-          setAllergenCache(prev => {
+          setAllergenCache((prev) => {
             const updated = { ...prev, [product.barcode]: allergens! }
             localStorage.setItem('allergenCache', JSON.stringify(updated))
             return updated
@@ -236,7 +248,7 @@ const SearchProducts: React.FC<Props> = ({
         console.warn(`Failed to enrich product: ${product.product_name}`, err)
       }
     }
-  
+
     return { ...product, nutrition, ingredients_text }
   }
 
@@ -305,33 +317,33 @@ const SearchProducts: React.FC<Props> = ({
    * @param product - The selected product object.
    */
   const filteredResults = useFilters
-  ? results.filter((product) => {
-    const ecoGrade = product.eco_score?.grade?.toUpperCase()
+    ? results.filter((product) => {
+        const ecoGrade = product.eco_score?.grade?.toUpperCase()
 
-    const matchesEco =
-    effectiveEcoScoreFilter.length === 0 ||
-    (
-      ecoGrade &&
-      ecoGrade !== 'UNKNOWN' &&
-      ecoGrade !== 'NOT-APPLICABLE' &&
-      effectiveEcoScoreFilter.includes(ecoGrade)
-    )
+        const matchesEco =
+          effectiveEcoScoreFilter.length === 0 ||
+          (ecoGrade &&
+            ecoGrade !== 'UNKNOWN' &&
+            ecoGrade !== 'NOT-APPLICABLE' &&
+            effectiveEcoScoreFilter.includes(ecoGrade))
 
-    return matchesEco
-  })
-: results
-  
+        return matchesEco
+      })
+    : results
+
   /**
    * Slices the filtered results based on the current page and maxResults.
    *
    * @returns {ProductWithNutrition[]} - The sliced array of products.
    */
   const sliceFilteredResults: ProductWithNutrition[] = maxResults
-  ? (useFilters ? filteredResults : results).slice(
-      activePage * (maxResults ?? 20),
-      (activePage + 1) * (maxResults ?? 20)
-    )
-  : useFilters ? filteredResults : results
+    ? (useFilters ? filteredResults : results).slice(
+        activePage * (maxResults ?? 20),
+        (activePage + 1) * (maxResults ?? 20),
+      )
+    : useFilters
+      ? filteredResults
+      : results
 
   // Visual effect for loading spinner
   useEffect(() => {
@@ -343,7 +355,7 @@ const SearchProducts: React.FC<Props> = ({
       }
     `
     document.head.appendChild(style)
-  
+
     return () => {
       document.head.removeChild(style)
     }
@@ -385,12 +397,13 @@ const SearchProducts: React.FC<Props> = ({
           <span>Loading results...</span>
         </div>
       ) : (
-
         <div style={minimalLayout ? undefined : styles.resultList}>
           {sliceFilteredResults.map((product) => (
             <div
               key={product._id}
-              style={minimalLayout ? styles.compactTextStyle : styles.productItem}
+              style={
+                minimalLayout ? styles.compactTextStyle : styles.productItem
+              }
             >
               <div style={styles.productInfo}>
                 <div style={styles.productDetails}>
@@ -413,7 +426,9 @@ const SearchProducts: React.FC<Props> = ({
                           ? styles.compactImageStyle
                           : styles.productImage
                       }
-                      onClick={() => setEnlargedImage(product.image_url || null)}
+                      onClick={() =>
+                        setEnlargedImage(product.image_url || null)
+                      }
                     />
                   )}
                   <br />
@@ -458,10 +473,10 @@ const SearchProducts: React.FC<Props> = ({
         </div>
       )}
 
-      { totalPages > 1 && (
+      {totalPages > 1 && (
         <div style={minimalLayout ? undefined : styles.paginationContainer}>
           <button
-            onClick={() => updatePage(p => Math.max(p - 1, 0))}
+            onClick={() => updatePage((p) => Math.max(p - 1, 0))}
             disabled={activePage === 0}
             style={styles.paginationBtn}
           >
@@ -469,7 +484,7 @@ const SearchProducts: React.FC<Props> = ({
           </button>
 
           <button
-            onClick={() => updatePage(p => (p + 1 < totalPages ? p + 1 : p))}
+            onClick={() => updatePage((p) => (p + 1 < totalPages ? p + 1 : p))}
             disabled={activePage + 1 >= totalPages}
             style={styles.paginationBtn}
           >
@@ -520,20 +535,26 @@ const SearchProducts: React.FC<Props> = ({
                     value={customImageUrl}
                     onChange={(e) => setCustomImageUrl(e.target.value)}
                     style={
-                      minimalLayout ? styles.compactImageStyle : styles.customInput
+                      minimalLayout
+                        ? styles.compactImageStyle
+                        : styles.customInput
                     }
                   />
-                  <button onClick={handleAddCustomProduct}>Submit Product</button>
+                  <button onClick={handleAddCustomProduct}>
+                    Submit Product
+                  </button>
                 </div>
               )}
             </div>
           )}
 
-          {results.length > 0 && sliceFilteredResults.length === 0 && useFilters && (
-            <div style={minimalLayout ? undefined : styles.customProductBox}>
-              <p>No products match your filters.</p>
-            </div>
-          )}
+          {results.length > 0 &&
+            sliceFilteredResults.length === 0 &&
+            useFilters && (
+              <div style={minimalLayout ? undefined : styles.customProductBox}>
+                <p>No products match your filters.</p>
+              </div>
+            )}
         </>
       )}
     </div>

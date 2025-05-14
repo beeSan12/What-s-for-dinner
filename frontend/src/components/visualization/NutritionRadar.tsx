@@ -14,20 +14,20 @@ type Props = { nutr: Nutrition; title: string }
 export default function NutritionRadar({ nutr, title }: Props) {
   const option = {
     title: { text: title, left: 'center', bottom: '30px' },
-    // title: { text: title, left: 'center', top: 10 },
     radar: {
       indicator: [
         { name: 'Protein', max: 50 },
-        { name: 'Fat',     max: 50 },
-        { name: 'Carbs',   max: 80 },
-        { name: 'Fiber',   max: 20 },
-        { name: 'Sugar',   max: 60 },
-        { name: 'Salt',    max: 5  },
+        { name: 'Fat', max: 50 },
+        { name: 'Carbs', max: 80 },
+        { name: 'Fiber', max: 20 },
+        { name: 'Sugar', max: 60 },
+        { name: 'Salt', max: 5 },
         { name: 'Saturated Fat', max: 20 },
-        { name: 'Cholesterol',   max: 300 },
-        { name: 'Sodium',       max: 2000 },
+        { name: 'Cholesterol', max: 300 },
+        { name: 'Sodium', max: 2000 },
       ],
-      axisNameGap: '10px'
+      axisNameGap: '10px',
+      radius: '90%',
     },
     series: [
       {
@@ -53,5 +53,12 @@ export default function NutritionRadar({ nutr, title }: Props) {
     ],
   }
 
-  return <ReactECharts option={option} style={{ maxWidth: '1000px', width: '100%', height: '600px' }} />
+  return (
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <ReactECharts
+        option={option}
+        style={{ width: '90%', height: '700px', maxWidth: '1000px' }}
+      />
+    </div>
+  )
 }
