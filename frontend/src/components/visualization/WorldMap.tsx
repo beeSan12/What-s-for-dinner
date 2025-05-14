@@ -16,11 +16,17 @@ import {
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 import ReactECharts from 'echarts-for-react'
-import iso2LatLon from '../../assets/iso2LatLon.json'  //  { "SE": [18, 62], ... }
+import iso2LatLon from '../../assets/iso2LatLon.json'
 import { apiFetch } from '../../utils/apiFetch'
-import worldGeoJSON from '../../assets/world.geo.json' // rätt sökväg
+import worldGeoJSON from '../../assets/world.geo.json'
+import type { FeatureCollection, Feature } from 'geojson'
+import countries from 'i18n-iso-countries'
+import enLocale from 'i18n-iso-countries/langs/en.json'
+countries.registerLocale(enLocale)
+// import { originSynonyms } from '../../utils/OriginSynonyms'
 
 const iso2LatLonRaw = iso2LatLon as Record<string, number[]>
+const worldGeoJSONTyped = worldGeoJSON as FeatureCollection
 
 echarts.use([
   MapChart,
@@ -34,7 +40,8 @@ echarts.use([
 type CountryData = {
   cc: string
   total: number
-  grades: Record<string, number>   // { A: 12, B: 3, … }
+  origin?: string
+  // grades: Record<string, number>   // { A: 12, B: 3, … }
 }
 
 /**
@@ -70,12 +77,37 @@ function seriesFromData(data: CountryData[]) {
       coordinateSystem: 'geo' as const,
       radius: 8,
       center,
-      label: { show: false },
-      tooltip: { formatter: '{b}<br/>{c} st · {d}%' },
-      data: Object.entries(c.grades).map(([grade, value]) => ({
-        name: grade,
-        value
-      }))
+      // label: { show: false },
+      label: {
+        show: true,
+        formatter: '{b}',
+        overflow: 'truncate',
+         position: 'inside'
+      },
+      labelLine: {
+        show: false
+      },
+      labelLayout: {
+        hideOverlap: true,
+        // moveOverlap: 'shiftX'
+      },
+      tooltip: {
+        trigger: 'item',
+        confine: true,
+        formatter: function (params: {
+          data: { value: number; origin?: string }
+          percent: number
+        }) {
+          return `${params.data.origin ?? c.cc}<br/>${params.data.value} st · ${params.percent.toFixed(1)}%`
+        }
+      },
+      // tooltip: { formatter: '{b}<br/>{c} st · {d}%' },
+      // data: [{ name: c.cc, value: c.total }]
+      data: [{ name: c.cc, value: c.total, origin: c.origin }]
+      // data: Object.entries(c.grades).map(([grade, value]) => ({
+      //   name: grade,
+      //   value
+      // }))
     }
   })
 }
@@ -85,9 +117,25 @@ export default function OriginMap() {
   const [ready, setReady] = useState(false)
 
   // 1) Load GeoJSON-data for world map
+  // useEffect(() => {
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   echarts.registerMap('world', worldGeoJSON as any)
+  //   setReady(true)
+  // }, [])
   useEffect(() => {
+    const transformedGeoJson: FeatureCollection = {
+      ...worldGeoJSONTyped,
+      features: worldGeoJSONTyped.features.map((feature: Feature) => ({
+        ...feature,
+        properties: {
+          ...feature.properties,
+          name: feature.properties?.iso_a2 // ISO2 blir name
+        }
+      }))
+    }
+  
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    echarts.registerMap('world', worldGeoJSON as any)
+    echarts.registerMap('world', transformedGeoJson as any)
     setReady(true)
   }, [])
   // useEffect(() => {
@@ -109,16 +157,41 @@ export default function OriginMap() {
         const response = await apiFetch(
           `${import.meta.env.VITE_API_BASE_URL}/products/origin-map`
         )
-        const json = await response.json()
-        json.forEach((d: CountryData) => {
+        // const json = await response.json()
+        const json: CountryData[] = await response.json()
+        // json.forEach((d: CountryData) => {
+        //   const c = coord(d.cc)
+        //   if (!c) console.warn('❗ Missing coordinates for:', d.cc)
+        // })
+        const transformed = json.map((d: CountryData) => {
+          const originName = countries.getName(d.cc, 'en') || d.cc
+          return {
+            ...d,
+            origin: originName
+          }
+        })
+        // const transformed = json.map((d: CountryData) => {
+        //   const normalizedOrigin = originSynonyms[d.cc.toLowerCase()] || d.cc
+        //   return {
+        //     ...d,
+        //     origin: normalizedOrigin  // Behåll cc som ISO2!
+        //   }
+        // })
+
+        // Check if all country codes have coordinates
+        transformed.forEach(d => {
           const c = coord(d.cc)
           if (!c) console.warn('❗ Missing coordinates for:', d.cc)
         })
-      
+
+        console.log('Transformed data:', transformed)
         console.log('Data from /origin-map:', json)
 
-        if (Array.isArray(json)) setData(json)
-        else console.error('Expected array from origin-map, got:', json)
+        // if (Array.isArray(json)) setData(json)
+        // if (Array.isArray(json)) setData(transformed)
+        // else console.error('Expected array from origin-map, got:', json)
+        console.log('Transformed data:', transformed)
+        setData(transformed)
         // const json = await response.json()
         // setData(json as CountryData[])
       } catch (err) {
@@ -153,7 +226,7 @@ export default function OriginMap() {
   return (
     <ReactECharts
       option={option}
-      style={{ width: '100%', height: 600 }}
+      style={{ maxWidth: '1000px', width: '100%', height: '600px'}}
     />
   )
 }

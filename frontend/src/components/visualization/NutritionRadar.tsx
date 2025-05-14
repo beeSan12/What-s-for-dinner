@@ -13,7 +13,8 @@ type Props = { nutr: Nutrition; title: string }
 
 export default function NutritionRadar({ nutr, title }: Props) {
   const option = {
-    title: { text: title, left: 'center', bottom: '10px' },
+    title: { text: title, left: 'center', bottom: '30px' },
+    // title: { text: title, left: 'center', top: 10 },
     radar: {
       indicator: [
         { name: 'Protein', max: 50 },
@@ -52,5 +53,5 @@ export default function NutritionRadar({ nutr, title }: Props) {
     ],
   }
 
-  return <ReactECharts option={option} style={{ height: 350, width: '100%' }} />
+  return <ReactECharts option={option} style={{ maxWidth: '1000px', width: '100%', height: '600px' }} />
 }

@@ -27,64 +27,129 @@ export class ProductService extends MongooseServiceBase {
   async getOriginMap ({ gradesFilter = [] } = {}) {
     // Build the aggregation pipeline
     const pipeline = [
-      // 1. Filter out products with missing origins or eco score
       {
         $match: {
-          origins: { $exists: true, $nin: [null, '', []] },
-          'eco_score.grade': { $exists: true, $nin: [null, '', []] }
+          origins_iso: { $exists: true, $not: { $size: 0 } }
         }
       },
-  
-      // 2. Optional filtering by grade
-      ...(gradesFilter.length
-        ? [{
-            $match: {
-              'eco_score.grade': {
-                $in: gradesFilter.map(g => g.toLowerCase())
-              }
-            }
-          }]
-        : []),
-  
-      // 3. Prepare origins and grades
+      {
+        $unwind: '$origins_iso'
+      },
+      {
+        $group: {
+          _id: '$origins_iso',
+          total: { $sum: 1 }
+        }
+      },
       {
         $project: {
-          ecoGrade: '$eco_score.grade',
-          originsArr: {
-            $filter: {
-              input: { $split: ['$origins', ','] },
-              as: 'o',
-              cond: { $ne: ['$$o', ''] }
-            }
-          }
+          _id: 0,
+          cc: '$_id',
+          total: 1
         }
       },
-      { $unwind: '$originsArr' },
+      { $sort: { total: -1 } }
     ]
+      
+  //     // 1. Filter out products with missing origins or eco score
+  //     {
+  //       $match: {
+  //         // origins: { $exists: true, $nin: [null, '', []] },
+  //         origins_iso: { $exists: true, $ne: [] }
 
-    const rawResults = await this.aggregate(pipeline)
+  //         // 'eco_score.grade': { $exists: true, $nin: [null, '', []] }
+  //       }
+  //     },
+  
+  //     // // 2. Optional filtering by grade
+  //     // ...(gradesFilter.length
+  //     //   ? [{
+  //     //       $match: {
+  //     //         'eco_score.grade': {
+  //     //           $in: gradesFilter.map(g => g.toLowerCase())
+  //     //         }
+  //     //       }
+  //     //     }]
+  //     //   : []),
+  
+  //     // 3. Prepare origins and grades
+  //     {
+  //       $project: {
+  //         // ecoGrade: '$eco_score.grade',
+  //         originsArr: {
+  //           $filter: {
+  //             input: { $split: ['$origins', ','] },
+  //             as: 'o',
+  //             cond: { $ne: ['$$o', ''] }
+  //           }
+  //         }
+  //       }
+  //     },
+  //     // { $unwind: '$originsArr' },
+  //     { $unwind: '$origins_iso' },
+  //   // ]
+  //   {
+  //     $project: {
+  //       origin: { $trim: { input: '$originsArr' } }
+  //     }
+  //   },
+  //   {
+  //     $group: {
+  //       _id: '$origin',
+  //       total: { $sum: 1 }
+  //     }
+  //   },
+  //   {
+  //     $project: {
+  //       _id: 0,
+  //       origin: '$_id',
+  //       total: 1
+  //     }
+  //   },
+  //   { $sort: { total: -1 } }
+  // ]
 
-    const grouped = {}
+    // const rawResults = await this.aggregate(pipeline)
+    const result = await this.aggregate(pipeline)
 
-    for (const item of rawResults) {
-      const rawOrigin = item.originsArr?.trim()
-      if (!rawOrigin) continue
-
-      const iso = rawOrigin.length === 2
-        ? rawOrigin.toUpperCase()
-        : countries.getAlpha2Code(rawOrigin, 'en')?.toUpperCase() || '??'
-
-      if (!grouped[iso]) {
-        grouped[iso] = { cc: iso, total: 0, grades: {} }
-      }
-
-      grouped[iso].total++
-      const grade = item.ecoGrade?.toUpperCase() || 'UNKNOWN'
-      grouped[iso].grades[grade] = (grouped[iso].grades[grade] || 0) + 1
+    if (!Array.isArray(result)) {
+      console.error('❌ OriginMap aggregation returned non-array:', result)
+      return []
     }
-    console.log('Mapped countries:', Object.values(grouped))
 
-    return Object.values(grouped)
+    return result
+
+    // const grouped = {}
+
+    // for (const item of rawResults) {
+    //   const rawOrigin = item.originsArr?.trim()
+    //   if (!rawOrigin) continue
+
+    //   const iso = rawOrigin.length === 2
+    //     ? rawOrigin.toUpperCase()
+    //     : countries.getAlpha2Code(rawOrigin, 'en')?.toUpperCase() || '??'
+
+    //   if (!grouped[iso]) {
+    //     // grouped[iso] = { cc: iso, total: 0, grades: {} }
+    //     grouped[iso] = { cc: iso, total: 0 }
+    //   }
+
+    //   grouped[iso].total++
+    //   // const grade = item.ecoGrade?.toUpperCase() || 'UNKNOWN'
+    //   // grouped[iso].grades[grade] = (grouped[iso].grades[grade] || 0) + 1
+    // }
+    // // console.log('Mapped countries:', Object.values(grouped))
+    // console.log('🌍 Origin-only map:', grouped)
+
+    // return Object.values(grouped)
+    // return rawResults.map(({ origin, total }) => {
+    //   const iso = origin.length === 2
+    //     ? origin.toUpperCase()
+    //     : countries.getAlpha2Code(origin, 'en')?.toUpperCase() || '??'
+  
+    //   console.log('Mapped countries:', { cc: iso, origin, total })
+    //   return { cc: iso, origin, total }
+    // })
   //     // 4. Normalize country to ISO2
   //     {
   //       $addFields: {
