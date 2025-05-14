@@ -14,15 +14,6 @@ import { FiLoader } from 'react-icons/fi'
 import { Product } from '../interface/Product'
 import { Nutrition } from '../interface/Nutrition'
 
-// interface Product {
-//   _id: string
-//   product_name: string
-//   brands: string
-//   categories?: string
-//   image_url?: string
-//   // reset?: number
-//   source: 'custom' | 'global'
-// }
 interface ProductWithNutrition extends Product {
   nutrition?: Nutrition
   allergens?: Product['allergens']
@@ -36,7 +27,6 @@ interface Props {
   minimalLayout?: boolean
   showSelectButton?: boolean // Optional prop to show select button
   hideSearchButton?: boolean
-  // reset?: number
   customInputStyle?: React.CSSProperties
   customButtonStyle?: React.CSSProperties
   ecoScoreFilter?: string[]
@@ -55,7 +45,6 @@ const SearchProducts: React.FC<Props> = ({
   minimalLayout,
   showSelectButton,
   hideSearchButton,
-  // reset,
   customInputStyle,
   customButtonStyle,
   ecoScoreFilter,
@@ -63,13 +52,11 @@ const SearchProducts: React.FC<Props> = ({
   excludedAllergens,
 }) => {
   const [query, setQuery] = useState('')
-  // const [results, setResults] = useState<Product[]>([])
   const [results, setResults] = useState<ProductWithNutrition[]>([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const [internalPage, setInternalPage] = useState(0)
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null)
-  // const [selectedProductInfo, setSelectedProductInfo] = useState<ProductWithNutrition | null>(null)
 
   const [totalPages, setTotalPages] = useState(1)
   const activePage = currentPage ?? internalPage
@@ -107,15 +94,6 @@ const SearchProducts: React.FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePage])
 
-  // /**
-  //  * Resets the search input and results when the reset prop changes.
-  //  */
-  // useEffect(() => {
-  //   setQuery('')
-  //   setResults([])
-  //   setSearched(false)
-  // }, [reset])
-
   /**
    * Handles the search action when the user clicks the search button or presses Enter.
    * It fetches product data from the backend API based on the user's query.
@@ -123,106 +101,6 @@ const SearchProducts: React.FC<Props> = ({
   // const handleSearch = async () => {
     const handleSearch = async (page = 0) => {
 
-  //   if (!query.trim()) return
-  //   setLoading(true)
-  //   setSearched(true)
-  
-  //   try {
-  //     const response = await apiFetch(
-  //       `${import.meta.env.VITE_API_BASE_URL}/products/search?name=${encodeURIComponent(query)}`,
-  //     )
-  //     const data = await response.json()
-  //     const products: Product[] = data.data || []
-  
-  //     console.log('Fetched products:', products)
-  
-  //     if (useFilters) {
-  //       const enrichedProducts = await Promise.all(
-  //         products.map(async (product) => {
-  //           let nutrition = nutritionCache[product.barcode]
-  //           let allergens = allergenCache[product.barcode]
-  //           let ingredients_text = ingredientCache[product.barcode]
-      
-  //           if (!nutrition || !allergens || !ingredients_text) {
-  //             try {
-  //               const [nutritionRes, allergenRes, ingredientsRes] = await Promise.all([
-  //                 !nutrition
-  //                   ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`)
-  //                   : null,
-  //                 !allergens
-  //                   ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/allergens`)
-  //                   : null,
-  //                 !ingredients_text
-  //                   ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/ingredients`)
-  //                   : null,
-  //               ])
-      
-  //               if (nutritionRes?.ok) {
-  //                 const data = await nutritionRes.json()
-  //                 nutrition = {
-  //                   calories: Number(data.calories),
-  //                   protein: Number(data.protein),
-  //                   carbs: Number(data.carbs),
-  //                   fat: Number(data.fat),
-  //                   fiber: Number(data.fiber),
-  //                   sugar: Number(data.sugar),
-  //                   salt: Number(data.salt),
-  //                   saturated_fat: Number(data.saturated_fat),
-  //                   cholesterol: Number(data.cholesterol),
-  //                   sodium: Number(data.sodium),
-  //                 }
-  //                 setNutritionCache(prev => {
-  //                   const updated = { ...prev, [product.barcode]: nutrition! }
-  //                   localStorage.setItem('nutritionCache', JSON.stringify(updated))
-  //                   return updated
-  //                 })
-  //               }
-      
-  //               if (allergenRes?.ok) {
-  //                 const data = await allergenRes.json()
-  //                 allergens = data.allergens
-  //                 setAllergenCache(prev => {
-  //                   const updated = { ...prev, [product.barcode]: allergens! }
-  //                   localStorage.setItem('allergenCache', JSON.stringify(updated))
-  //                   return updated
-  //                 })
-  //               }
-      
-  //               if (ingredientsRes?.ok) {
-  //                 const data = await ingredientsRes.json()
-  //                 ingredients_text = data.ingredients_text
-  //                 setIngredientCache(prev => {
-  //                   const updated = { ...prev, [product.barcode]: ingredients_text! }
-  //                   localStorage.setItem('ingredientCache', JSON.stringify(updated))
-  //                   return updated
-  //                 })
-  //               }
-  //             } catch (err) {
-  //               console.warn(`Failed to enrich product: ${product.product_name}`, err)
-  //             }
-  //           }
-      
-  //           return {
-  //             ...product,
-  //             nutrition,
-  //             allergens,
-  //             ingredients_text,
-  //           }
-  //         })
-  //       )
-      
-  //       setResults(enrichedProducts)
-  //     } else {
-  //       // fallback when no filters are used
-  //       setResults(products)
-  //     }
-  
-  //   } catch (err) {
-  //     console.error('Error fetching products:', err)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
     if (!query.trim()) return
     setLoading(true)
     setSearched(true)
@@ -233,15 +111,11 @@ const SearchProducts: React.FC<Props> = ({
       params.append('page', String((currentPage ?? 0) + 1))
       params.append('per_page', String(maxResults ?? 20))
   
-      // Alltid skicka med name-param för sökning
       params.append('name', query)
       params.append('page', String(page + 1))
   
-      // ✅ Använd endast filters om showFilters är aktivt
       if (useFilters) {
         if (ecoScoreFilter && ecoScoreFilter.length > 0) {
-          // Här anpassar du vid behov, ex: ecoGrades=A,B
-          // params.append('ecoScoreMissing', 'true')
           params.append('ecoGrades', ecoScoreFilter.join(','))
         }
   
@@ -262,7 +136,6 @@ const SearchProducts: React.FC<Props> = ({
           )
         ) || 1
       )
-      // setTotalPages(data.pagination?.totalPages ?? 1)
       const rawProducts: ProductWithNutrition[] = data.data || []
   
       // Enrich with eco_score
@@ -293,50 +166,6 @@ const SearchProducts: React.FC<Props> = ({
       setLoading(false)
     }
   }
-
-//     try {
-//       const response = await apiFetch(
-//         `${import.meta.env.VITE_API_BASE_URL}/products/search?name=${encodeURIComponent(query)}`,
-//       )
-//       const data = await response.json()
-//       const rawProducts: ProductWithNutrition[] = data.data || []
-
-//     const enrichedProducts = await Promise.all(
-//       rawProducts.map(async (product) => {
-//         try {
-//           const ecoRes = await apiFetch(
-//             `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/eco-score`
-//           )
-//           if (ecoRes.ok) {
-//             const ecoData = await ecoRes.json()
-//             product.eco_score = ecoData.eco_score
-//           } else {
-//             product.eco_score = { score: -1, grade: 'unknown' }
-//           }
-//         } catch {
-//           product.eco_score = { score: -1, grade: 'unknown' }
-//         }
-//         return product
-//       })
-//     )
-
-//     console.log('Enriched products with eco_score:', enrichedProducts)
-//     setResults(enrichedProducts)
-//   } catch (err) {
-//     console.error('Error fetching products:', err)
-//   } finally {
-//     setLoading(false)
-//   }
-// }
-
-  //     console.log('Fetched products:', data)
-  //     setResults(data.data || []) // Ensure data is an array
-  //   } catch (err) {
-  //     console.error('Error fetching products:', err)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
 
   /**
    * Enriches the product with additional data such as nutrition and ingredients.
@@ -422,138 +251,6 @@ const SearchProducts: React.FC<Props> = ({
     const enriched = await enrichProduct(product)
     onProductSelect(enriched)
   }
-  //   try {
-  //     // let nutrition: Nutrition | undefined = undefined
-  //     // let allergens: Product['allergens'] | undefined = undefined
-  //     let nutrition = nutritionCache[product.barcode]
-  //     let allergens = allergenCache[product.barcode]
-  //     let ingredients_text = ingredientCache[product.barcode]
-
-  //     const [nutritionRes, allergenRes, ingredientsRes] = await Promise.all([
-  //       !nutrition
-  //         ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`)
-  //         : null,
-  //       !allergens
-  //         ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/allergens`)
-  //         : null,
-  //       !ingredients_text
-  //         ? apiFetch(`${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/ingredients`)
-  //         : null,
-  //     ])
-
-  //     if (nutritionRes?.ok) {
-  //       const data = await nutritionRes.json()
-  //       nutrition = {
-  //         calories: Number(data.calories),
-  //         protein: Number(data.protein),
-  //         carbs: Number(data.carbs),
-  //         fat: Number(data.fat),
-  //         fiber: Number(data.fiber),
-  //         sugar: Number(data.sugar),
-  //         salt: Number(data.salt),
-  //         saturated_fat: Number(data.saturated_fat),
-  //         cholesterol: Number(data.cholesterol),
-  //         sodium: Number(data.sodium),
-  //       }
-  //       setNutritionCache((prev) => {
-  //         const updated = { ...prev, [product.barcode]: nutrition! }
-  //         localStorage.setItem('nutritionCache', JSON.stringify(updated))
-  //         return updated
-  //       })
-  //     }
-
-  //     if (allergenRes?.ok) {
-  //       const data = await allergenRes.json()
-  //       allergens = data.allergens
-  //       setAllergenCache((prev) => {
-  //         const updated = { ...prev, [product.barcode]: allergens! }
-  //         localStorage.setItem('allergenCache', JSON.stringify(updated))
-  //         return updated
-  //       })
-  //     }
-
-  //     if (ingredientsRes?.ok) {
-  //       const data = await ingredientsRes.json()
-  //       ingredients_text = data.ingredients_text
-  //       setIngredientCache((prev) => {
-  //         const updated = { ...prev, [product.barcode]: ingredients_text! }
-  //         localStorage.setItem('ingredientCache', JSON.stringify(updated))
-  //         return updated
-  //       })
-  //     }
-  //     onProductSelect({
-  //       ...product,
-  //       nutrition,
-  //       allergens,
-  //       ingredients_text,
-  //     })
-  //   } catch (error) {
-  //     console.warn(`Failed to enrich product: ${product.product_name}`, error)
-  //   }
-  // }
-
-  
-    // if (product.barcode) {
-    //   try {
-    //     // Fetch nutrition data
-    //     const nutritionRes = await apiFetch(
-    //       `${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`,
-    //     )
-    //     if (nutritionRes.ok) {
-    //       const nutriData = await nutritionRes.json()
-    //       nutrition = {
-    //         calories: Number(nutriData.calories),
-    //         protein: Number(nutriData.protein),
-    //         carbs: Number(nutriData.carbs),
-    //         fat: Number(nutriData.fat),
-    //         fiber: Number(nutriData.fiber),
-    //         sugar: Number(nutriData.sugar),
-    //         salt: Number(nutriData.salt),
-    //         saturated_fat: Number(nutriData.saturated_fat),
-    //         cholesterol: Number(nutriData.cholesterol),
-    //         sodium: Number(nutriData.sodium),
-    //       }
-    //     }
-
-    //     // Fetch allergens data
-    //     const allergenRes = await apiFetch(
-    //       `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/allergens`,
-    //     )
-    //     if (allergenRes.ok) {
-    //       const allergenData = await allergenRes.json()
-    //       allergens = allergenData.allergens
-    //     }
-
-    //     // Fetch ingredients data
-    //     const ingredientsRes = await apiFetch(
-    //       `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/ingredients`,
-    //     )
-    //     if (ingredientsRes.ok) {
-    //       const ingredientsData = await ingredientsRes.json()
-    //       product.ingredients_text = ingredientsData.ingredients_text
-    //     }
-    //   } catch (err) {
-    //     console.warn(
-    //       `Error fetching nutrition or allergens for ${product.product_name}`,
-    //       err,
-    //     )
-    //   }
-    // }
-
-    // setSelectedProductInfo({
-    //   ...product,
-    //   nutrition,
-    //   allergens,
-    //   ingredients_text: product.ingredients_text,
-    // })
-  //   onProductSelect({
-  //     ...product,
-  //     nutrition,
-  //     allergens,
-  //     ingredients_text,
-  //     // ingredients_text: product.ingredients_text,
-  //   })
-  // }
 
   /**
    * Handles the addition of a custom product.
@@ -620,51 +317,15 @@ const SearchProducts: React.FC<Props> = ({
       effectiveEcoScoreFilter.includes(ecoGrade)
     )
 
-    // const hasExcludedAllergens = effectiveExcludedAllergens.some(
-    //   (allergen) => product.allergens?.[allergen] === true
-    // )
-
-    // const hasNutrition =
-    //   product.nutrition &&
-    //   typeof product.nutrition.calories === 'number' &&
-    //   !isNaN(product.nutrition.calories)
-
-    // const hasIngredients =
-    //   typeof product.ingredients_text === 'string' &&
-    //   product.ingredients_text.trim().length > 0
-
-    // const hasValidNutrition =
-    // product.nutrition &&
-    // typeof product.nutrition.calories === 'number' &&
-    // !isNaN(product.nutrition.calories) &&
-    // typeof product.nutrition.saturated_fat === 'number' &&
-    // !isNaN(product.nutrition.saturated_fat) &&
-    // typeof product.nutrition.sugar === 'number' &&
-    // !isNaN(product.nutrition.sugar)
-
     return matchesEco
   })
 : results
-  // /**
-  //  * Slices the results array based on the current page and maxResults.
-  //  *
-  //  * @param product - The selected product object.
-  //  */
-  // const sliceResults = maxResults
-  //   ? results.slice(activePage * maxResults, (activePage + 1) * maxResults)
-  //   : results
   
-  // /**
-  //  * Slices the filtered results array based on the current page and maxResults.
-  //  *
-  //  * @param product - The selected product object.
-  //  */
-  // const sliceFilteredResults = maxResults
-  // ? (showFilters ? filteredResults : results).slice(
-  //     activePage * maxResults,
-  //     (activePage + 1) * maxResults
-  //   )
-  // : (showFilters ? filteredResults : results)
+  /**
+   * Slices the filtered results based on the current page and maxResults.
+   *
+   * @returns {ProductWithNutrition[]} - The sliced array of products.
+   */
   const sliceFilteredResults: ProductWithNutrition[] = maxResults
   ? (useFilters ? filteredResults : results).slice(
       activePage * (maxResults ?? 20),
@@ -701,7 +362,6 @@ const SearchProducts: React.FC<Props> = ({
             handleSearch(0)
           }
         }}
-        // onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         style={customInputStyle || (minimalLayout ? undefined : styles.input)}
       />
       {!hideSearchButton && (
@@ -710,7 +370,6 @@ const SearchProducts: React.FC<Props> = ({
             updatePage(0)
             handleSearch(0)
           }}
-          // onClick={handleSearch}
           style={
             customButtonStyle || (minimalLayout ? undefined : styles.searchBtn)
           }
@@ -728,7 +387,6 @@ const SearchProducts: React.FC<Props> = ({
       ) : (
 
         <div style={minimalLayout ? undefined : styles.resultList}>
-          {/* {sliceResults.map((product) => ( */}
           {sliceFilteredResults.map((product) => (
             <div
               key={product._id}
@@ -820,72 +478,8 @@ const SearchProducts: React.FC<Props> = ({
         </div>
       )}
 
-      {/* {maxResults && results.length > maxResults && (
-        <div style={minimalLayout ? undefined : styles.paginationContainer}>
-          <button
-            onClick={() => updatePage((prev: number) => Math.max(prev - 1, 0))}
-            disabled={activePage === 0}
-            style={minimalLayout ? undefined : styles.paginationBtn}
-          >
-            <LuArrowBigLeft /> Prev
-          </button>
-          <button
-            onClick={() =>
-              updatePage((prev: number) =>
-                (prev + 1) * maxResults! < results.length ? prev + 1 : prev,
-              )
-            }
-            disabled={(activePage + 1) * maxResults >= results.length}
-            style={minimalLayout ? undefined : styles.paginationBtn}
-          >
-            Next <LuArrowBigRight />
-          </button>
-        </div>
-      )} */}
-
-      {/* {!loading && searched && results.length === 0 && query.trim() && (
-        <div style={minimalLayout ? undefined : styles.customProductBox}>
-          <p>No product found. Add custom product:</p>
-          {!showCustomProductForm ? (
-            <button onClick={() => setShowCustomProductForm(true)}>
-              Add “{query}”
-            </button>
-          ) : (
-            <div style={minimalLayout ? undefined : styles.customForm}>
-              <input
-                placeholder="Name"
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-                style={minimalLayout ? undefined : styles.customInput}
-              />
-              <input
-                placeholder="Brand"
-                value={customBrand}
-                onChange={(e) => setCustomBrand(e.target.value)}
-                style={minimalLayout ? undefined : styles.customInput}
-              />
-              <input
-                placeholder="Category"
-                value={customCategory}
-                onChange={(e) => setCustomCategory(e.target.value)}
-                style={minimalLayout ? undefined : styles.customInput}
-              />
-              <input
-                placeholder="Image URL (optional)"
-                value={customImageUrl}
-                onChange={(e) => setCustomImageUrl(e.target.value)}
-                style={
-                  minimalLayout ? styles.compactImageStyle : styles.customInput
-                }
-              />
-              <button onClick={handleAddCustomProduct}>Submit Product</button>
-            </div>
-          )}
-        </div>
-      )} */}
       {!loading && searched && query.trim() && (
         <>
-          {/* Visar resultatstatus alltid */}
           <div style={minimalLayout ? undefined : styles.loading}>
             <span>
               {results.length === 0
@@ -894,7 +488,6 @@ const SearchProducts: React.FC<Props> = ({
             </span>
           </div>
 
-          {/* Visar "lägg till egen" om inga produkter hittades alls */}
           {results.length === 0 && (
             <div style={minimalLayout ? undefined : styles.customProductBox}>
               <p>No product found. Add custom product:</p>
@@ -936,7 +529,6 @@ const SearchProducts: React.FC<Props> = ({
             </div>
           )}
 
-          {/* Visar om produkter fanns men filtrerades bort */}
           {results.length > 0 && sliceFilteredResults.length === 0 && useFilters && (
             <div style={minimalLayout ? undefined : styles.customProductBox}>
               <p>No products match your filters.</p>

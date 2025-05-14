@@ -31,9 +31,8 @@ export default function Visualize() {
     ;(async () => {
       try {
         const result = await apiFetch(
-          `${import.meta.env.VITE_API_BASE_URL}/products?per_page=2000`,
+          `${import.meta.env.VITE_API_BASE_URL}/products?per_page=5000`,
         )
-        // const res  = await apiFetch('/products?per_page=2000')
         const json = await result.json()
         const list = Array.isArray(json.data) ? json.data : Array.isArray(json) ? json : []
         setProducts(list as ProductExt[])
@@ -74,14 +73,14 @@ export default function Visualize() {
          ecoFilter.includes(p.eco_score?.grade?.toUpperCase() ?? '')
   )
 
-  const total = products.length
-  const shown = filtered.length
+  // const total = products.length
+  // const shown = filtered.length
 
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Eco-score distribution</h2>
 
-      {/* ---------------- filter-kontroller ---------------- */}
+      {/* ---------------- filter-controller ---------------- */}
       <div style={styles.filter}>
         {['A','B','C','D','E'].map(g => (
           <label key={g} style={{ marginRight: 12 }}>
@@ -96,7 +95,7 @@ export default function Visualize() {
       </div>
 
       <p style={styles.totalProducts}>
-        Showing {shown} of {total} products
+        {/* Showing {shown} of {total} products */}
       </p>
 
       <div style={styles.grid}>
@@ -141,6 +140,7 @@ const styles = {
     width: '100%',
     margin: '20px',
     gap: '20px',
+    justifyContent: 'center',
   },
   totalProducts: { 
     alignSelf: 'flex-start',
@@ -159,14 +159,16 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    // gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    // gridTemplateRows: showRadar ? 'repeat(2, 600px)' : 'repeat(2, 1fr)',
     gap: '32px',
     width: '100%',
-    alignItems: 'start' 
+    alignItems: 'center' 
   },
   chartBox: { 
     width: '100%',
-    height: '100%',
+    height: '600px',
     padding: '10px',
     backgroundColor: '#f5f5dc',
     borderRadius: '12px',

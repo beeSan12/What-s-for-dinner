@@ -63,7 +63,7 @@ export default function EcoScatter ({ products }: Props) {
     <ReactECharts
       ref={chartRef}
       option={option}
-      style={{ width: '100%', height: 350 }}
+      style={{ maxWidth: '1000px', width: '100%', height: '600px' }}
       opts={{ renderer: 'canvas' }}
     />
   )

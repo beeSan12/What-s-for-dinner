@@ -49,6 +49,10 @@ const productSchema = new mongoose.Schema({
   eco_score_grade: { type: String },
   eco_score_score: { type: Number },
   origins: { type: String },
+  origins_iso: {
+    type: [String],
+    default: []
+  },
   manufacturing_places: { type: String },
   packaging: { type: String },
   labels: { type: String },

@@ -63,5 +63,5 @@ export default function Dashboard({ ecoFilter = [] }: Props) {
     }
   }
 
-  return <ReactECharts option={option} style={{ height: 300, width: '100%' }} />
+  return <ReactECharts option={option} style={{ maxWidth: '1000px', width: '100%', height: '600px' }} />
 }

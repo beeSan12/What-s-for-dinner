@@ -10,11 +10,73 @@ import csv from 'csv-parser'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import { ProductModel } from './src/models/ProductModel.js'
+import { fallbackCountries, normalizeCountry } from './src/utils/countryUtils.js'
+import countries from 'i18n-iso-countries'
+import enLocale from 'i18n-iso-countries/langs/en.json' with { type: 'json' }
+import frLocale from 'i18n-iso-countries/langs/fr.json' with { type: 'json' }
+import esLocale from 'i18n-iso-countries/langs/es.json' with { type: 'json' }
 
 dotenv.config()
 const FILE_PATH = process.env.PATH_TO_DATA_GZ
 const maxImport = 20000
 const LOG_FIRST_N = 5
+
+countries.registerLocale(enLocale)
+countries.registerLocale(frLocale)
+countries.registerLocale(esLocale)
+
+/**
+ * Parses the origins string and returns an array of ISO country codes.
+ *
+ * @param {string} originsRaw - The raw origins string.
+ * @param {string} originsTagsRaw - The raw origins tags string.
+ * @returns {string[]} - An array of ISO country codes.
+ */
+// function parseOrigins(originsRaw) {
+//   if (!originsRaw) return []
+
+//   return originsRaw
+//     .split(/[,;]/) // stöd för både kommatecken och semikolon
+//     .map(o => o.trim().toLowerCase().replace(/^([a-z]{2,3}):/, '')) // ta bort t.ex. "en:"
+//     .map(normalizeCountry) // t.ex. "états-unis" → "united states"
+//     .map(o => fallbackCountries[`en:${o}`] || fallbackCountries[o] || countries.getAlpha2Code(o, 'en')) // t.ex. "united states" → "US"
+//     .filter(Boolean)
+//     .filter((v, i, a) => a.indexOf(v) === i) // ta bort dubbletter
+// }
+function parseOrigins(originsRaw, originsTagsRaw) {
+  const rawList = []
+
+  if (originsRaw) rawList.push(...originsRaw.split(/[,;]/))
+  if (originsTagsRaw) rawList.push(...originsTagsRaw.split(/[,;]/))
+
+  return rawList
+    .map(o => o.trim().toLowerCase().replace(/^([a-z]{2,3}):/, '')) // ta bort språkkod
+    .map(normalizeCountry) // försök normalisera t.ex. "états-unis" till "united states"
+    .map(o => fallbackCountries[`en:${o}`] || fallbackCountries[o] || countries.getAlpha2Code(o, 'en'))
+    .filter(Boolean)
+    .filter((v, i, a) => a.indexOf(v) === i) // unika ISO-koder
+}
+  // let importedCount = 0
+  // if (!originsRaw) return []
+
+  // return originsRaw
+  //   .split(',')
+  //   .map(o => o.trim().toLowerCase().replace(/^([a-z]{2}):/, ''))
+  //   .map(o => {
+  //     const iso = countries.getAlpha2Code(o, 'en') ||
+  //                 countries.getAlpha2Code(o, 'fr') ||
+  //                 countries.getAlpha2Code(o, 'es') ||
+  //                 fallbackCountries[o]
+  //     if (!iso && importedCount < 10) {
+  //       console.warn(`⛔ Unresolved origin: "${o}"`)
+  //     }
+  //     // return iso || null
+  //     return iso || o.toUpperCase() 
+  //   })
+  //   .filter(Boolean) // remove nulls
+  //   .filter((v, i, a) => a.indexOf(v) === i) // remove duplicates
+// }
+
 /**
  * This function creates a regular expression to match allergen words by using boundary and allowing for up to 20 additional characters after the word.
  *
@@ -48,48 +110,6 @@ const ALLERGEN_WORDS = {
   mustard: new RegExp(`${w('mustard')}|${w('senap')}|${w('mostaza')}|${w('moutarde')}|${w('senape')}`, 'i'),
   sulphites: new RegExp(`${w('sulphite[s]?')}|${w('sulfite[s]?')}|${w('sulfit')}|${w('sulfitt')}|${w('sulfur_dioxide')}|${w('svaveldioxid')}`, 'i')
 }
-// nuts: /\b(nut|nuts|noix|nuss|nüsse|noci|nuez|mandel|almond|hazelnut|walnut|cashew|pistachio|macadamia|pecan)\b/i,
-// peanuts: /\b(peanut|peanuts|cacahuète|erdnuss|erdnüsse|cacahuetes|jordnöt[ter]*)\b/i,
-// soybeans: /\b(soy|soja|soya|soybean[s]*|sojaböna[r]*)\b/i,
-// eggs: /\b(egg|eggs|œuf[s]?|eier|huevo[s]?|ägg)\b/i,
-// fish: /\b(fish|fisk|poisson|fisch|pesce|pez|cod|torsk|salmon|lax|tuna|tonfisk|trout|forel|haddock|anchovy|anchovis)\b/i,
-// crustaceans: /\b(shrimp|shrimps|räka|räkor|gambero|crevette|crevettes|prawn[s]?|crab|krabba|crabe|lobster|hummer|langosta|crayfish|kräfta|écrevisse)\b/i,
-// sesame: /\b(sesame|sesam|sesameseed[s]*|sesamfrö[n]*)\b/i,
-// celery: /\b(celery|céleri|selleri|sedano|apio)\b/i,
-// mustard: /\b(mustard|senap|mostaza|moutarde|senape)\b/i,
-// sulphites: /\b(sulphite[s]?|sulfite[s]?|sulfit|sulfitt|sulfur_dioxide|svaveldioxid)\b/i
-// }
-
-// /**
-//  * Parses a CSV file and returns an array of objects.
-//  *
-//  * @param {string} filePath - The path to the CSV file.
-//  * @param {Function} transformRow - A function that transforms a CSV row to a Mongoose object.
-//  * @returns {Promise<object[]>} - An array of objects.
-//  */
-// function parseCSV (filePath, transformRow) {
-//   return new Promise((resolve, reject) => {
-//     const results = []
-//     fs.createReadStream(filePath)
-//       .pipe(csv())
-//       .on('data', (row) => {
-//         // Call the transformRow function to convert the row to a Mongoose object
-//         const doc = transformRow(row)
-//         if (doc) {
-//           // Push the transformed object to the results array
-//           results.push(doc)
-//         }
-//       })
-//       // When the CSV file has been read completely (end event)
-//       .on('end', () => {
-//         console.log(`Finished reading CSV: ${filePath}. Found ${results.length} rows.`)
-//         resolve(results)
-//       })
-//       .on('error', (err) => {
-//         reject(err)
-//       })
-//   })
-// }
 
 /**
  * Scans the ingredients text for allergen words and updates the result object.
@@ -215,7 +235,10 @@ function rowToProduct (row, importedCount) {
     eco_score_score: row.environmental_score_score
       ? Number(row.environmental_score_score)
       : gradeToScore[(row.environmental_score_grade || '').toLowerCase()] ?? -1,
+    origin_tags: row.origins_tags,
+    origins_iso: parseOrigins(row.origins, row.origins_tags),
     origins: row.origins,
+    // origins_iso: parseOrigins(row.origins),
     manufacturing_places: row.manufacturing_places,
     packaging: row.packaging,
     labels: row.labels
@@ -265,6 +288,7 @@ export async function seed () {
           // barcode: row.code,
           categories: row.categories,
           name: row.product_name,
+          origin_tags: row.origins_tags,
           ecoScore: row.environmental_score_grade,
           ecoScoreScore: row.environmental_score_score,
           allergens: parseAllergens(row, importedCount),
