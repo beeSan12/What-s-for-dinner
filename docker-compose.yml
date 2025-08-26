@@ -28,17 +28,17 @@ services:
       - mongo
     restart: always
 
-  frontend:
-    image: bsan89/whats-for-dinner-frontend:latest
-    build:
-      context: ./frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    env_file:
-      - ./frontend/.env
-    restart: always
+  # frontend:
+  #   image: bsan89/whats-for-dinner-frontend:latest
+  #   build:
+  #     context: ./frontend
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - backend
+  #   env_file:
+  #     - ./frontend/.env
+  #   restart: always
 
 volumes:
   mongo-data:
