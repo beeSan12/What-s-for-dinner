@@ -109,7 +109,7 @@ export default function FindRecipes() {
     const results: EmbeddingMatch[] = []
 
     for (const item of recipeItems) {
-      const res = await apiFetch(
+      const data: EmbeddingMatch[] = await apiFetch(
         `${import.meta.env.VITE_API_BASE_URL}/embeddings/search`,
         {
           method: 'POST',
@@ -117,7 +117,6 @@ export default function FindRecipes() {
           body: JSON.stringify({ query: item.product_name }),
         },
       )
-      const data = await res.json()
       if (!Array.isArray(data)) {
         console.error('Unexpected response from embedding search:', data)
         alert('Could not search for recipes. Check console for details.')
@@ -141,7 +140,7 @@ export default function FindRecipes() {
     await searchBasedOnProducts()
 
     try {
-      const res = await apiFetch(
+      const data: { recipe: string } = await apiFetch(
         `${import.meta.env.VITE_API_BASE_URL}/recipes/generate`,
         {
           method: 'POST',
@@ -154,7 +153,6 @@ export default function FindRecipes() {
         },
       )
 
-      const data = await res.json()
       console.log('Generated recipe:', data)
 
       // Add recipe to the list of generated recipes
@@ -180,7 +178,6 @@ export default function FindRecipes() {
       <div style={styles.header} />
       <h1 style={styles.h1}>Find Recipes by Your Products</h1>
       {/* 1) Search for product */}
-      {/* <div style={styles.searchContainer}> */}
       {(recipeItems.length === 0 || addingMore) &&
         !selectedProduct &&
         generatedRecipes.length === 0 && (

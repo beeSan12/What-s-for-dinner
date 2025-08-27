@@ -11,12 +11,12 @@
  *
  * @param url The URL to fetch data from.
  * @param options The options for the fetch request, such as method, headers, body, etc.
- * @returns {Promise<Response>} The response from the fetch request.
+ * @returns A promise that resolves to the JSON response from the API.
  */
-export const apiFetch = async (
+export const apiFetch = async <T = unknown,>(
   url: string,
   options: RequestInit = {},
-): Promise<Response> => {
+): Promise<T> => {
   const token = localStorage.getItem('token')
 
   const response = await fetch(url, {
@@ -25,6 +25,7 @@ export const apiFetch = async (
       ...(options.headers || {}),
       Authorization: token ? `Bearer ${token}` : '',
       'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
     },
   })
 
@@ -35,13 +36,29 @@ export const apiFetch = async (
     window.location.href = '/login'
     // Do not return the response
     // Instead, reject the promise with an error
-    return new Response(null, {
-      status: 401,
-      statusText: 'Unauthorized',
-    })
+    throw new Error('Unauthorized')
   }
-  //   return Promise.reject(new Error('Unauthorized'))
-  // }
+  console.log('🔐 Sending request to', url)
+  console.log('📦 Headers:', {
+    ...options.headers,
+    Authorization: token ? `Bearer ${token}` : '',
+  })
 
-  return response
+  // return response
+  const contentType = response.headers.get('content-type') || ''
+  const raw = await response.text()
+
+  if (!response.ok) {
+    throw new Error(`HTTP Error ${response.status}: ${raw}`)
+  }
+
+  if (!contentType.includes('application/json')) {
+    throw new Error(`Not JSON, raw response: ${raw.slice(0, 300)}`)
+  }
+
+  try {
+    return JSON.parse(raw)
+  } catch (err) {
+    throw new Error('Failed to parse JSON: ' + err)
+  }
 }
