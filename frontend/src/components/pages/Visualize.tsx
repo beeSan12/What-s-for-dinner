@@ -7,7 +7,6 @@
  */
 import { useState, useEffect, Suspense, lazy, useMemo } from 'react'
 import Dashboard from '../visualization/Dashboard'
-// import EcoScatter from '../visualization/EcoScatter'
 import { apiFetch } from '../../utils/apiFetch'
 import { Product } from '../interface/Product'
 import { Nutrition } from '../interface/Nutrition'
@@ -29,21 +28,16 @@ export default function Visualize() {
   useEffect(() => {
     ;(async () => {
       try {
-        const result = await apiFetch(
+        const json = await apiFetch<ProductExt[]>(
           `${import.meta.env.VITE_API_BASE_URL}/products?per_page=5000`,
         )
-        const json = await result.json()
-        const list = Array.isArray(json.data)
-          ? json.data
-          : Array.isArray(json)
-            ? json
-            : []
-        setProducts(list as ProductExt[])
-      } catch (err) {
-        console.error(err)
-      }
-    })()
-  }, [])
+       const list = Array.isArray(json) ? json : []
+          setProducts(list as ProductExt[])
+        } catch (err) {
+          console.error(err)
+        }
+      })()
+    }, [])
 
   const avgNutrition = useMemo(() => {
     if (products.length === 0) return null
