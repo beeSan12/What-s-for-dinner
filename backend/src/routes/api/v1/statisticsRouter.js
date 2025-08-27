@@ -6,8 +6,11 @@ import { container, PRODUCTTYPES } from '../../../config/inversify.config.js'
 export const router = express.Router()
 dotenv.config()
 
+console.log('statisticsRouter loaded')
+
 // GET /products/eco-score-distribution
 router.route('/eco-score-distribution')
+console.log('In getEcoScoreDistribution controller')
   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getEcoScoreDistribution(req, res, next))
 
 export { router as statisticsRouter }

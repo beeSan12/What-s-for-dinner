@@ -24,10 +24,6 @@ router.route('/search')
 router.route('/origin-map')
   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getOriginMap(req, res, next))
 
-// // GET /products/eco-score-distribution
-// router.route('/eco-score-distribution')
-//   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getEcoScoreDistribution(req, res, next))
-
 // Map HTTP verbs and route paths to controller action methods.
 
 // GET products

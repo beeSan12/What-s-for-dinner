@@ -32,13 +32,6 @@ export async function createEmbedding (input) {
     return res.data[0].embedding
   }
 }
-//   const res = await openai.embeddings.create({
-//     model: 'text-embedding-ada-002',
-//     input: text
-//   })
-//   console.log('Generated embedding length:', res.data[0].embedding.length)
-//   return res.data[0].embedding
-// }
 
 /**
  * Ask GPT for a fallback answer if no embedding match was found.
