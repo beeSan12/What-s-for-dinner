@@ -131,10 +131,9 @@ export default function OriginMap() {
   useEffect(() => {
     ;(async () => {
       try {
-        const response = await apiFetch(
+        const json = await apiFetch<CountryData[]>(
           `${import.meta.env.VITE_API_BASE_URL}/products/origin-map`,
         )
-        const json: CountryData[] = await response.json()
         const transformed = json.map((d: CountryData) => {
           const originName = countries.getName(d.cc, 'en') || d.cc
           return {
