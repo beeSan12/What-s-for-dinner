@@ -181,8 +181,14 @@ const SearchProducts: React.FC<Props> = ({
               `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/eco-score`,
             )
             product.eco_score = ecoData.eco_score
-          } catch {
-            product.eco_score = { score: -1, grade: 'unknown' }
+          } catch (err: unknown) {
+            if (err instanceof Error && err.message.includes('404')) {
+              // Eco score not found
+              product.eco_score = { score: -1, grade: 'unknown' }
+            } else {
+              // Log all other errors (e.g. 429)
+              throw err
+            }
           }
 
           return product
