@@ -294,6 +294,7 @@ export class ProductController {
    * @returns {Promise<void>} - A promise that resolves when the response is sent.
    */
   async getEcoScoreDistribution (req, res, next) {
+    console.log('In getEcoScoreDistribution controller')
     try {
       const products = await this.#service.getEcoScoreDistribution()
       res.json(products)
