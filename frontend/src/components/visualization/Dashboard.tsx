@@ -26,7 +26,7 @@ export default function Dashboard({ ecoFilter = [] }: Props) {
   useEffect(() => {
     ;(async () => {
       const json = await apiFetch<EcoData[]>(
-        `${import.meta.env.VITE_API_BASE_URL}/products/eco-score-distribution`,
+        `${import.meta.env.VITE_API_BASE_URL}/statistics/eco-score-distribution`,
       )
       setData(Array.isArray(json) ? json : [])
     })()

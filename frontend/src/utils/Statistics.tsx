@@ -14,10 +14,9 @@ export const EcoScorePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await apiFetch(
+        const json = await apiFetch<{ grade: string; value: number }[]>(
           `${import.meta.env.VITE_API_BASE_URL}/statistics/eco-score-distribution`,
         )
-        const json = await response.json()
         setData(json)
       } catch (error) {
         console.error('Failed to fetch eco score distribution:', error)
