@@ -51,7 +51,7 @@ export default function SearchQuery() {
     }
 
     try {
-      const res = await apiFetch(
+      const data: AskEmbeddingResponse = await apiFetch(
         `${import.meta.env.VITE_API_BASE_URL}/embeddings/ask`,
         {
           method: 'POST',
@@ -59,7 +59,6 @@ export default function SearchQuery() {
           body: JSON.stringify({ query }),
         },
       )
-      const data: AskEmbeddingResponse = await res.json()
 
       console.log('RESPONSE:', data)
       if (data.fallback) {

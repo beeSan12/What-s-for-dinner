@@ -19,6 +19,38 @@ interface ProductWithNutrition extends Product {
   allergens?: Product['allergens']
 }
 
+export interface IngredientsResponse {
+  ingredients_text: string
+}
+
+export interface AllergensResponse {
+  allergens: Product['allergens']
+}
+export interface ProductListResponse {
+  data: ProductWithNutrition[]
+  pagination?: { totalPages?: number; totalCount?: number }
+}
+
+export interface EcoScoreResponse {
+  eco_score: {
+    score: number
+    grade: string
+  }
+}
+
+export interface NutritionResponse {
+  calories: number
+  protein: number
+  carbs: number
+  fat: number
+  fiber: number
+  sugar: number
+  salt: number
+  saturated_fat: number
+  cholesterol: number
+  sodium: number
+}
+
 interface Props {
   onProductSelect: (product: ProductWithNutrition) => void
   maxResults?: number // Optional prop to limit the number of results displayed
@@ -130,8 +162,7 @@ const SearchProducts: React.FC<Props> = ({
       }
 
       const url = `${baseUrl}?${params.toString()}`
-      const response = await apiFetch(url)
-      const data = await response.json()
+      const data = await apiFetch<ProductListResponse>(url)
       setTotalPages(
         (data.pagination?.totalPages ??
           Math.ceil(
@@ -146,18 +177,14 @@ const SearchProducts: React.FC<Props> = ({
       const enrichedProducts = await Promise.all(
         rawProducts.map(async (product) => {
           try {
-            const ecoRes = await apiFetch(
+            const ecoData = await apiFetch<EcoScoreResponse>(
               `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/eco-score`,
             )
-            if (ecoRes.ok) {
-              const ecoData = await ecoRes.json()
-              product.eco_score = ecoData.eco_score
-            } else {
-              product.eco_score = { score: -1, grade: 'unknown' }
-            }
+            product.eco_score = ecoData.eco_score
           } catch {
             product.eco_score = { score: -1, grade: 'unknown' }
           }
+
           return product
         }),
       )
@@ -188,24 +215,24 @@ const SearchProducts: React.FC<Props> = ({
       try {
         const [nutritionRes, ingredientsRes, allergensRes] = await Promise.all([
           !nutrition
-            ? apiFetch(
+            ? apiFetch<NutritionResponse>(
                 `${import.meta.env.VITE_API_BASE_URL}/food/${product.barcode}/nutrition`,
               )
             : null,
           !ingredients_text
-            ? apiFetch(
+            ? apiFetch<IngredientsResponse>(
                 `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/ingredients`,
               )
             : null,
           !allergens
-            ? apiFetch(
+            ? apiFetch<AllergensResponse>(
                 `${import.meta.env.VITE_API_BASE_URL}/products/${product.barcode}/allergens`,
               )
             : null,
         ])
 
-        if (nutritionRes?.ok) {
-          const data = await nutritionRes.json()
+        if (nutritionRes) {
+          const data = nutritionRes
           nutrition = {
             calories: Number(data.calories),
             protein: Number(data.protein),
@@ -225,8 +252,8 @@ const SearchProducts: React.FC<Props> = ({
           })
         }
 
-        if (ingredientsRes?.ok) {
-          const data = await ingredientsRes.json()
+        if (ingredientsRes) {
+          const data = ingredientsRes
           ingredients_text = data.ingredients_text
           setIngredientCache((prev) => {
             const updated = { ...prev, [product.barcode]: ingredients_text! }
@@ -235,8 +262,8 @@ const SearchProducts: React.FC<Props> = ({
           })
         }
 
-        if (allergensRes?.ok) {
-          const data = await allergensRes.json()
+        if (allergensRes) {
+          const data = allergensRes
           allergens = data.allergens
           setAllergenCache((prev) => {
             const updated = { ...prev, [product.barcode]: allergens! }
@@ -271,7 +298,7 @@ const SearchProducts: React.FC<Props> = ({
   const handleAddCustomProduct = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await apiFetch(
+      const res = await apiFetch<Response>(
         `${import.meta.env.VITE_API_BASE_URL}/products/custom`,
         {
           method: 'POST',
