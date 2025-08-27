@@ -22,7 +22,7 @@ router.route('/search')
 
 // GET /products/origin-map
 router.route('/origin-map')
-.get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getOriginMap(req, res, next))
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).getOriginMap(req, res, next))
 
 // GET /products/eco-score-distribution
 router.route('/eco-score-distribution')
@@ -33,10 +33,6 @@ router.route('/eco-score-distribution')
 // GET products
 router.route('/')
   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).findAll(req, res, next))
-
-// GET products/:id
-router.route('/:id')
-  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).find(req, res, next))
 
 // POST /products/custom — add a custom product
 router.route('/custom')
@@ -61,5 +57,9 @@ router.route('/:barcode/eco-score')
 // GET /products/smart-search
 router.route('/smart-search')
   .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).smartSearch(req, res, next))
+
+// GET products/:id
+router.route('/:id')
+  .get(authenticate, (req, res, next) => container.get(PRODUCTTYPES.ProductController).find(req, res, next))
 
 export { router as productRouter }
