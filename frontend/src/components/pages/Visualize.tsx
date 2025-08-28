@@ -183,7 +183,8 @@ const styles = {
     // maxHeight: '1000px',
     // maxHeight: '600px',
     width: '100%',
-    height: '100%',
+    minHeight: '400px',
+    aspectRatio: '1.2',
     padding: '10px',
     backgroundColor: '#f5f5dc',
     borderRadius: '12px',
@@ -195,7 +196,7 @@ const styles = {
   chartBoxMap: {
     color: '#f5f5dc',
     width: '100%',
-    height: '100%',
+    minHeight: '500px',
     // height: '100%',
     padding: '10px',
     backgroundColor: '#f5f5dc',
