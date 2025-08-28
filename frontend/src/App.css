@@ -1,5 +1,5 @@
 #root {
-  max-width: 1600px;
+  max-width: 2000px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -102,7 +102,7 @@
 } */
 
 /* Media query for small screens */
-/* @media (max-width: 768px) {
+@media (max-width: 768px) {
   .visualize-grid {
     grid-template-columns: 1fr;
   }
@@ -116,4 +116,4 @@
     height: auto;
     min-height: 600px;
   } */
-
+}

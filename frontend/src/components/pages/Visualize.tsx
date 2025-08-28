@@ -145,7 +145,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     padding: '20px',
-    maxWidth: '1200px',
+    maxWidth: '1800px',
     width: '100%',
     margin: '20px',
     gap: '20px',
