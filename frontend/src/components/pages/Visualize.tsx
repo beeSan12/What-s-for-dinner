@@ -10,7 +10,6 @@ import Dashboard from '../visualization/Dashboard'
 import { apiFetch } from '../../utils/apiFetch'
 import { Product } from '../interface/Product'
 import { Nutrition } from '../interface/Nutrition'
-import '../../App.css'
 
 interface ProductExt extends Product {
   nutrition?: Nutrition
@@ -148,6 +147,7 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundSize: 'contain',
     // maxWidth: '1800px',
     // width: '100%',
     minHeight: '100%',
