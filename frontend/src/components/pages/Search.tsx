@@ -440,8 +440,6 @@ const styles = {
     overflowY: 'auto',
     position: 'relative',
     boxSizing: 'border-box',
-    // width: '90%',
-    // maxHeight: '80vh',
   },
   filterButton: {
     marginTop: '20px',
