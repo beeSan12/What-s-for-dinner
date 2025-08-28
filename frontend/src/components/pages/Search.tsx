@@ -324,7 +324,7 @@ const styles = {
     alignItems: 'flex-start',
     padding: '20px',
     // alignItems: 'center',
-    // backgroundSize: 'contain',
+    backgroundSize: 'contain',
     // margin: '20px',
     // gap: '20px',
   },
