@@ -67,43 +67,78 @@ function coord(cc: string): [number, number] | undefined {
 function seriesFromData(data: CountryData[]) {
   if (!Array.isArray(data)) return []
 
-  return data.flatMap((c) => {
-    const center = coord(c.cc)
-    if (!center) return []
-
-    return {
-      name: c.cc,
-      type: 'pie' as const,
-      coordinateSystem: 'geo' as const,
-      radius: 8,
-      center,
-      // label: { show: false },
+  return [
+    {
+      name: 'Products by Country',
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      symbolSize: function (val: [number, number, number]) {
+        return Math.sqrt(val[2]) * 2 // storleken beroende på produktantalet
+      },
       label: {
         show: false,
-        formatter: '{b}',
-        overflow: 'truncate',
-        position: 'inside',
-      },
-      labelLine: {
-        show: false,
-      },
-      labelLayout: {
-        hideOverlap: true,
       },
       tooltip: {
         trigger: 'item',
         confine: true,
         formatter: function (params: {
-          data: { value: number; origin?: string }
-          percent: number
+          name: string
+          value: [number, number, number]
         }) {
-          return `${params.data.origin ?? c.cc}<br/>${params.data.value} st · ${params.percent.toFixed(1)}%`
+          const total = params.value[2]
+          return `${params.name}<br/>${total} produkter`
         },
       },
-      data: [{ name: c.cc, value: c.total, origin: c.origin }],
-    }
-  })
+      data: data
+        .map((c) => {
+          const center = coord(c.cc)
+          if (!center) return null
+          return {
+            name: c.origin ?? c.cc,
+            value: [...center, c.total], // [lon, lat, total]
+          }
+        })
+        .filter((d): d is { name: string; value: [number, number, number] } => !!d),
+    },
+  ]
 }
+//   return data.flatMap((c) => {
+//     const center = coord(c.cc)
+//     if (!center) return []
+
+//     return {
+//       name: c.cc,
+//       type: 'pie' as const,
+//       coordinateSystem: 'geo' as const,
+//       radius: 8,
+//       center,
+//       // label: { show: false },
+//       label: {
+//         show: false,
+//         formatter: '{b}',
+//         overflow: 'truncate',
+//         position: 'inside',
+//       },
+//       labelLine: {
+//         show: false,
+//       },
+//       labelLayout: {
+//         hideOverlap: true,
+//       },
+//       tooltip: {
+//         trigger: 'item',
+//         confine: true,
+//         formatter: function (params: {
+//           data: { value: number; origin?: string }
+//           percent: number
+//         }) {
+//           return `${params.data.origin ?? c.cc}<br/>${params.data.value} st · ${params.percent.toFixed(1)}%`
+//         },
+//       },
+//       data: [{ name: c.cc, value: c.total, origin: c.origin }],
+//     }
+//   })
+// }
 
 export default function OriginMap() {
   const [data, setData] = useState<CountryData[]>([])
@@ -200,7 +235,7 @@ export default function OriginMap() {
   }
 
   return (
-    <div style={{ width: '100%', height: '70vh' }}>
+    <div style={{ width: '100%', height: '100%' }}>
       <ReactECharts
         ref={chartRef}
         option={option}
