@@ -6,7 +6,7 @@
  * @author Beatriz Sanssi
  */
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import ReactECharts from 'echarts-for-react'
 import { apiFetch } from '../../utils/apiFetch'
 
@@ -21,7 +21,7 @@ type Props = { ecoFilter?: string[] }
 
 export default function Dashboard({ ecoFilter = [] }: Props) {
   const [data, setData] = useState<EcoData[]>([])
-  // const [data, setData] = useState<{ grade: string; value: number }[]>([])
+  const chartRef = useRef<ReactECharts | null>(null)
 
   useEffect(() => {
     ;(async () => {
@@ -30,6 +30,21 @@ export default function Dashboard({ ecoFilter = [] }: Props) {
       )
       setData(Array.isArray(json) ? json : [])
     })()
+  }, [])
+
+  useEffect(() => {
+    const resize = () => {
+      if (chartRef.current) {
+        chartRef.current.getEchartsInstance().resize()
+      }
+    }
+
+    // Timeout to wait for layout to stabilize
+    setTimeout(resize, 100)
+
+    // Trigger resize on window resize too
+    window.addEventListener('resize', resize)
+    return () => window.removeEventListener('resize', resize)
   }, [])
 
   // Filter the data based on the ecoFilter prop
@@ -69,9 +84,11 @@ export default function Dashboard({ ecoFilter = [] }: Props) {
   }
 
   return (
-    <ReactECharts
-      option={option}
-      style={{ width: '100%', height: '100%' }}
-    />
+    <div style={{ width: '600px', height: '500px' }}>
+      <ReactECharts
+        option={option}
+        style={{ width: '100%', height: '100%' }}
+      />
+    </div>
   )
 }
