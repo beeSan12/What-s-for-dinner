@@ -670,6 +670,7 @@ const styles = {
     alignItems: 'center',
     gap: '0.5rem',
     fontSize: '20px',
+    margin: '0 10px',
   },
   customProductBox: {
     marginTop: '2rem',
