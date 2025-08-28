@@ -169,7 +169,8 @@ const styles = {
   grid: {
     display: 'grid',
     // gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-    gridTemplateColumns: 'repeat(2, 1fr)',
+    // gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
     gap: '32px',
     // gridAutoRows: '600px',
     width: '100%',
