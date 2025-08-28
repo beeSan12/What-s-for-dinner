@@ -606,13 +606,8 @@ const styles = {
     justifyContent: 'space-between',
     borderBottom: '1px solid #ccc',
     padding: '15px',
-    flexWrap: 'wrap', // ny!
+    flexWrap: 'wrap',
     gap: '10px',
-    // display: 'flex',
-    // alignItems: 'center',
-    // justifyContent: 'space-between',
-    // borderBottom: '1px solid #ccc',
-    // padding: '15px',
   },
   productDetails: {
     display: 'flex',
@@ -632,7 +627,6 @@ const styles = {
   },
   input: {
     padding: '0.5rem',
-    // width: '300px',
     maxWidth: '300px',
   },
   searchBtn: {
@@ -669,7 +663,7 @@ const styles = {
     gap: '1rem',
     padding: '10px',
     width: '100%',
-    maxWidth: '400px', // Lägg till en rimlig maxbredd
+    maxWidth: '400px',
     marginInline: 'auto'
   },
   paginationBtn: {
@@ -685,12 +679,9 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem',
-    flex: '1 1 0', // Gör dem flexibla
-    minWidth: '100px', // Minimum så att de inte kollapsar
+    flex: '1 1 0',
+    minWidth: '100px',
     maxWidth: '160px',
-    // flex: 'none', 
-    // margin: '0',
-    // minWidth: '80px',
     justifyContent: 'center',
   },
   customProductBox: {
