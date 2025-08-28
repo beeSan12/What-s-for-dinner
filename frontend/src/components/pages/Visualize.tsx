@@ -127,7 +127,7 @@ export default function Visualize() {
           </Suspense>
         )}
 
-        <div className="chart-box-map" style={styles.chartBox}>
+        <div className="chart-box-map" style={styles.chartBoxMap}>
           <OriginMap />
         </div>
       </div>
