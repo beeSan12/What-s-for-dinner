@@ -66,81 +66,54 @@ function coord(cc: string): [number, number] | undefined {
  */
 function seriesFromData(data: CountryData[]) {
   if (!Array.isArray(data)) return []
+  const total = data.reduce((sum, d) => sum + d.total, 0)
 
-  const seriesData = data
-    .map((c) => {
-      const center = coord(c.cc)
-      if (!center) return null
-      return {
-        name: c.origin ?? c.cc,
-        value: [...center, c.total], // [lon, lat, total]
-      }
-    })
-    .filter((d): d is { name: string; value: [number, number, number] } => !!d)
+  return data.flatMap((c) => {
+    const center = coord(c.cc)
+    if (!center) return []
 
-  return [
-    {
-      name: 'Products by Country',
-      type: 'scatter',
-      coordinateSystem: 'geo',
-      symbolSize: function (val: [number, number, number]) {
-        return Math.sqrt(val[2]) * 2
-      },
+    return {
+      name: c.cc,
+      type: 'pie' as const,
+      coordinateSystem: 'geo' as const,
+      radius: 8,
+      center,
+      // label: { show: false },
       label: {
         show: false,
+        formatter: '{b}',
+        overflow: 'truncate',
+        position: 'inside',
+      },
+      labelLine: {
+        show: false,
+      },
+      labelLayout: {
+        hideOverlap: true,
       },
       tooltip: {
         trigger: 'item',
         confine: true,
         formatter: function (params: {
-          name: string
-          value: [number, number, number]
+          data: { value: number; origin?: string }
         }) {
-          const total = params.value[2]
-          return `${params.name}<br/>${total} produkter`
+          const count = params.data.value
+          const origin = params.data.origin ?? c.cc
+          const percent = ((count / total) * 100).toFixed(1)
+          return `${origin}<br/>${count} produkter · ${percent}%`
         },
       },
-      data: seriesData,
-    },
-  ]
+      //   formatter: function (params: {
+      //     data: { value: number; origin?: string }
+      //     percent: number
+      //   }) {
+      //     return `${params.data.origin ?? c.cc}<br/>${params.data.value} st · ${params.percent.toFixed(1)}%`
+      //   },
+      // },
+      data: [{ name: c.cc, value: c.total, origin: c.origin }],
+    }
+  })
 }
-//   return data.flatMap((c) => {
-//     const center = coord(c.cc)
-//     if (!center) return []
-
-//     return {
-//       name: c.cc,
-//       type: 'pie' as const,
-//       coordinateSystem: 'geo' as const,
-//       radius: 8,
-//       center,
-//       // label: { show: false },
-//       label: {
-//         show: false,
-//         formatter: '{b}',
-//         overflow: 'truncate',
-//         position: 'inside',
-//       },
-//       labelLine: {
-//         show: false,
-//       },
-//       labelLayout: {
-//         hideOverlap: true,
-//       },
-//       tooltip: {
-//         trigger: 'item',
-//         confine: true,
-//         formatter: function (params: {
-//           data: { value: number; origin?: string }
-//           percent: number
-//         }) {
-//           return `${params.data.origin ?? c.cc}<br/>${params.data.value} st · ${params.percent.toFixed(1)}%`
-//         },
-//       },
-//       data: [{ name: c.cc, value: c.total, origin: c.origin }],
-//     }
-//   })
-// }
 
 export default function OriginMap() {
   const [data, setData] = useState<CountryData[]>([])
