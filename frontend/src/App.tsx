@@ -1,7 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-// import { useEffect} from 'react'
 import Search from './components/pages/Search'
-// import CreateShoppingList from './components/pages/CreateShoppingList'
 import FindRecipes from './components/pages/FindRecepies'
 import SearchQuery from './components/types/SearchQuery'
 import Home from './components/pages/Home'

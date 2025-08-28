@@ -10,6 +10,7 @@ import Dashboard from '../visualization/Dashboard'
 import { apiFetch } from '../../utils/apiFetch'
 import { Product } from '../interface/Product'
 import { Nutrition } from '../interface/Nutrition'
+import '../App.css'
 
 interface ProductExt extends Product {
   nutrition?: Nutrition
@@ -85,11 +86,11 @@ export default function Visualize() {
   // const shown = filtered.length
 
   return (
-    <div style={styles.container}>
+    <div className="visualize-container">
       <h2 style={styles.title}>Eco-score distribution</h2>
 
       {/* ---------------- filter-controller ---------------- */}
-      <div style={styles.filter}>
+      <div className="visualize-filter">
         {['A', 'B', 'C', 'D', 'E'].map((g) => (
           <label key={g} style={{ marginRight: 12 }}>
             <input
@@ -106,33 +107,27 @@ export default function Visualize() {
         {/* Showing {shown} of {total} products */}
       </p>
 
-      <div style={styles.grid}>
-        <div style={styles.chartBox}>
+      <div className="visualize-grid">
+        <div className="chart-box">
           <Dashboard ecoFilter={ecoFilter} />
         </div>
 
         <Suspense fallback={<p>Loading scatter …</p>}>
-          <div style={styles.chartBox}>
+          <div className="chart-box">
             <EcoScatter products={filtered} />
           </div>
         </Suspense>
 
         {showRadar && avgNutrition && (
           <Suspense fallback={<p>Loading radar …</p>}>
-            <div style={styles.chartBox}>
+            <div className="chart-box">
               <NutritionRadar nutr={avgNutrition} title="Average values" />
               {/* <NutritionRadar nutr={avgNutrition} title="Average nutrition values" count={products.filter(p => p.nutrition).length} />             */}
             </div>
           </Suspense>
         )}
 
-        <div
-          style={{
-            ...styles.chartBox,
-            gridColumn: '1 / -1',
-            height: '1200px',
-          }}
-        >
+        <div className="chart-box full-width">
           <OriginMap />
         </div>
       </div>
@@ -171,30 +166,28 @@ const styles = {
     display: 'flex',
     gap: '12px',
   },
-  grid: {
-    display: 'grid',
-    // gridTemplateColumns: '1fr 1fr',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    // gridTemplateRows: showRadar ? 'repeat(2, 600px)' : 'repeat(2, 1fr)',
-    gap: '32px',
-    gridAutoRows: '600px',
-    width: '100%',
-    alignItems: 'center',
-    justifyItems: 'center',
-  },
-  chartBox: {
-    color: '#f5f5dc',
-    width: '100%',
-    maxHeight: '1000px',
-    height: '100%',
-    padding: '10px',
-    backgroundColor: '#f5f5dc',
-    borderRadius: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxSizing: 'border-box',
-  },
+  // grid: {
+  //   display: 'grid',
+  //   gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+  //   gap: '32px',
+  //   width: '100%',
+  //   alignItems: 'stretch',
+  //   justifyItems: 'center',
+  //   boxSizing: 'border-box',
+  // },
+  // chartBox: {
+  //   color: '#f5f5dc',
+  //   width: '100%',
+  //   // maxHeight: '1000px',
+  //   height: '100%',
+  //   padding: '10px',
+  //   backgroundColor: '#f5f5dc',
+  //   borderRadius: '12px',
+  //   display: 'flex',
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   boxSizing: 'border-box',
+  // },
   btn: {
     marginTop: '24px',
     padding: '8px 16px',
