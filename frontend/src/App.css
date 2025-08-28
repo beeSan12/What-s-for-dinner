@@ -73,13 +73,14 @@
   align-items: center;
   box-sizing: border-box;
   min-height: 400px;
-  height: 400px;
+  height: auto;
 }
 
 /* Map */
 .chart-box.full-width {
   grid-column: 1 / -1;
-  height: 1000px;
+  min-height: 600px;
+  height: auto;
 }
 
 /* Responsive checkboxes */
@@ -110,8 +111,8 @@
     min-height: 300px;
   }
 
-  .chart-box.full-width {
+  /* .chart-box.full-width {
     height: auto;
     min-height: 600px;
-  }
+  } */
 }
