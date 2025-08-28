@@ -207,7 +207,7 @@ const styles = {
   chartBoxMap: {
     color: '#f5f5dc',
     width: '100%',
-    height: '400px',
+    height: '600px',
     // minHeight: '100%',
     // minHeight: '500px',
     // height: '100%',
