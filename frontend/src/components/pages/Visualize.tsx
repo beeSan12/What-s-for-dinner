@@ -126,7 +126,13 @@ export default function Visualize() {
           </Suspense>
         )}
 
-        <div style={styles.chartBox}>
+        <div
+          style={{
+            ...styles.chartBox,
+            gridColumn: '1 / -1',
+            height: '1200px',
+          }}
+        >
           <OriginMap />
         </div>
       </div>
@@ -171,6 +177,7 @@ const styles = {
     gridTemplateColumns: 'repeat(2, 1fr)',
     // gridTemplateRows: showRadar ? 'repeat(2, 600px)' : 'repeat(2, 1fr)',
     gap: '32px',
+    gridAutoRows: '600px',
     width: '100%',
     alignItems: 'center',
     justifyItems: 'center',
