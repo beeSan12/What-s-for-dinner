@@ -210,13 +210,13 @@ export default function OriginMap() {
   }
 
   return (
-    <div style={{ maxWidth: '100%', maxHeight: '70vh' }}>
+    <div style={{ width: '100vh', height: '70vh' }}>
       <ReactECharts
         ref={chartRef}
         option={option}
         style={{
-          width: '100%',
-          height: '100%',
+          maxWidth: '100%',
+          maxHeight: '100%',
           // margin: '0 auto',
         }}
         opts={{ renderer: 'canvas' }}
