@@ -10,7 +10,7 @@ import Dashboard from '../visualization/Dashboard'
 import { apiFetch } from '../../utils/apiFetch'
 import { Product } from '../interface/Product'
 import { Nutrition } from '../interface/Nutrition'
-import '../App.css'
+import '../../App.css'
 
 interface ProductExt extends Product {
   nutrition?: Nutrition
