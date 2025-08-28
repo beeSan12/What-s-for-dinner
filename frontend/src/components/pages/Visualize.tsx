@@ -192,8 +192,8 @@ const styles = {
   chartBoxMap: {
     color: '#f5f5dc',
     width: 'auto',
-    maxHeight: '1000px',
-    height: '100%',
+    // maxHeight: '1000px',
+    // height: '100%',
     padding: '10px',
     backgroundColor: '#f5f5dc',
     borderRadius: '12px',
@@ -202,7 +202,7 @@ const styles = {
     justifyContent: 'center',
     boxSizing: 'border-box',
     gridColumn: '1 / -1',
-    minHeight: '600px',
+    // minHeight: '600px',
   },
   btn: {
     marginTop: '24px',
