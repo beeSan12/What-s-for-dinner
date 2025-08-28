@@ -108,19 +108,19 @@ export default function Visualize() {
       </p>
 
       <div className="visualize-grid">
-        <div className="chart-box">
+        <div className="chart-box dashboard">
           <Dashboard ecoFilter={ecoFilter} />
         </div>
 
         <Suspense fallback={<p>Loading scatter …</p>}>
-          <div className="chart-box">
+          <div className="chart-box scatter">
             <EcoScatter products={filtered} />
           </div>
         </Suspense>
 
         {showRadar && avgNutrition && (
           <Suspense fallback={<p>Loading radar …</p>}>
-            <div className="chart-box">
+            <div className="chart-box map">
               <NutritionRadar nutr={avgNutrition} title="Average values" />
               {/* <NutritionRadar nutr={avgNutrition} title="Average nutrition values" count={products.filter(p => p.nutrition).length} />             */}
             </div>
@@ -140,17 +140,17 @@ export default function Visualize() {
 }
 
 const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '20px',
-    maxWidth: '1600px',
-    width: '100%',
-    margin: '20px',
-    gap: '20px',
-    justifyContent: 'center',
-  },
+  // container: {
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  //   alignItems: 'center',
+  //   padding: '20px',
+  //   maxWidth: '1600px',
+  //   width: '100%',
+  //   margin: '20px',
+  //   gap: '20px',
+  //   justifyContent: 'center',
+  // },
   totalProducts: {
     alignSelf: 'flex-start',
     margin: '10px',

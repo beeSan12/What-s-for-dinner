@@ -1,9 +1,9 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
+} */
 
 .logo {
   height: 6em;
@@ -89,6 +89,15 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+.chart-box.dashboard {
+  height: 400px;
+}
+.chart-box.scatter {
+  height: 400px;
+}
+.chart-box.map {
+  height: 800px;
+}
 
 /* Media query for small screens */
 @media (max-width: 768px) {
@@ -98,5 +107,11 @@
 
   .chart-box.full-width {
     height: 600px;
+  }
+}
+
+@media (max-width: 600px) {
+  .visualize-grid {
+    grid-template-columns: 1fr;
   }
 }
