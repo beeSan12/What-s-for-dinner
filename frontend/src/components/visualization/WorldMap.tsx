@@ -188,7 +188,7 @@ export default function OriginMap() {
       style={{
         width: '100%',
         height: '700px',
-        // maxWidth: '1200px',
+        maxWidth: '1200px',
         margin: '0 auto',
       }}
       opts={{ renderer: 'canvas' }}
