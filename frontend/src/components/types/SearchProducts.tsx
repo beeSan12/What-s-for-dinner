@@ -601,10 +601,18 @@ const styles = {
   },
   productInfo: {
     display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottom: '1px solid #ccc',
     padding: '15px',
+    flexWrap: 'wrap', // ny!
+    gap: '10px',
+    // display: 'flex',
+    // alignItems: 'center',
+    // justifyContent: 'space-between',
+    // borderBottom: '1px solid #ccc',
+    // padding: '15px',
   },
   productDetails: {
     display: 'flex',
@@ -660,6 +668,9 @@ const styles = {
     flexWrap: 'nowrap',
     gap: '1rem',
     padding: '10px',
+    width: '100%',
+    maxWidth: '400px', // Lägg till en rimlig maxbredd
+    marginInline: 'auto'
   },
   paginationBtn: {
     backgroundColor: '#2f4f4f',
@@ -674,9 +685,12 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem',
-    flex: 'none', 
-    margin: '0',
-    minWidth: '80px',
+    flex: '1 1 0', // Gör dem flexibla
+    minWidth: '100px', // Minimum så att de inte kollapsar
+    maxWidth: '160px',
+    // flex: 'none', 
+    // margin: '0',
+    // minWidth: '80px',
     justifyContent: 'center',
   },
   customProductBox: {
