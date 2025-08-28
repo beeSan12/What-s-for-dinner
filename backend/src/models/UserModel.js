@@ -44,11 +44,5 @@ const schema = new mongoose.Schema({
   }
 })
 
-// // Salts and hashes password before save.
-// schema.pre('save', async function () {
-//   const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10)
-//   this.password = await bcrypt.hash(this.password, saltRounds)
-// })
-
 // Create a model using the schema.
 export const UserModel = mongoose.model('User', schema)

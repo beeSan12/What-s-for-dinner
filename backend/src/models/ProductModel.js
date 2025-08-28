@@ -18,34 +18,6 @@ const productSchema = new mongoose.Schema({
   barcode: { type: String, required: false, unique: true },
   nutrition: { type: Map, of: Number },
   allergens: { type: Map, of: Boolean },
-  // nutrition: {
-  //   calories: { type: String },
-  //   protein: { type: String },
-  //   carbs: { type: String },
-  //   fat: { type: String },
-  //   fiber: { type: String },
-  //   sugars: { type: String },
-  //   salt: { type: String },
-  //   sodium: { type: String },
-  //   saturated_fat: { type: String },
-  //   cholesterol: { type: String }
-  // },
-  // allergens: {
-  //   gluten: { type: Boolean },
-  //   lactose: { type: Boolean },
-  //   nuts: { type: Boolean },
-  //   peanuts: { type: Boolean },
-  //   soy: { type: Boolean },
-  //   eggs: { type: Boolean },
-  //   fish: { type: Boolean },
-  //   shellfish: { type: Boolean }
-  // },
-  // eco_score: {
-  //   // score: { type: Number, default: -1 },
-  //   score: { type: Number },
-  //   // grade: { type: String, default: 'unknown' }
-  //   grade: { type: String }
-  // },
   eco_score_grade: { type: String },
   eco_score_score: { type: Number },
   origins: { type: String },
@@ -102,7 +74,6 @@ productSchema.set('toJSON', {
       cholesterol: nutrMap.cholesterol_100g ?? nutrMap.cholesterol ?? null,
       sodium: nutrMap.sodium_100g ?? nutrMap.sodium ?? null
     }
-    // ret.eco_score = ret.eco_score || { grade: 'unknown', score: -1 }
     ret.eco_score = {
       grade: ret.eco_score_grade ?? 'unknown',
       score: ret.eco_score_score ?? -1

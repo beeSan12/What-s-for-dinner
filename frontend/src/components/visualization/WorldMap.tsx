@@ -41,7 +41,6 @@ type CountryData = {
   cc: string
   total: number
   origin?: string
-  // grades: Record<string, number>   // { A: 12, B: 3, … }
 }
 
 /**
@@ -78,7 +77,6 @@ function seriesFromData(data: CountryData[]) {
       coordinateSystem: 'geo' as const,
       radius: 8,
       center,
-      // label: { show: false },
       label: {
         show: false,
         formatter: '{b}',
@@ -103,13 +101,6 @@ function seriesFromData(data: CountryData[]) {
           return `${origin}<br/>${count} produkter · ${percent}%`
         },
       },
-      //   formatter: function (params: {
-      //     data: { value: number; origin?: string }
-      //     percent: number
-      //   }) {
-      //     return `${params.data.origin ?? c.cc}<br/>${params.data.value} st · ${params.percent.toFixed(1)}%`
-      //   },
-      // },
       data: [{ name: c.cc, value: c.total, origin: c.origin }],
     }
   })
@@ -189,7 +180,17 @@ export default function OriginMap() {
   const option = useMemo(
     () => ({
       tooltip: { trigger: 'item' },
-      legend: { orient: 'vertical', left: 'left' },
+      // legend: { orient: 'vertical', left: 'left' },
+      legend: {
+        orient: 'vertical',
+        left: 'left',
+        itemWidth: 8,
+        itemHeight: 8,
+        textStyle: {
+          fontSize: window.innerWidth < 600 ? 8 : 12,
+        },
+        show: window.innerWidth >= 600, // dölj på små skärmar
+      },
       geo: {
         map: 'world',
         roam: true,

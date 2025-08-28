@@ -32,17 +32,6 @@ countries.registerLocale(esLocale)
  * @param {string} originsTagsRaw - The raw origins tags string.
  * @returns {string[]} - An array of ISO country codes.
  */
-// function parseOrigins(originsRaw) {
-//   if (!originsRaw) return []
-
-//   return originsRaw
-//     .split(/[,;]/) // stöd för både kommatecken och semikolon
-//     .map(o => o.trim().toLowerCase().replace(/^([a-z]{2,3}):/, '')) // ta bort t.ex. "en:"
-//     .map(normalizeCountry) // t.ex. "états-unis" → "united states"
-//     .map(o => fallbackCountries[`en:${o}`] || fallbackCountries[o] || countries.getAlpha2Code(o, 'en')) // t.ex. "united states" → "US"
-//     .filter(Boolean)
-//     .filter((v, i, a) => a.indexOf(v) === i) // ta bort dubbletter
-// }
 function parseOrigins(originsRaw, originsTagsRaw) {
   const rawList = []
 
@@ -50,32 +39,12 @@ function parseOrigins(originsRaw, originsTagsRaw) {
   if (originsTagsRaw) rawList.push(...originsTagsRaw.split(/[,;]/))
 
   return rawList
-    .map(o => o.trim().toLowerCase().replace(/^([a-z]{2,3}):/, '')) // ta bort språkkod
-    .map(normalizeCountry) // försök normalisera t.ex. "états-unis" till "united states"
+    .map(o => o.trim().toLowerCase().replace(/^([a-z]{2,3}):/, ''))
+    .map(normalizeCountry)
     .map(o => fallbackCountries[`en:${o}`] || fallbackCountries[o] || countries.getAlpha2Code(o, 'en'))
     .filter(Boolean)
-    .filter((v, i, a) => a.indexOf(v) === i) // unika ISO-koder
+    .filter((v, i, a) => a.indexOf(v) === i)
 }
-  // let importedCount = 0
-  // if (!originsRaw) return []
-
-  // return originsRaw
-  //   .split(',')
-  //   .map(o => o.trim().toLowerCase().replace(/^([a-z]{2}):/, ''))
-  //   .map(o => {
-  //     const iso = countries.getAlpha2Code(o, 'en') ||
-  //                 countries.getAlpha2Code(o, 'fr') ||
-  //                 countries.getAlpha2Code(o, 'es') ||
-  //                 fallbackCountries[o]
-  //     if (!iso && importedCount < 10) {
-  //       console.warn(`⛔ Unresolved origin: "${o}"`)
-  //     }
-  //     // return iso || null
-  //     return iso || o.toUpperCase() 
-  //   })
-  //   .filter(Boolean) // remove nulls
-  //   .filter((v, i, a) => a.indexOf(v) === i) // remove duplicates
-// }
 
 /**
  * This function creates a regular expression to match allergen words by using boundary and allowing for up to 20 additional characters after the word.
@@ -157,7 +126,6 @@ function parseAllergens (row, importedCount) {
   const result = {}
 
   // 1) get string of allergen tags
-  // const raw = row.allergens || row.allergens_tags
   const raw = [
     row.allergens,
     row.allergens_tags,
@@ -223,7 +191,6 @@ function rowToProduct (row, importedCount) {
     product_name: row.product_name,
     brands: row.brands,
     categories: row.categories,
-    // ingredients_text: row.ingredients_text?.trim() || null,
     ingredients: row.ingredients_text?.slice(0, 120),
     nutriscore_grade: row.nutriscore_grade,
     nova_group: row.nova_group ? Number(row.nova_group) : null,
@@ -238,7 +205,6 @@ function rowToProduct (row, importedCount) {
     origin_tags: row.origins_tags,
     origins_iso: parseOrigins(row.origins, row.origins_tags),
     origins: row.origins,
-    // origins_iso: parseOrigins(row.origins),
     manufacturing_places: row.manufacturing_places,
     packaging: row.packaging,
     labels: row.labels
@@ -321,152 +287,5 @@ export async function seed () {
   console.log('\nExample rows (first three):')
   console.table(exampleRows)
 }
-// const foodFactsData = process.env.PATH_TO_DATA_GZ
-// const maxImport = 20000
 
-// // Connect to MongoDB
-// await mongoose.connect(process.env.DB_CONNECTION_STRING)
-// console.log('Connected to MongoDB')
-
-// // Clear existing products if any
-// await ProductModel.deleteMany({})
-// console.log('Old products removed')
-
-// // Import new products
-// let count = 0
-// let headerKeys = null
-// const firstExamples = []
-
-// fs.createReadStream(foodFactsData)
-//   .pipe(zlib.createGunzip())
-//   .pipe(csv({ separator: '\t' }))
-//   .on('data', async (row) => {
-//     if (!headerKeys) {
-//       headerKeys = Object.keys(row)
-//     }
-//     if (firstExamples.length < 3) { // t.ex. tre exempel
-//       firstExamples.push({
-//         code: row.code,
-//         name: row.product_name,
-//         allergensRaw: row.allergens || row.allergens_tags || ''
-//       })
-//     }
-
-//     // if (count >= maxImport) {
-//     //   console.log(row[0])
-//     //   console.log(`Max limit (${maxImport}) reached. Stopping import.`)
-//     //   mongoose.disconnect()
-//     //   process.exit()
-//     // }
-
-//     try {
-//       if (row.product_name && row.brands && row.image_url) {
-//         const nutrition = {}
-//         for (const key in row) {
-//           if (key.endsWith('_100g') && row[key]) {
-//             const value = parseFloat(row[key])
-//             if (!isNaN(value)) {
-//               nutrition[key] = value
-//             }
-//           }
-//         }
-
-//         // Dynamic allergens
-//         const allergens = {}
-//         if (row.allergens_tags) {
-//           if (count < 5) { // <–– ändra 5 till hur många exempel du vill se
-//             console.log('─'.repeat(60))
-//             console.log(`BARCODE: ${row.code}`)
-//             console.log(`NAME   : ${row.product_name}`)
-//             console.log('RAW TAGS:', row.allergens_tags)
-
-//             const parsed = row.allergens_tags
-//               .split(',')
-//               .map(t => t.replace(/^en:/, '').trim())
-//               .filter(Boolean)
-
-//             console.log('PARSED :', parsed)
-//           }
-//           // const tags = row.allergens_tags.split(',')
-//           // for (const tag of tags) {
-//           //   const clean = tag.replace(/^en:/, '').trim()
-//           //   if (clean) allergens[clean] = true
-//           // }
-//         }
-
-//         // const allergensTags = row.allergens_tags?.split(',') || []
-
-//         await ProductModel.create({
-//           product_name: row.product_name,
-//           brands: row.brands,
-//           categories: row.categories,
-//           ingredients_text: row.ingredients_text?.trim() || null,
-//           nutriscore_grade: row.nutriscore_grade,
-//           nova_group: row.nova_group ? parseInt(row.nova_group) : null,
-//           image_url: row.image_url,
-//           barcode: row.code,
-//           nutrition,
-//           allergens,
-//           // nutrition: {
-//           //   calories: row['energy-kcal_100g'],
-//           //   protein: row.proteins_100g,
-//           //   carbs: row.carbohydrates_100g,
-//           //   fat: row.fat_100g,
-//           //   fiber: row.fiber_100g,
-//           //   sugars: row.sugars_100g,
-//           //   salt: row.salt_100g,
-//           //   sodium: row.sodium_100g,
-//           //   saturated_fat: row['saturated-fat_100g'],
-//           //   cholesterol: row.cholesterol_100g
-//           // },
-//           // allergens: {
-//           //   gluten: allergensTags.includes('en:gluten'),
-//           //   lactose: allergensTags.includes('en:milk'),
-//           //   nuts: allergensTags.includes('en:nuts'),
-//           //   peanuts: allergensTags.includes('en:peanuts'),
-//           //   soy: allergensTags.includes('en:soybeans'),
-//           //   eggs: allergensTags.includes('en:eggs'),
-//           //   fish: allergensTags.includes('en:fish'),
-//           //   shellfish: allergensTags.includes('en:crustaceans')
-//           // },
-//           eco_score: row.environmental_score_grade,
-//           // eco_score: {
-//           //   score: row.environmental_score_score ? parseFloat(row.environmental_score_score) : -1,
-//           //   grade: row.environmental_score_grade || 'unknown'
-//           // },
-//           // eco_score: {
-//           //   score: row.eco_score_score ? parseFloat(row.eco_score_score) : -1,
-//           //   grade: row.eco_score_grade || 'unknown'
-//           // },
-//           origins: row.origins,
-//           manufacturing_places: row.manufacturing_places,
-//           packaging: row.packaging,
-//           labels: row.labels
-//         })
-//         console.log(row.allergens_tags)
-//         count++
-//         if (count % 100 === 0) console.log(`${count} products imported...`)
-//       }
-//     } catch (err) {
-//       console.error('Error inserting product:', err.message)
-//     }
-//   })
-//   .on('end', () => {
-//     if (count >= maxImport) {
-//       console.log(row[0])
-//       console.log(`Max limit (${maxImport}) reached. Stopping import.`)
-//       mongoose.disconnect()
-//       process.exit()
-//     }
-//     console.log(`Totalt importerade: ${count}`)
-//     console.log('\nTillgängliga kolumner:')
-//     console.log(headerKeys)
-
-//     console.log('\nExempelrader:')
-//     console.table(firstExamples)
-
-//     console.log(`Done! Imported ${count} products.`)
-//     mongoose.disconnect()
-//   })
-// Execute the seed function
 seed()

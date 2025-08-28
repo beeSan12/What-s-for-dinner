@@ -35,7 +35,6 @@ export default function App() {
           <Route index element={<Navigate to="home" replace />} />
           <Route path="home" element={<Home />} />
           <Route path="search" element={<Search />} />
-          {/* <Route path="create-shopping-list" element={<CreateShoppingList />} /> */}
           <Route path="find-recipe" element={<FindRecipes />} />
           <Route path="search-query" element={<SearchQuery />} />
           <Route path="/visualize" element={<Visualize />} />
