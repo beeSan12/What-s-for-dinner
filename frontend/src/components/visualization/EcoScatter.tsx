@@ -23,8 +23,8 @@ type Props = { products: ProductWithNutri[] }
  */
 export default function EcoScatter({ products }: Props) {
   const chartRef = useRef<ReactECharts | null>(null)
+  
   const datasetSrc = products
-
     .filter(
       (p) =>
         p.eco_score &&
@@ -39,9 +39,15 @@ export default function EcoScatter({ products }: Props) {
       p.eco_score!.grade.toUpperCase(),
     ])
     .sort((a, b) => Number(a[0]) - Number(b[0]))
+  
+  const totalProducts = datasetSrc.length
 
   // Sort the dataset by eco-score
   const option = {
+      title: {
+      text: `Product origins (${totalProducts} totalt)`,
+      left: 'center'
+    },
     xAxis: { name: 'Eco-score', min: 0, max: 100 },
     yAxis: { name: 'kcal / 100 g', min: 0 },
     dataset: { source: datasetSrc },
@@ -62,7 +68,7 @@ export default function EcoScatter({ products }: Props) {
   }, [])
 
   return (
-    <div style={{ width: '100%', height: '70vh' }}>
+    <div style={{ width: '100%', height: '100%' }}>
       <ReactECharts
         option={option}
         style={{ width: '100%', height: '100%' }}
