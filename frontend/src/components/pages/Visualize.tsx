@@ -192,9 +192,9 @@ const styles = {
   },
   chartBoxMap: {
     color: '#f5f5dc',
-    width: 'auto',
-    // maxHeight: '1000px',
-    // height: '100%',
+    width: '100%',
+    maxHeight: '600px',
+    height: '100%',
     padding: '10px',
     backgroundColor: '#f5f5dc',
     borderRadius: '12px',
