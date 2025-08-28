@@ -57,7 +57,10 @@ export default function Dashboard({ ecoFilter = [] }: Props) {
   )
 
   const option = {
-    title: { text: 'Total of products', left: 'center' },
+    title: {
+      text: `Total of products: ${filtered.reduce((sum, d) => sum + d.count, 0)}`,
+      left: 'center',
+    },
     xAxis: { type: 'category', data: filtered.map((d) => d.grade) },
     yAxis: { type: 'value' },
     series: [
