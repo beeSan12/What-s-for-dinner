@@ -141,19 +141,20 @@ export default function Visualize() {
 
 const styles = {
   container: {
+    padding: '20px',
+    margin: '20px',
+    textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: '20px',
     // maxWidth: '1800px',
     // width: '100%',
     minHeight: '100%',
     maxWidth: '100%',
     width: '100vw',
     height: '100vh',
-    margin: '20px',
     gap: '20px',
-    justifyContent: 'center',
   },
   totalProducts: {
     alignSelf: 'flex-start',
@@ -172,7 +173,7 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
     // gridTemplateColumns: 'repeat(2, 1fr)',
     // gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))',
     gap: '32px',
@@ -187,7 +188,8 @@ const styles = {
     // maxHeight: '1000px',
     // maxHeight: '600px',
     width: '100%',
-    minHeight: '400px',
+    // minHeight: '400px',
+    minHeight: '100%',
     aspectRatio: '1.2',
     padding: '10px',
     backgroundColor: '#f5f5dc',
@@ -200,7 +202,8 @@ const styles = {
   chartBoxMap: {
     color: '#f5f5dc',
     width: '100%',
-    minHeight: '500px',
+    minHeight: '100%',
+    // minHeight: '500px',
     // height: '100%',
     padding: '10px',
     backgroundColor: '#f5f5dc',
