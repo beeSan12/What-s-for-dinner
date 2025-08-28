@@ -136,7 +136,6 @@ const SearchProducts: React.FC<Props> = ({
    * Handles the search action when the user clicks the search button or presses Enter.
    * It fetches product data from the backend API based on the user's query.
    */
-  // const handleSearch = async () => {
   const handleSearch = async (page = 0) => {
     if (!query.trim()) return
     setLoading(true)
@@ -423,7 +422,6 @@ const SearchProducts: React.FC<Props> = ({
         </button>
       )}
 
-      {/* {loading && <p>Loading...</p>} */}
       {loading ? (
         <div style={styles.loading}>
           <FiLoader style={styles.spinnerIcon} />

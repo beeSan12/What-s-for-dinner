@@ -8,7 +8,6 @@
 import SearchProducts from '../types/SearchProducts'
 import NutritionChart from '../types/NutritionChart'
 import { useState } from 'react'
-// import { apiFetch } from '../../utils/apiFetch'
 import { Product } from '../interface/Product'
 import { Nutrition } from '../interface/Nutrition'
 import { MdClose } from 'react-icons/md'

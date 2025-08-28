@@ -16,7 +16,6 @@ interface EcoData {
   avgScore: number
 }
 
-// type EcoData = { grade: string; value: number }
 type Props = { ecoFilter?: string[] }
 
 export default function Dashboard({ ecoFilter = [] }: Props) {
