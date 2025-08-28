@@ -145,7 +145,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     padding: '20px',
-    maxWidth: '1800px',
+    // maxWidth: '1800px',
     width: '100%',
     margin: '20px',
     gap: '20px',
@@ -169,8 +169,8 @@ const styles = {
   grid: {
     display: 'grid',
     // gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-    // gridTemplateColumns: 'repeat(2, 1fr)',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    // gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))',
     gap: '32px',
     // gridAutoRows: '600px',
     width: '100%',
@@ -181,7 +181,7 @@ const styles = {
   chartBox: {
     color: '#f5f5dc',
     width: '100%',
-    maxHeight: '1000px',
+    // maxHeight: '1000px',
     height: '100%',
     padding: '10px',
     backgroundColor: '#f5f5dc',
@@ -194,7 +194,7 @@ const styles = {
   chartBoxMap: {
     color: '#f5f5dc',
     width: '100%',
-    maxHeight: '1200px',
+    // maxHeight: '1200px',
     height: '100%',
     padding: '10px',
     backgroundColor: '#f5f5dc',
