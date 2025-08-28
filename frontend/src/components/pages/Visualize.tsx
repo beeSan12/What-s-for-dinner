@@ -203,7 +203,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    boxSizing: 'border-box',
+    // boxSizing: 'border-box',
     gridColumn: '1 / -1',
     // minHeight: '600px',
   },
