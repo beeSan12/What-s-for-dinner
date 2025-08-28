@@ -210,7 +210,7 @@ export default function OriginMap() {
   }
 
   return (
-    <div style={{ width: '100vh', height: '70vh' }}>
+    <div style={{ width: '100vh', height: '100vh' }}>
       <ReactECharts
         ref={chartRef}
         option={option}
