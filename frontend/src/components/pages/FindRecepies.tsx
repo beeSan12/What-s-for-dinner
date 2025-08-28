@@ -307,6 +307,8 @@ const styles = {
     // color: '#2f4f4f',
     // boxSizing: 'border-box',
     backgroundColor: 'rgba(232, 222, 212)',
+    backgroundRepeat: 'repeat',
+    backgroundSize: 'cover',
     padding: '20px 10px',
     display: 'flex',
     flexDirection: 'column',

@@ -341,7 +341,7 @@ const styles = {
     // overflow: 'auto',
     // opacity: 0.9,
     backgroundColor: '#fefefe',
-    padding: '20px',
+    // padding: '20px',
     borderRadius: '12px',
     boxShadow: '0px 4px 20px rgba(0,0,0,0.1)',
     width: '100%',
@@ -400,7 +400,7 @@ const styles = {
     textAlign: 'left',
     marginTop: '1rem',
     color: '#2f4f4f',
-    fontSize: '20px',
+    fontSize: '16px',
     fontWeight: 'bold',
   },
   allergenList: {
