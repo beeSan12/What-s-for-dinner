@@ -215,9 +215,8 @@ export default function OriginMap() {
         ref={chartRef}
         option={option}
         style={{
-          width: '100%',
-          height: '100%',
-          // margin: '0 auto',
+          maxWidth: '100%',
+          maxHeight: '100%',
         }}
         opts={{ renderer: 'canvas' }}
       />
