@@ -68,7 +68,7 @@ export default function EcoScatter({ products }: Props) {
   }, [])
 
   return (
-    <div style={{ width: '100vw', height: '70vh' }}>
+    <div style={{ width: '350px', height: '400px' }}>
       <ReactECharts
         option={option}
         style={{ maxWidth: '100%', maxHeight: '100%' }}
