@@ -624,7 +624,8 @@ const styles = {
   },
   input: {
     padding: '0.5rem',
-    width: '300px',
+    // width: '300px',
+    maxWidth: '300px',
   },
   searchBtn: {
     marginLeft: '1rem',
