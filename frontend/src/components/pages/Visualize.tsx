@@ -142,7 +142,7 @@ export default function Visualize() {
 const styles = {
   container: {
     padding: '20px',
-    margin: '20px',
+    margin: '0 auto',
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -155,6 +155,7 @@ const styles = {
     width: '100vw',
     height: '100vh',
     gap: '20px',
+    boxSizing: 'border-box',
   },
   totalProducts: {
     alignSelf: 'flex-start',
@@ -176,7 +177,7 @@ const styles = {
     gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
     // gridTemplateColumns: 'repeat(2, 1fr)',
     // gridTemplateColumns: 'repeat(auto-fit, minmax(600px, 1fr))',
-    gap: '32px',
+    gap: '24px',
     gridTemplateRows: 'auto auto',
     gridAutoRows: 'minmax(400px, auto)',
     // gridAutoRows: '600px',
@@ -203,6 +204,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     // boxSizing: 'border-box',
+    boxSizing: 'border-box',
   },
   chartBoxMap: {
     color: '#f5f5dc',
@@ -220,6 +222,7 @@ const styles = {
     // boxSizing: 'border-box',
     gridColumn: '1 / -1',
     // minHeight: '600px',
+    boxSizing: 'border-box',
   },
   btn: {
     marginTop: '24px',
