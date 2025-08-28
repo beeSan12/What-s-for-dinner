@@ -90,7 +90,7 @@ export default function Dashboard({ ecoFilter = [] }: Props) {
     <div style={{ width: '100vh', height: '60vh' }}>
       <ReactECharts
         option={option}
-        style={{ maxWidth: '100%', maxHeight: '100%' }}
+        style={{ width: '100%', height: '100%' }}
       />
     </div>
   )
