@@ -6,7 +6,7 @@
  * @author Beatriz Sanssi
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useMemo, useState } from 'react'
 import * as echarts from 'echarts/core'
 import { MapChart, PieChart } from 'echarts/charts'
 import {
@@ -108,6 +108,8 @@ function seriesFromData(data: CountryData[]) {
 export default function OriginMap() {
   const [data, setData] = useState<CountryData[]>([])
   const [ready, setReady] = useState(false)
+  const chartRef = useRef<ReactECharts | null>(null)
+  
 
   // 1) Load GeoJSON-data for world map
   useEffect(() => {
@@ -127,7 +129,22 @@ export default function OriginMap() {
     setReady(true)
   }, [])
 
-  // 2) Get the aggregated data from the server
+  // 2) Resize the chart when the window is resized
+  useEffect(() => {
+  const resize = () => {
+    if (chartRef.current) {
+      chartRef.current.getEchartsInstance().resize()
+    }
+  }
+
+  // Timeout to wait for layout/rendering to complete
+  setTimeout(resize, 100)
+
+  window.addEventListener('resize', resize)
+  return () => window.removeEventListener('resize', resize)
+}, [])
+
+  // 3) Get the aggregated data from the server
   useEffect(() => {
     ;(async () => {
       try {
@@ -158,7 +175,7 @@ export default function OriginMap() {
     })()
   }, [])
 
-  // 3) Memoize the option object to avoid unnecessary re-renders
+  // 4) Memoize the option object to avoid unnecessary re-renders
   const option = useMemo(
     () => ({
       tooltip: { trigger: 'item' },
@@ -177,20 +194,23 @@ export default function OriginMap() {
     [ready, data],
   )
   console.log(seriesFromData(data))
-  // 4) Conditionally render loading
+  // 5) Conditionally render loading
   if (!ready) {
     return <p>Loading map…</p>
   }
 
   return (
-    <ReactECharts
-      option={option}
-      style={{
-        width: '100%',
-        height: '100%',
-        // margin: '0 auto',
-      }}
-      opts={{ renderer: 'canvas' }}
-    />
+    <div style={{ width: '1200px', height: '800px' }}>
+      <ReactECharts
+        ref={chartRef}
+        option={option}
+        style={{
+          width: '100%',
+          height: '100%',
+          // margin: '0 auto',
+        }}
+        opts={{ renderer: 'canvas' }}
+      />
+    </div>
   )
 }
