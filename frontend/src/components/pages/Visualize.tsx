@@ -171,7 +171,7 @@ const styles = {
     // gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
     gridTemplateColumns: 'repeat(2, 1fr)',
     gap: '32px',
-    gridAutoRows: '600px',
+    // gridAutoRows: '600px',
     width: '100%',
     alignItems: 'stretch',
     justifyItems: 'center',
