@@ -67,13 +67,24 @@ function coord(cc: string): [number, number] | undefined {
 function seriesFromData(data: CountryData[]) {
   if (!Array.isArray(data)) return []
 
+  const seriesData = data
+    .map((c) => {
+      const center = coord(c.cc)
+      if (!center) return null
+      return {
+        name: c.origin ?? c.cc,
+        value: [...center, c.total], // [lon, lat, total]
+      }
+    })
+    .filter((d): d is { name: string; value: [number, number, number] } => !!d)
+
   return [
     {
       name: 'Products by Country',
       type: 'scatter',
       coordinateSystem: 'geo',
       symbolSize: function (val: [number, number, number]) {
-        return Math.sqrt(val[2]) * 2 // storleken beroende på produktantalet
+        return Math.sqrt(val[2]) * 2
       },
       label: {
         show: false,
@@ -89,16 +100,7 @@ function seriesFromData(data: CountryData[]) {
           return `${params.name}<br/>${total} produkter`
         },
       },
-      data: data
-        .map((c) => {
-          const center = coord(c.cc)
-          if (!center) return null
-          return {
-            name: c.origin ?? c.cc,
-            value: [...center, c.total], // [lon, lat, total]
-          }
-        })
-        .filter((d): d is { name: string; value: [number, number, number] } => !!d),
+      data: seriesData,
     },
   ]
 }
