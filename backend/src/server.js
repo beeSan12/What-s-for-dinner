@@ -29,6 +29,8 @@ import { logger } from './config/winston.js'
 import { router } from './routes/router.js'
 
 dotenv.config()
+const PORT = Number(process.env.PORT || process.env.NODEJS_EXPRESS_PORT || 8083)
+const HOST = process.env.HOST || '0.0.0.0'
 
 try {
   // Connect to MongoDB.
@@ -61,7 +63,14 @@ try {
   )
 
   // Enable Cross Origin Resource Sharing (CORS) (https://www.npmjs.com/package/cors).
-  app.use(cors())
+  // app.use(cors())
+  app.use(cors({
+    origin: [
+      'http://localhost:3000',
+      'https://what-s-for-dinner-one.vercel.app'
+    ],
+    credentials: true
+  }))
 
   // Parse requests of the content type application/json.
   app.use(express.json())
@@ -135,10 +144,15 @@ try {
     return res.status(err.status || 500).json(copy)
   })
 
+  // Health check route
+  app.get('/health', (req, res) => {
+    res.json({ status: 'ok' })
+  })
+
   // Starts the HTTP server listening for connections.
-  const server = app.listen(process.env.NODEJS_EXPRESS_PORT, () => {
-    logger.info(`Server running at http://localhost:${server.address().port}`)
-    logger.info('Press Ctrl-C to terminate...')
+  app.listen(PORT, HOST, function () {
+    const { port } = this.address()
+    logger.info(`Server running on http://${HOST}:${port}`)
   })
 } catch (err) {
   logger.error(err.message, { error: err })

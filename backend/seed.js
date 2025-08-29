@@ -12,11 +12,19 @@ import mongoose from 'mongoose'
 import { ProductModel } from './src/models/ProductModel.js'
 import { fallbackCountries, normalizeCountry } from './src/utils/countryUtils.js'
 import countries from 'i18n-iso-countries'
-import enLocale from 'i18n-iso-countries/langs/en.json' with { type: 'json' }
-import frLocale from 'i18n-iso-countries/langs/fr.json' with { type: 'json' }
-import esLocale from 'i18n-iso-countries/langs/es.json' with { type: 'json' }
+import { createRequire } from 'module'
 
 dotenv.config()
+const require = createRequire(import.meta.url)
+
+const enLocale = require('i18n-iso-countries/langs/en.json')
+const frLocale = require('i18n-iso-countries/langs/fr.json')
+const esLocale = require('i18n-iso-countries/langs/es.json')
+
+countries.registerLocale(enLocale)
+countries.registerLocale(frLocale)
+countries.registerLocale(esLocale)
+
 const FILE_PATH = process.env.PATH_TO_DATA_GZ
 const maxImport = 20000
 const LOG_FIRST_N = 5
@@ -32,7 +40,7 @@ countries.registerLocale(esLocale)
  * @param {string} originsTagsRaw - The raw origins tags string.
  * @returns {string[]} - An array of ISO country codes.
  */
-function parseOrigins(originsRaw, originsTagsRaw) {
+function parseOrigins (originsRaw, originsTagsRaw) {
   const rawList = []
 
   if (originsRaw) rawList.push(...originsRaw.split(/[,;]/))
