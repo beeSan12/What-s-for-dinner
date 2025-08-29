@@ -67,7 +67,7 @@ try {
   app.use(cors({
     origin: [
       'http://localhost:3000',
-      'https://what-s-for-dinner-one.vercel.app'
+      'https://what-s-for-dinner-pink.vercel.app'
     ],
     credentials: true
   }))
