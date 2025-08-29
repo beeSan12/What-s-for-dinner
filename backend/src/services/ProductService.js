@@ -8,7 +8,10 @@
 import { MongooseServiceBase } from './MongooseServiceBase.js'
 import { APIClientFactory } from '../utils/APIClientFactory.js'
 import countries from 'i18n-iso-countries'
-import enLocale from 'i18n-iso-countries/langs/en.json' assert { type: 'json' }
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
+const enLocale = require('i18n-iso-countries/langs/en.json')
 
 // Register English locale
 countries.registerLocale(enLocale)

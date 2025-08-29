@@ -17,12 +17,10 @@ dotenv.config()
 await mongoose.connect(process.env.DB_CONNECTION_STRING)
 console.log('Connected to MongoDB')
 
-// Clear existing embeddings first
-await EmbeddingModel.deleteMany({})
-console.log('Old embeddings removed')
+const LIMIT = Number(process.env.EMBEDDING_LIMIT || 10000)
+const BATCH_SIZE = Number(process.env.EMBEDDING_BATCH || 1000)
 
-const BATCH_SIZE = 1000
-const products = await ProductModel.find({})
+const products = await ProductModel.find({}).limit(LIMIT).lean()
 
 console.log(`Found ${products.length} products. Start creating embeddings...`)
 
