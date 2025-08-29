@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "👀 entrypoint.sh is running"
+# echo "👀 entrypoint.sh is running"
 
 # echo "⏳ Waiting for MongoDB..."
 # until bash -c "</dev/tcp/mongo/27017"; do
@@ -19,15 +19,14 @@ echo "👀 entrypoint.sh is running"
 
 # echo "🚀 Server started!"
 
+set -e
+echo "👀 entrypoint.sh is running"
+
 if [ "$RUN_SEED" = "true" ]; then
   echo "Seeding database..."
-  npm run seed || exit 1
-
+  npm run seed
   if [ "$RUN_EMBEDDINGS" = "true" ]; then
     echo "Seeding embeddings..."
-    npm run seed-embeddings || exit 1
+    npm run seed-embeddings
   fi
 fi
-
-echo "Starting server..."
-npm start
