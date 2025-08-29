@@ -16,7 +16,7 @@ services:
     build:
       context: ./backend
     ports:
-      - "8083:8083"
+      - "8000:8000"
     environment:
       - DB_CONNECTION_STRING=mongodb://root:secret@mongo:27017/wt2?authSource=admin
       - PATH_TO_DATA_GZ=/app/data/en.openfoodfacts.org.products.csv.gz
