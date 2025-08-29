@@ -9,7 +9,7 @@ WORKDIR /app/backend
 # RUN npm install --omit=dev
 
 # Kopiera in källkod (efter npm ci för cache)
-COPY . backend/
+COPY . .
 
 RUN npm install
 
