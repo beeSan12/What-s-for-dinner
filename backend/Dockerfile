@@ -23,10 +23,10 @@ RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["bash", "./entrypoint.sh"]
 
 # Lyssna på porten som Koyeb skickar in via env (fallback 8083)
-ENV PORT=8000
-EXPOSE 8000
+ENV PORT=8083
+EXPOSE 8083
 
-CMD ["/app/entrypoint.sh"]
+CMD ["./entrypoint.sh"]
 
 # # 1. Base image
 # FROM node:20-bullseye-slim
