@@ -29,7 +29,7 @@ import { logger } from './config/winston.js'
 import { router } from './routes/router.js'
 
 dotenv.config()
-const PORT = Number(process.env.PORT || process.env.NODEJS_EXPRESS_PORT || 8083)
+const PORT = Number(process.env.PORT || process.env.NODEJS_EXPRESS_PORT || 8000)
 const HOST = process.env.HOST || '0.0.0.0'
 
 try {
