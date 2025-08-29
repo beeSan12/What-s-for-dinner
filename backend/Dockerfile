@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Installera bara det som behövs
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Kopiera in källkod (efter npm ci för cache)
 COPY . .
