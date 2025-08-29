@@ -30,3 +30,8 @@ if [ "$RUN_SEED" = "true" ]; then
     npm run seed-embeddings
   fi
 fi
+
+echo "Starting server..."
+npm start
+
+echo "🚀 Server started!"
