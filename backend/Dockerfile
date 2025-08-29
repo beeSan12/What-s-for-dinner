@@ -11,7 +11,7 @@ WORKDIR /app
 # Kopiera in källkod (efter npm ci för cache)
 COPY . .
 
-RUN npm install --omit=dev
+RUN npm install
 
 RUN chmod +x entrypoint.sh
 
