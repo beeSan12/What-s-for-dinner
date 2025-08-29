@@ -2,7 +2,7 @@
 
 FROM node:20-bullseye-slim
 ENV NODE_ENV=production
-WORKDIR /backend
+WORKDIR /
 
 # Installera bara det som behövs
 # COPY backend/package*.json ./
