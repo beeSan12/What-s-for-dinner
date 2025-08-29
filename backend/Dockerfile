@@ -5,20 +5,23 @@ ENV NODE_ENV=production
 WORKDIR /app
 
 # Installera bara det som behövs
-COPY backend/package*.json ./
-RUN npm install --omit=dev
+# COPY backend/package*.json ./
+# RUN npm install --omit=dev
 
 # Kopiera in källkod (efter npm ci för cache)
-COPY backend/. .
+COPY . .
 
-COPY backend/entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+RUN npm install --omit=dev
+
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["bash", "./entrypoint.sh"]
 
 # Lyssna på porten som Koyeb skickar in via env (fallback 8083)
 ENV PORT=8083
 EXPOSE 8083
 
-CMD ["/app/entrypoint.sh"]
+CMD ["./entrypoint.sh"]
 
 # # 1. Base image
 # FROM node:20-bullseye-slim
