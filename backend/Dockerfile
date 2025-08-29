@@ -2,18 +2,23 @@
 
 FROM node:20-bullseye-slim
 ENV NODE_ENV=production
-WORKDIR /
+WORKDIR /app
 
 # Installera bara det som behövs
 # COPY backend/package*.json ./
 # RUN npm install --omit=dev
 
 # Kopiera in källkod (efter npm ci för cache)
-COPY . .
+COPY backend/package*.json ./
 
-RUN npm install
+# 2) Installera backendens dependencies
+#    (prova npm ci först, fallback till npm install om lockfile saknas)
+RUN npm ci --omit=dev || npm install --omit=dev
 
-RUN chmod +x entrypoint.sh
+# 3) Kopiera in resten av backend-koden
+COPY backend/. .
+
+RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["bash", "./entrypoint.sh"]
 
@@ -21,7 +26,7 @@ ENTRYPOINT ["bash", "./entrypoint.sh"]
 ENV PORT=8083
 EXPOSE 8083
 
-CMD ["./entrypoint.sh"]
+CMD ["/app/entrypoint.sh"]
 
 # # 1. Base image
 # FROM node:20-bullseye-slim
