@@ -18,8 +18,8 @@ services:
     ports:
       - "8083:8083"
     environment:
-      - DB_CONNECTION_STRING=mongodb+srv://beasanssi_db_user:HWpkN1cxN35fSNXh@whats-for-dinner-backen.e1ezmnw.mongodb.net/?retryWrites=true&w=majority&appName=whats-for-dinner-backend
-      - PATH_TO_DATA_GZ=/app/data/en.openfoodfacts.org.products.csv.gz
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+      - PATH_TO_DATA_GZ=${PATH_TO_DATA_GZ}
     env_file:
       - ./backend/.env
     volumes:
@@ -27,18 +27,6 @@ services:
     depends_on:
       - mongo
     restart: always
-
-  # frontend:
-  #   image: bsan89/whats-for-dinner-frontend:latest
-  #   build:
-  #     context: ./frontend
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - backend
-  #   env_file:
-  #     - ./frontend/.env
-  #   restart: always
-
+    
 volumes:
   mongo-data:
