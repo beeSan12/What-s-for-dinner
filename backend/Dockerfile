@@ -1,50 +1,33 @@
 # backend/Dockerfile
 
+# 1. Base image
 FROM node:20-bullseye-slim
+
+# 2. Add environment variables and set working directory
 ENV NODE_ENV=production
 WORKDIR /app
 
-# Installera bara det som behövs
-# COPY backend/package*.json ./
-# RUN npm install --omit=dev
-
+# 3. Install curl to use in entrypoint.sh
 RUN apt-get update && apt-get install -y curl
 
-# Kopiera in källkod (efter npm ci för cache)
+# 4. Copy only package.json and package-lock.json first to leverage Docker cache
 COPY backend/package*.json ./
 
-# 2) Installera backendens dependencies
+# 5. Install dependencies
 RUN npm ci --omit=dev || npm install --omit=dev
 
-# 3) Kopiera in resten av backend-koden
+# 6. Copy the rest of the backend code
 COPY backend/. .
 
+# 7. Make entrypoint.sh executable
 RUN chmod +x /app/entrypoint.sh
 
+# 8. Use entrypoint to wait for MongoDB to be ready before starting the app
 ENTRYPOINT ["bash", "./entrypoint.sh"]
 
-# Lyssna på porten som Koyeb skickar in via env (fallback 8083)
+# 9. Expose the port the app runs on
 ENV PORT=8083
 EXPOSE 8083
 
+# 10. Start the application
 CMD ["./entrypoint.sh"]
-
-# # 1. Base image
-# FROM node:20-bullseye-slim
-
-# # 2. Create app directory and copy files
-# WORKDIR /app
-
-# # 3. Copy the application code
-# COPY . .
-
-# # 4. Install dependencies for testing
-# # RUN apt-get update && apt-get install -y netcat-openbsd && npm install -g newman
-
-# # 5. Install app dependencies
-# RUN npm install
-
-# # 6. Build the application
-# RUN chmod +x entrypoint.sh
-# CMD ["./entrypoint.sh"]
-# # ENTRYPOINT ["bash", "./entrypoint.sh"]
