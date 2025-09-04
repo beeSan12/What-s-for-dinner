@@ -8,11 +8,12 @@ WORKDIR /app
 # COPY backend/package*.json ./
 # RUN npm install --omit=dev
 
+RUN apt-get update && apt-get install -y curl
+
 # Kopiera in källkod (efter npm ci för cache)
 COPY backend/package*.json ./
 
 # 2) Installera backendens dependencies
-#    (prova npm ci först, fallback till npm install om lockfile saknas)
 RUN npm ci --omit=dev || npm install --omit=dev
 
 # 3) Kopiera in resten av backend-koden
